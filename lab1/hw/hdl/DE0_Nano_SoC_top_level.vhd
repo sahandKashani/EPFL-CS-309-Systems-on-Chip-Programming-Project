@@ -102,7 +102,18 @@ entity DE0_Nano_SoC_top_level is
 end entity DE0_Nano_SoC_top_level;
 
 architecture rtl of DE0_Nano_SoC_top_level is
+    component soc_system is
+        port(
+            clk_clk       : in std_logic := 'X';
+            reset_reset_n : in std_logic := 'X'
+        );
+    end component soc_system;
 
 begin
+    u0 : component soc_system
+        port map(
+            clk_clk       => FPGA_CLK1_50,
+            reset_reset_n => KEY_N(0)
+        );
 
 end;
