@@ -6,7 +6,7 @@
    version="1.0"
    description=""
    tags=""
-   categories="" />
+   categories="System" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
    element clk_0
@@ -29,7 +29,7 @@
    {
       datum baseAddress
       {
-         value = "1052672";
+         value = "1052704";
          type = "String";
       }
    }
@@ -65,6 +65,46 @@
          type = "String";
       }
    }
+   element pwm_0
+   {
+      datum _sortIndex
+      {
+         value = "4";
+         type = "int";
+      }
+   }
+   element pwm_0.avalon_slave_0
+   {
+      datum baseAddress
+      {
+         value = "1052688";
+         type = "String";
+      }
+   }
+   element pwm_1
+   {
+      datum _sortIndex
+      {
+         value = "5";
+         type = "int";
+      }
+   }
+   element pwm_1.avalon_slave_0
+   {
+      datum baseAddress
+      {
+         value = "1052672";
+         type = "String";
+      }
+   }
+   element soc_system
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone V";
+         type = "String";
+      }
+   }
 }
 ]]></parameter>
  <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
@@ -79,7 +119,7 @@
  <parameter name="hideFromIPCatalog" value="false" />
  <parameter name="lockedInterfaceDefinition" value="" />
  <parameter name="maxAdditionalLatency" value="1" />
- <parameter name="projectName" value="" />
+ <parameter name="projectName" value="lab1.qpf" />
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="0" />
  <parameter name="testBenchDutName" value="" />
@@ -87,6 +127,16 @@
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk_0.clk_in" type="clock" dir="end" />
+ <interface
+   name="pwm_0_conduit_end"
+   internal="pwm_0.conduit_end"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="pwm_1_conduit_end"
+   internal="pwm_1.conduit_end"
+   type="conduit"
+   dir="end" />
  <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
  <module name="clk_0" kind="clock_source" version="15.1" enabled="1">
   <parameter name="clockFrequency" value="50000000" />
@@ -137,7 +187,7 @@
   <parameter name="dataAddrWidth" value="21" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory2_0.s1' start='0x80000' end='0xC45C0' type='altera_avalon_onchip_memory2.s1' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x100800' end='0x101000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x101000' end='0x101008' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory2_0.s1' start='0x80000' end='0xC45C0' type='altera_avalon_onchip_memory2.s1' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x100800' end='0x101000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='pwm_1.avalon_slave_0' start='0x101000' end='0x101010' type='pwm.avalon_slave_0' /><slave name='pwm_0.avalon_slave_0' start='0x101010' end='0x101020' type='pwm.avalon_slave_0' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x101020' end='0x101028' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -299,7 +349,7 @@
    version="15.1"
    enabled="1">
   <parameter name="allowInSystemMemoryContentEditor" value="false" />
-  <parameter name="autoInitializationFileName">soc_system_onchip_memory2_0</parameter>
+  <parameter name="autoInitializationFileName">$${FILENAME}_onchip_memory2_0</parameter>
   <parameter name="blockType" value="AUTO" />
   <parameter name="copyInitFile" value="false" />
   <parameter name="dataWidth" value="32" />
@@ -322,11 +372,31 @@
   <parameter name="useShallowMemBlocks" value="false" />
   <parameter name="writable" value="true" />
  </module>
+ <module name="pwm_0" kind="pwm" version="1.0" enabled="1" />
+ <module name="pwm_1" kind="pwm" version="1.0" enabled="1" />
  <connection
    kind="avalon"
    version="15.1"
    start="nios2_gen2_0.data_master"
    end="jtag_uart_0.avalon_jtag_slave">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00101020" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="15.1"
+   start="nios2_gen2_0.data_master"
+   end="pwm_0.avalon_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00101010" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="15.1"
+   start="nios2_gen2_0.data_master"
+   end="pwm_1.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x00101000" />
   <parameter name="defaultConnection" value="false" />
@@ -374,6 +444,8 @@
    version="15.1"
    start="clk_0.clk"
    end="onchip_memory2_0.clk1" />
+ <connection kind="clock" version="15.1" start="clk_0.clk" end="pwm_0.clock" />
+ <connection kind="clock" version="15.1" start="clk_0.clk" end="pwm_1.clock" />
  <connection
    kind="interrupt"
    version="15.1"
@@ -391,6 +463,8 @@
    version="15.1"
    start="clk_0.clk_reset"
    end="jtag_uart_0.reset" />
+ <connection kind="reset" version="15.1" start="clk_0.clk_reset" end="pwm_0.reset" />
+ <connection kind="reset" version="15.1" start="clk_0.clk_reset" end="pwm_1.reset" />
  <connection
    kind="reset"
    version="15.1"
@@ -406,6 +480,16 @@
    version="15.1"
    start="nios2_gen2_0.debug_reset_request"
    end="jtag_uart_0.reset" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="nios2_gen2_0.debug_reset_request"
+   end="pwm_0.reset" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="nios2_gen2_0.debug_reset_request"
+   end="pwm_1.reset" />
  <connection
    kind="reset"
    version="15.1"
