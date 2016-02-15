@@ -4,16 +4,15 @@ use ieee.numeric_std.all;
 
 entity mcp3204_spi is
     port(
-        -- Inputs
-        clk         : in  std_logic;
-        reset       : in  std_logic;
-        busy : out std_logic;
-        start : in std_logic;
-        done : out std_logic;
-        data : out std_logic_vector(11 downto 0);
-        CS : out  std_logic;
-        MOSI   : out  std_logic;
-        MISO     : in  std_logic
+        clk   : in  std_logic;
+        reset : in  std_logic;
+        busy  : out std_logic;
+        start : in  std_logic;
+        done  : out std_logic;
+        data  : out std_logic_vector(11 downto 0);
+        CS_N  : out std_logic;
+        MOSI  : out std_logic;
+        MISO  : in  std_logic
     );
 end mcp3204_spi;
 
@@ -22,7 +21,6 @@ architecture rtl of mcp3204_spi is
 
     signal reg_state, next_reg_state : state := STATE_CS_HIGH;
 begin
-
     process(clk, reset)
     begin
         if reset = '1' then
