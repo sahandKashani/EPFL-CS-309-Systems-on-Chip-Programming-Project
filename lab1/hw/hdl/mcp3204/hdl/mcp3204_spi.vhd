@@ -22,24 +22,23 @@ entity mcp3204_spi is
 end mcp3204_spi;
 
 architecture rtl of mcp3204_spi is
+    type state is (STATE_CS_N_HIGH, STATE_CS_N_LOW, STATE_START, STATE_SGL, STATE_D2, STATE_D1, STATE_D0, STATE_SAMPLE, STATE_NULL, STATE_D_IN);
+    signal reg_state : state := STATE_CS_N_HIGH;
+
     signal reg_clk_divider_counter : unsigned(4 downto 0) := (others => '0'); -- need to be able to count until 24
     signal reg_spi_en              : std_logic            := '0'; -- pulses every 0.5 MHz
     signal reg_falling_edge_sclk   : std_logic            := '0';
 
-    -- 1 MHz (not actuall "clocked" at 1 MHz, but rather "enabled" every 1 MHz)
-    type state is (STATE_CS_N_HIGH, STATE_CS_N_LOW, STATE_START, STATE_SGL, STATE_D2, STATE_D1, STATE_D0, STATE_SAMPLE, STATE_NULL, STATE_D_IN);
-    signal reg_state, next_reg_state : state := STATE_CS_N_HIGH;
-
-    signal reg_channel, next_reg_channel           : std_logic_vector(channel'range) := (others => '0');
-    signal reg_data_counter, next_reg_data_counter : unsigned(3 downto 0)            := (others => '0'); -- need to be able to count until 11
+    signal reg_channel      : std_logic_vector(channel'range) := (others => '0');
+    signal reg_data_counter : unsigned(3 downto 0)            := (others => '0'); -- need to be able to count until 11
 
     -- registered outputs
-    signal reg_busy, next_reg_busy             : std_logic                    := '0';
-    signal reg_data_valid, next_reg_data_valid : std_logic                    := '0';
-    signal reg_data, next_reg_data             : std_logic_vector(data'range) := (others => '0');
-    signal reg_sclk                            : std_logic                    := '0';
-    signal reg_cs_n, next_reg_cs_n             : std_logic                    := '0';
-    signal reg_mosi, next_reg_mosi             : std_logic                    := '0';
+    signal reg_busy       : std_logic                    := '0';
+    signal reg_data_valid : std_logic                    := '0';
+    signal reg_data       : std_logic_vector(data'range) := (others => '0');
+    signal reg_sclk       : std_logic                    := '0';
+    signal reg_cs_n       : std_logic                    := '1';
+    signal reg_mosi       : std_logic                    := '0';
 
 begin
     busy       <= reg_busy;
@@ -92,109 +91,66 @@ begin
             reg_cs_n         <= '1';
             reg_mosi         <= '0';
         elsif rising_edge(clk) then
-            if reg_falling_edge_sclk = '1' then
-                reg_state        <= next_reg_state;
-                reg_channel      <= next_reg_channel;
-                reg_data_counter <= next_reg_data_counter;
-                reg_busy         <= next_reg_busy;
-                reg_data_valid   <= next_reg_data_valid;
-                reg_data         <= next_reg_data;
-                reg_cs_n         <= next_reg_cs_n;
-                reg_mosi         <= next_reg_mosi;
+            if start = '1' then
+                reg_busy    <= '1';
+                reg_channel <= channel;
+
+            elsif reg_falling_edge_sclk = '1' then
+                case reg_state is
+                    when STATE_CS_N_HIGH =>
+                        if reg_busy = '1' then
+                            reg_cs_n  <= '0';
+                            reg_state <= STATE_CS_N_LOW;
+                        end if;
+
+                    when STATE_CS_N_LOW =>
+                        reg_state <= STATE_START;
+
+                    when STATE_START =>
+                        -- "first clock received with CS_N low and D_IN high will 
+                        -- constiture a start bit".
+                        reg_mosi  <= '1';
+                        reg_state <= STATE_SGL;
+
+                    when STATE_SGL =>
+                        -- SGL / DIFF_N bit (we use SGL)
+                        reg_mosi  <= '1';
+                        reg_state <= STATE_D2;
+
+                    when STATE_D2 =>
+                        -- D2 = don't care
+                        reg_state <= STATE_D1;
+
+                    when STATE_D1 =>
+                        -- msb of channel
+                        reg_mosi  <= reg_channel(1);
+                        reg_state <= STATE_D0;
+
+                    when STATE_D0 =>
+                        -- lsb of channel
+                        reg_mosi  <= reg_channel(0);
+                        reg_state <= STATE_SAMPLE;
+
+                    when STATE_SAMPLE =>
+                        reg_state <= STATE_NULL;
+
+                    when STATE_NULL =>
+                        reg_data_counter <= to_unsigned(11, reg_data_counter'length);
+                        reg_state        <= STATE_D_IN;
+
+                    when STATE_D_IN =>
+                        reg_data(to_integer(reg_data_counter)) <= MISO;
+
+                        if reg_data_counter /= 0 then
+                            reg_data_counter <= reg_data_counter - 1;
+                        else
+                            reg_data_valid <= '1';
+                            reg_busy       <= '0';
+                            reg_state      <= STATE_CS_N_HIGH;
+                        end if;
+                end case;
             end if;
         end if;
-    end process;
-
-    NEXT_STATE_LOGIC : process(reg_state, reg_channel, reg_data_counter, reg_busy, reg_data_valid, reg_data, reg_cs_n, reg_mosi)
-    begin
-        next_reg_state        <= reg_state;
-        next_reg_channel      <= reg_channel;
-        next_reg_data_counter <= reg_data_counter;
-
-        next_reg_busy       <= reg_busy;
-        next_reg_data_valid <= reg_data_valid;
-        next_reg_data       <= reg_data;
-        next_reg_cs_n       <= reg_cs_n;
-        next_reg_mosi       <= reg_mosi;
-
-        case reg_state is
-            when STATE_CS_N_HIGH =>
-                if start = '1' then
-                    next_reg_channel <= channel;
-                    next_reg_busy    <= '1';
-                    next_reg_cs_n    <= '0';
-
-                    next_reg_state <= STATE_CS_N_LOW;
-                end if;
-
-            when STATE_CS_N_LOW =>
-                next_reg_state <= STATE_START;
-
-            when STATE_START =>
-                -- "first clock received with CS_N low and D_IN high will 
-                -- constiture a start bit".
-                MOSI <= '1';
-                CS_N <= '0';
-                busy <= '1';
-
-                next_reg_state <= STATE_SGL;
-
-            when STATE_SGL =>
-                -- SGL / DIFF_N bit (we use SGL)
-                MOSI <= '1';
-                CS_N <= '0';
-                busy <= '1';
-
-                next_reg_state <= STATE_D2;
-
-            when STATE_D2 =>
-                -- D2 = don't care
-                CS_N <= '0';
-                busy <= '1';
-
-                next_reg_state <= STATE_D1;
-
-            when STATE_D1 =>
-                -- msb of channel
-                MOSI <= reg_channel(1);
-                CS_N <= '0';
-                busy <= '1';
-
-                next_reg_state <= STATE_D0;
-
-            when STATE_D0 =>
-                -- lsb of channel
-                MOSI <= reg_channel(0);
-                CS_N <= '0';
-                busy <= '1';
-
-                next_reg_state <= STATE_SAMPLE;
-
-            when STATE_SAMPLE =>
-                CS_N <= '0';
-                busy <= '1';
-
-                next_reg_state <= STATE_NULL;
-
-            when STATE_NULL =>
-                CS_N                  <= '0';
-                busy                  <= '1';
-                next_reg_data_counter <= to_unsigned(11, next_reg_data_counter'length);
-
-                next_reg_state <= STATE_D_IN;
-
-            when STATE_D_IN =>
-                CS_N                                        <= '0';
-                busy                                        <= '1';
-                next_reg_data_counter                       <= reg_data_counter - 1;
-                next_reg_data(to_integer(reg_data_counter)) <= MISO;
-
-                if reg_data_counter = 0 then
-                    data           <= reg_data;
-                    data_valid     <= '1';
-                    next_reg_state <= STATE_CS_N_HIGH;
-                end if;
-        end case;
     end process;
 
 end architecture rtl;

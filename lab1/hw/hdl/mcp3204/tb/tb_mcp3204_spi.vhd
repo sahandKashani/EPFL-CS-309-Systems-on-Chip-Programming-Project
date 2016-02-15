@@ -53,8 +53,6 @@ begin
 
         procedure spi_transfer(constant channel_number : natural range 0 to 3) is
         begin
-            wait until busy = '0';
-
             wait until falling_edge(clk);
             start   <= '1';
             channel <= std_logic_vector(to_unsigned(channel_number, channel'length));
@@ -65,7 +63,6 @@ begin
 
             wait until rising_edge(data_valid);
             wait until busy = '0';
-
         end procedure spi_transfer;
 
     begin
@@ -73,7 +70,7 @@ begin
 
         spi_transfer(1);
 
-        --        sim_finished <= true;
+        sim_finished <= true;
         wait;
     end process sim;
 end architecture rtl;
