@@ -17,7 +17,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity pwm_mm_slave is
+entity pwm is
     port(
         -- Inputs
         clk         : in  std_logic;
@@ -31,13 +31,17 @@ entity pwm_mm_slave is
         pwm_out     : out std_logic
     );
 
-end pwm_mm_slave;
+end pwm;
 
-architecture rtl of pwm_mm_slave is
+architecture rtl of pwm is
+    constant REG_PERIOD_OFST     : std_logic_vector(address'range) := std_logic_vector(to_unsigned(0, address'length));
+    constant REG_DUTY_CYCLE_OFST : std_logic_vector(address'range) := std_logic_vector(to_unsigned(1, address'length));
+    constant REG_CTRL_OFST       : std_logic_vector(address'range) := std_logic_vector(to_unsigned(2, address'length));
+
     constant ONE : unsigned(writedata'range) := to_unsigned(1, writedata'length);
 
     -- Registers
-    -- The versions of the signals prefixed by 'next_' are used to avoid glitches in the PWM.
+    -- The versions of the signals prefixed by 'new_' are used to avoid glitches in the PWM.
     signal period, new_period         : unsigned(31 downto 0);
     signal duty_cycle, new_duty_cycle : unsigned(31 downto 0);
     constant DEFAULT_PERIOD           : unsigned(period'range)     := to_unsigned(4, period'length);
@@ -93,11 +97,11 @@ begin
         elsif rising_edge(clk) then
             if write = '1' then
                 case address is
-                    when "00" =>
+                    when REG_PERIOD_OFST =>
                         new_period <= unsigned(writedata);
-                    when "01" =>
+                    when REG_DUTY_CYCLE_OFST =>
                         new_duty_cycle <= unsigned(writedata);
-                    when "10" =>
+                    when REG_CTRL_OFST =>
                         started <= writedata(0);
                     when others => null;
                 end case;
@@ -110,10 +114,10 @@ begin
         if rising_edge(clk) then
             if read = '1' then
                 case address is
-                    when "00" =>
-                        readdata <= std_logic_vector(period);
-                    when "01" =>
-                        readdata <= std_logic_vector(duty_cycle);
+                    when REG_PERIOD_OFST =>
+                        readdata <= std_logic_vector(period); -- should technically return new_period
+                    when REG_DUTY_CYCLE_OFST =>
+                        readdata <= std_logic_vector(duty_cycle); -- should technically return new_duty_cycle
                     when others => null;
                 end case;
             end if;
