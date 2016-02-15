@@ -2,9 +2,9 @@
 ;
 ; All Rights Reserved.
 ;
-; THIS WORK CONTAINS TRADE SECRET AND PROPRIETARY INFORMATION WHICH IS THE PROPERTY OF 
+; THIS WORK CONTAINS TRADE SECRET AND PROPRIETARY INFORMATION WHICH IS THE PROPERTY OF
 ; MENTOR GRAPHICS CORPORATION OR ITS LICENSORS AND IS SUBJECT TO LICENSE TERMS.
-;   
+;
 
 [Library]
 std = $MODEL_TECH/../std
@@ -15,6 +15,7 @@ std_developerskit = $MODEL_TECH/../std_developerskit
 synopsys = $MODEL_TECH/../synopsys
 modelsim_lib = $MODEL_TECH/../modelsim_lib
 sv_std = $MODEL_TECH/../sv_std
+osvvm = $MODEL_TECH/../osvvm
 
 ; Altera Primitive libraries
 ;
@@ -96,7 +97,7 @@ twentynm_hip_ver = $MODEL_TECH/../altera/verilog/twentynm_hip
 
 work = work
 [vcom]
-; VHDL93 variable selects language version as the default. 
+; VHDL93 variable selects language version as the default.
 ; Default is VHDL-2002.
 ; Value of 0 or 1987 for VHDL-1987.
 ; Value of 1 or 1993 for VHDL-1993.
@@ -218,7 +219,7 @@ Resolution = ps
 UserTimeUnit = default
 
 ; Default run length
-RunLength = 100 ps
+RunLength = 100
 
 ; Maximum iterations that can be run without advancing simulation time
 IterationLimit = 5000
@@ -239,7 +240,7 @@ IterationLimit = 5000
 BreakOnAssertion = 3
 
 ; Assertion Message Format
-; %S - Severity Level 
+; %S - Severity Level
 ; %R - Report Message
 ; %T - Time of assertion
 ; %D - Delta
@@ -390,10 +391,10 @@ ConcurrentFileLimit = 40
 ; description of a message.
 
 ; Control transcripting of elaboration/runtime messages.
-; The default is to have messages appear in the transcript and 
+; The default is to have messages appear in the transcript and
 ; recorded in the wlf file (messages that are recorded in the
 ; wlf file can be viewed in the MsgViewer).  The other settings
-; are to send messages only to the transcript or only to the 
+; are to send messages only to the transcript or only to the
 ; wlf file.  The valid values are
 ;    both  {default}
 ;    tran  {transcript only}
@@ -409,10 +410,10 @@ Project_Version = 6
 Project_DefaultLib = work
 Project_SortMethod = unused
 Project_Files_Count = 2
-Project_File_0 = C:/Users/Phil/Documents/EPFL/PrSOC/lab1/hw/hdl/pwm_mm_slave.vhd
-Project_File_P_0 = vhdl_novitalcheck 0 file_type vhdl group_id 0 cover_nofec 0 vhdl_nodebug 0 vhdl_1164 1 vhdl_noload 0 vhdl_synth 0 vhdl_enable0In 0 folder {Top Level} last_compile 1455228597 vhdl_disableopt 0 vhdl_vital 0 cover_excludedefault 0 vhdl_warn1 1 vhdl_warn2 1 vhdl_explicit 1 vhdl_showsource 0 vhdl_warn3 1 cover_covercells 0 vhdl_0InOptions {} vhdl_warn4 1 voptflow 1 cover_optlevel 3 vhdl_options {} vhdl_warn5 1 toggle - ood 0 cover_noshort 0 compile_to work compile_order 0 cover_nosub 0 dont_compile 0 vhdl_use93 2002
-Project_File_1 = C:/Users/Phil/Documents/EPFL/PrSOC/lab1/hw/hdl/pwm_mm_slave_tb.vhd
-Project_File_P_1 = vhdl_novitalcheck 0 file_type vhdl group_id 0 cover_nofec 0 vhdl_nodebug 0 vhdl_1164 1 vhdl_noload 0 vhdl_synth 0 vhdl_enable0In 0 folder {Top Level} last_compile 1455228914 vhdl_disableopt 0 cover_excludedefault 0 vhdl_vital 0 vhdl_warn1 1 vhdl_showsource 0 vhdl_explicit 1 vhdl_warn2 1 vhdl_0InOptions {} cover_covercells 0 vhdl_warn3 1 vhdl_options {} cover_optlevel 3 voptflow 1 vhdl_warn4 1 ood 0 toggle - vhdl_warn5 1 compile_to work cover_noshort 0 compile_order 1 dont_compile 0 cover_nosub 0 vhdl_use93 2002
+Project_File_0 = ../hdl/pwm_mm_slave_tb.vhd
+Project_File_P_0 = vhdl_novitalcheck 0 file_type vhdl group_id 0 cover_nofec 0 vhdl_nodebug 0 vhdl_1164 1 vhdl_noload 0 vhdl_synth 0 vhdl_enable0In 0 folder {Top Level} last_compile 0 vhdl_disableopt 0 vhdl_vital 0 cover_excludedefault 0 vhdl_warn1 1 vhdl_warn2 1 vhdl_explicit 1 vhdl_showsource 0 vhdl_warn3 1 cover_covercells 0 vhdl_0InOptions {} vhdl_warn4 1 voptflow 1 cover_optlevel 3 vhdl_options {} vhdl_warn5 1 toggle - ood 1 cover_noshort 0 compile_to work compile_order 1 cover_nosub 0 dont_compile 0 vhdl_use93 2002
+Project_File_1 = ../hdl/pwm_mm_slave.vhd
+Project_File_P_1 = vhdl_novitalcheck 0 file_type vhdl group_id 0 cover_nofec 0 vhdl_nodebug 0 vhdl_1164 1 vhdl_noload 0 vhdl_synth 0 vhdl_enable0In 0 folder {Top Level} last_compile 0 vhdl_disableopt 0 vhdl_vital 0 cover_excludedefault 0 vhdl_warn1 1 vhdl_warn2 1 vhdl_explicit 1 vhdl_showsource 0 vhdl_warn3 1 cover_covercells 0 vhdl_0InOptions {} vhdl_warn4 1 voptflow 1 cover_optlevel 3 vhdl_options {} vhdl_warn5 1 toggle - ood 1 cover_noshort 0 compile_to work compile_order 0 cover_nosub 0 dont_compile 0 vhdl_use93 2002
 Project_Sim_Count = 0
 Project_Folder_Count = 0
 Echo_Compile_Output = 0
@@ -421,44 +422,44 @@ Project_Opt_Count = 0
 ForceSoftPaths = 0
 ProjectStatusDelay = 5000
 VERILOG_DoubleClick = Edit
-VERILOG_CustomDoubleClick = 
+VERILOG_CustomDoubleClick =
 SYSTEMVERILOG_DoubleClick = Edit
-SYSTEMVERILOG_CustomDoubleClick = 
+SYSTEMVERILOG_CustomDoubleClick =
 VHDL_DoubleClick = Edit
-VHDL_CustomDoubleClick = 
+VHDL_CustomDoubleClick =
 PSL_DoubleClick = Edit
-PSL_CustomDoubleClick = 
+PSL_CustomDoubleClick =
 TEXT_DoubleClick = Edit
-TEXT_CustomDoubleClick = 
+TEXT_CustomDoubleClick =
 SYSTEMC_DoubleClick = Edit
-SYSTEMC_CustomDoubleClick = 
+SYSTEMC_CustomDoubleClick =
 TCL_DoubleClick = Edit
-TCL_CustomDoubleClick = 
+TCL_CustomDoubleClick =
 MACRO_DoubleClick = Edit
-MACRO_CustomDoubleClick = 
+MACRO_CustomDoubleClick =
 VCD_DoubleClick = Edit
-VCD_CustomDoubleClick = 
+VCD_CustomDoubleClick =
 SDF_DoubleClick = Edit
-SDF_CustomDoubleClick = 
+SDF_CustomDoubleClick =
 XML_DoubleClick = Edit
-XML_CustomDoubleClick = 
+XML_CustomDoubleClick =
 LOGFILE_DoubleClick = Edit
-LOGFILE_CustomDoubleClick = 
+LOGFILE_CustomDoubleClick =
 UCDB_DoubleClick = Edit
-UCDB_CustomDoubleClick = 
+UCDB_CustomDoubleClick =
 TDB_DoubleClick = Edit
-TDB_CustomDoubleClick = 
+TDB_CustomDoubleClick =
 UPF_DoubleClick = Edit
-UPF_CustomDoubleClick = 
+UPF_CustomDoubleClick =
 PCF_DoubleClick = Edit
-PCF_CustomDoubleClick = 
+PCF_CustomDoubleClick =
 PROJECT_DoubleClick = Edit
-PROJECT_CustomDoubleClick = 
+PROJECT_CustomDoubleClick =
 VRM_DoubleClick = Edit
-VRM_CustomDoubleClick = 
+VRM_CustomDoubleClick =
 DEBUGDATABASE_DoubleClick = Edit
-DEBUGDATABASE_CustomDoubleClick = 
+DEBUGDATABASE_CustomDoubleClick =
 DEBUGARCHIVE_DoubleClick = Edit
-DEBUGARCHIVE_CustomDoubleClick = 
+DEBUGARCHIVE_CustomDoubleClick =
 Project_Major_Version = 10
 Project_Minor_Version = 4
