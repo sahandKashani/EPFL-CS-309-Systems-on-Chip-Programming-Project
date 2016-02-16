@@ -53,22 +53,37 @@ begin
 
         procedure spi_transfer(constant channel_number : natural range 0 to 3) is
         begin
-            wait until falling_edge(clk);
-            start   <= '1';
-            channel <= std_logic_vector(to_unsigned(channel_number, channel'length));
+            if busy = '1' then
+                wait until busy = '0';
 
-            wait until falling_edge(clk);
-            start   <= '0';
-            channel <= (others => '0');
+            else
+                wait until falling_edge(clk);
+                start   <= '1';
+                channel <= std_logic_vector(to_unsigned(channel_number, channel'length));
 
-            wait until rising_edge(data_valid);
-            wait until busy = '0';
+                wait until falling_edge(clk);
+                start   <= '0';
+                channel <= (others => '0');
+
+                wait until rising_edge(data_valid);
+                wait until falling_edge(busy);
+            end if;
         end procedure spi_transfer;
 
     begin
         async_reset;
 
+        MISO <= '1';
+        spi_transfer(0);
+
+        MISO <= '0';
         spi_transfer(1);
+
+        MISO <= '1';
+        spi_transfer(2);
+
+        MISO <= '0';
+        spi_transfer(3);
 
         sim_finished <= true;
         wait;

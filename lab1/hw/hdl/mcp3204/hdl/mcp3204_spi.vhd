@@ -22,11 +22,12 @@ entity mcp3204_spi is
 end mcp3204_spi;
 
 architecture rtl of mcp3204_spi is
-    type state is (STATE_CS_N_HIGH, STATE_CS_N_LOW, STATE_START, STATE_SGL, STATE_D2, STATE_D1, STATE_D0, STATE_SAMPLE, STATE_NULL, STATE_D_IN);
-    signal reg_state : state := STATE_CS_N_HIGH;
+    type state is (STATE_IDLE, STATE_START, STATE_SGL, STATE_D2, STATE_D1, STATE_D0, STATE_SAMPLE, STATE_NULL, STATE_D_IN, STATE_DATA_VALID);
+    signal reg_state : state := STATE_IDLE;
 
     signal reg_clk_divider_counter : unsigned(4 downto 0) := (others => '0'); -- need to be able to count until 24
     signal reg_spi_en              : std_logic            := '0'; -- pulses every 0.5 MHz
+    signal reg_rising_edge_sclk    : std_logic            := '0';
     signal reg_falling_edge_sclk   : std_logic            := '0';
 
     signal reg_channel      : std_logic_vector(channel'range) := (others => '0');
@@ -55,13 +56,16 @@ begin
         elsif rising_edge(clk) then
             reg_clk_divider_counter <= reg_clk_divider_counter + 1;
             reg_spi_en              <= '0';
+            reg_rising_edge_sclk    <= '0';
             reg_falling_edge_sclk   <= '0';
 
             if reg_clk_divider_counter = 24 then
                 reg_clk_divider_counter <= (others => '0');
                 reg_spi_en              <= '1';
 
-                if reg_SCLK = '1' then
+                if reg_sclk = '0' then
+                    reg_rising_edge_sclk <= '1';
+                elsif reg_sclk = '1' then
                     reg_falling_edge_sclk <= '1';
                 end if;
             end if;
@@ -82,12 +86,11 @@ begin
     STATE_LOGIC : process(clk, reset)
     begin
         if reset = '1' then
-            reg_state        <= STATE_CS_N_HIGH;
+            reg_state        <= STATE_IDLE;
             reg_channel      <= (others => '0');
             reg_data_counter <= (others => '0');
             reg_busy         <= '0';
             reg_data_valid   <= '0';
-            reg_data         <= (others => '0');
             reg_cs_n         <= '1';
             reg_mosi         <= '0';
         elsif rising_edge(clk) then
@@ -97,58 +100,77 @@ begin
 
             elsif reg_falling_edge_sclk = '1' then
                 case reg_state is
-                    when STATE_CS_N_HIGH =>
+                    when STATE_IDLE =>
                         if reg_busy = '1' then
+                            reg_state <= STATE_START;
+                            -- "first clock received with CS_N low and D_IN high will
+                            -- constiture a start bit".
+                            reg_mosi  <= '1';
                             reg_cs_n  <= '0';
-                            reg_state <= STATE_CS_N_LOW;
                         end if;
 
-                    when STATE_CS_N_LOW =>
-                        reg_state <= STATE_START;
-
                     when STATE_START =>
-                        -- "first clock received with CS_N low and D_IN high will 
-                        -- constiture a start bit".
+                        -- SGL / DIFF_N bit (we use SGL)
                         reg_mosi  <= '1';
                         reg_state <= STATE_SGL;
 
                     when STATE_SGL =>
-                        -- SGL / DIFF_N bit (we use SGL)
-                        reg_mosi  <= '1';
                         reg_state <= STATE_D2;
+                        -- D2 = don't care
+                        reg_mosi  <= '0';
 
                     when STATE_D2 =>
-                        -- D2 = don't care
                         reg_state <= STATE_D1;
+                        -- D1 = msb of reg_channel
+                        reg_mosi  <= reg_channel(1);
 
                     when STATE_D1 =>
-                        -- msb of channel
-                        reg_mosi  <= reg_channel(1);
                         reg_state <= STATE_D0;
+                        -- D0 = lsb of reg_channel
+                        reg_mosi  <= reg_channel(0);
 
                     when STATE_D0 =>
-                        -- lsb of channel
-                        reg_mosi  <= reg_channel(0);
                         reg_state <= STATE_SAMPLE;
+                        -- Don't care about MOSI during sample
+                        reg_mosi  <= '0';
 
                     when STATE_SAMPLE =>
                         reg_state <= STATE_NULL;
+                        -- Don't care about MOSI during null bit
+                        reg_mosi  <= '0';
 
                     when STATE_NULL =>
-                        reg_data_counter <= to_unsigned(11, reg_data_counter'length);
                         reg_state        <= STATE_D_IN;
+                        -- Initialize counter for D_IN states
+                        reg_data_counter <= to_unsigned(11, reg_data_counter'length);
 
                     when STATE_D_IN =>
-                        reg_data(to_integer(reg_data_counter)) <= MISO;
-
                         if reg_data_counter /= 0 then
                             reg_data_counter <= reg_data_counter - 1;
                         else
+                            reg_cs_n       <= '1';
                             reg_data_valid <= '1';
-                            reg_busy       <= '0';
-                            reg_state      <= STATE_CS_N_HIGH;
+                            reg_state      <= STATE_DATA_VALID;
                         end if;
+
+                    when STATE_DATA_VALID =>
+                        reg_busy       <= '0';
+                        reg_data_valid <= '0';
+                        reg_state      <= STATE_IDLE;
                 end case;
+            end if;
+        end if;
+    end process;
+
+    DATA_CAPTURE : process(clk, reset)
+    begin
+        if reset = '1' then
+            reg_data <= (others => '0');
+        elsif rising_edge(clk) then
+            if reg_rising_edge_sclk = '1' then
+                if reg_state = STATE_D_IN then
+                    reg_data(to_integer(reg_data_counter)) <= MISO;
+                end if;
             end if;
         end if;
     end process;
