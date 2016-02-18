@@ -104,19 +104,27 @@ end entity DE0_Nano_SoC_top_level;
 architecture rtl of DE0_Nano_SoC_top_level is
     component soc_system is
         port(
-            clk_clk               : in  std_logic := 'X';
-            reset_reset_n         : in  std_logic := 'X';
-            pwm_0_conduit_end_pwm : out std_logic;
-            pwm_1_conduit_end_pwm : out std_logic
+            clk_clk                    : in  std_logic := 'X';
+            reset_reset_n              : in  std_logic := 'X';
+            pwm_0_conduit_end_pwm      : out std_logic;
+            pwm_1_conduit_end_pwm      : out std_logic;
+            mcp3204_0_conduit_end_cs_n : out std_logic;
+            mcp3204_0_conduit_end_mosi : out std_logic;
+            mcp3204_0_conduit_end_miso : in  std_logic := 'X';
+            mcp3204_0_conduit_end_sclk : out std_logic
         );
     end component soc_system;
 
 begin
     u0 : component soc_system
         port map(
-            clk_clk               => FPGA_CLK1_50,
-            reset_reset_n         => KEY_N(0),
-            pwm_0_conduit_end_pwm => GPIO_0(0),
-            pwm_1_conduit_end_pwm => GPIO_0(1)
+            clk_clk                    => FPGA_CLK1_50,
+            reset_reset_n              => KEY_N(0),
+            pwm_0_conduit_end_pwm      => GPIO_0(0),
+            pwm_1_conduit_end_pwm      => GPIO_0(1),
+            mcp3204_0_conduit_end_cs_n => GPIO_0(2),
+            mcp3204_0_conduit_end_mosi => GPIO_0(3),
+            mcp3204_0_conduit_end_miso => GPIO_0(4),
+            mcp3204_0_conduit_end_sclk => GPIO_0(5)
         );
 end;
