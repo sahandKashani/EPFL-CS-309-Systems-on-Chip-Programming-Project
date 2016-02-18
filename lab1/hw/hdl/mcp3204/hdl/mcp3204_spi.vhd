@@ -45,7 +45,7 @@ begin
     busy       <= reg_busy;
     data_valid <= reg_data_valid;
     data       <= reg_data;
-    SCLK       <= reg_sclk;
+    SCLK       <= reg_sclk when reg_state /= STATE_IDLE and reg_state /= STATE_DATA_VALID else '0';
     CS_N       <= reg_cs_n;
     MOSI       <= reg_mosi;
 
@@ -75,10 +75,10 @@ begin
     SCLK_generation : process(clk, reset)
     begin
         if reset = '1' then
-            reg_SCLK <= '0';
+            reg_sclk <= '0';
         elsif rising_edge(clk) then
             if reg_spi_en = '1' then
-                reg_SCLK <= not reg_SCLK;
+                reg_sclk <= not reg_sclk;
             end if;
         end if;
     end process;
