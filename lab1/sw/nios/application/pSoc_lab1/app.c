@@ -11,7 +11,7 @@
 /* bottom servo = [10500, 19500] us */
 
 int main(void) {
-    pwm_dev pwm = pwm_inst(PWM_0_BASE);
+    pwm_dev pwm = pwm_inst((void *) PWM_0_BASE);
     pwm_init(&pwm);
 
     uint32_t duty_in_us = 15000;
