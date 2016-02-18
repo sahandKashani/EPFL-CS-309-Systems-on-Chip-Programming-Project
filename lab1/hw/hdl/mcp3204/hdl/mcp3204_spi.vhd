@@ -102,11 +102,12 @@ begin
                 case reg_state is
                     when STATE_IDLE =>
                         if reg_busy = '1' then
-                            reg_state <= STATE_START;
+                            reg_state      <= STATE_START;
                             -- "first clock received with CS_N low and D_IN high will
                             -- constiture a start bit".
-                            reg_mosi  <= '1';
-                            reg_cs_n  <= '0';
+                            reg_mosi       <= '1';
+                            reg_cs_n       <= '0';
+                            reg_data_valid <= '0';
                         end if;
 
                     when STATE_START =>
@@ -154,9 +155,8 @@ begin
                         end if;
 
                     when STATE_DATA_VALID =>
-                        reg_busy       <= '0';
-                        reg_data_valid <= '0';
-                        reg_state      <= STATE_IDLE;
+                        reg_busy  <= '0';
+                        reg_state <= STATE_IDLE;
                 end case;
             end if;
         end if;
