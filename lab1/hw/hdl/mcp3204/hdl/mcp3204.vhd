@@ -122,9 +122,11 @@ begin
     spi_channel <= std_logic_vector(channel);
 
     -- Interface with the Avalon Switch Fabric
-    p_avalon_read : process(clk)
+    p_avalon_read : process(reset, clk)
     begin
-        if rising_edge(clk) then
+        if reset = '1' then
+            readdata <= (others => '0');
+        elsif rising_edge(clk) then
             if read = '1' then
                 readdata <= data_reg(to_integer(unsigned(address)));
             end if;
