@@ -43,7 +43,7 @@ architecture rtl of lepton_manager is
   -- msn stands for most significant nibble
   signal header_2cd_msn : std_logic_vector(3 downto 0);
 
-  constant CLOCK_TICKS_PER_200_MS : integer := 200 * (INPUT_CLK_FREQ / 1e3);
+  constant CLOCK_TICKS_PER_200_MS : integer := 200;--200 * (INPUT_CLK_FREQ / 1e3);
   constant CLOCK_TICKS_PER_200_NS : integer := (200 * (INPUT_CLK_FREQ / 1e6)) / 1e3;
   constant BYTES_PER_HEADER       : integer := 4;
   constant BYTES_PER_PAYLOAD      : integer := 160;

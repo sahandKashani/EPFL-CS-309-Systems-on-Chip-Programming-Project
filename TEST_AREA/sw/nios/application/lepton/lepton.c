@@ -2,6 +2,7 @@
 #include "lepton.h"
 #include "io.h"
 #include <stdio.h>
+#include <stdint.h>
 #include <unistd.h>
 
 lepton_dev lepton_open(void *base)
@@ -21,13 +22,13 @@ void lepton_start_capture(lepton_dev *dev)
 void lepton_wait_until_eof(lepton_dev *dev)
 {
 	while (IORD_16DIRECT(dev->base, LEPTON_REGS_STATUS_OFFSET) != 0) {
-		printf("Currently acquiring row %x...\n", IORD_16DIRECT(dev->base, LEPTON_REGS_SUM_LSB_OFFSET + 2));
+		//printf("Currently acquiring row %x...\n", IORD_16DIRECT(dev->base, LEPTON_REGS_ROW_IDX_OFFSET));
 	}
 }
 
 void lepton_save_capture(lepton_dev *dev)
 {
-	int i;
+	int row, col;
 	FILE *fp;
 
 	fp = fopen("/mnt/host/output.pgm", "w");
@@ -36,14 +37,12 @@ void lepton_save_capture(lepton_dev *dev)
 	fprintf(fp, "P2\n80 60\n%d", IORD_16DIRECT(dev->base, LEPTON_REGS_MAX_OFFSET));
 
 	// Write body
-	for (i = LEPTON_REGS_BUFFER_OFFSET; i < (LEPTON_REGS_BUFFER_OFFSET + LEPTON_REGS_BUFFER_SIZE); ++i) {
-		int col = i % 80;
-
-		if (col == (LEPTON_REGS_BUFFER_OFFSET % 80)) {
-			fprintf(fp, "\n");
+	for (row = 0; row < 60; ++row) {
+		fputs("\n", fp);
+		for (col = 0; col < 80; ++col) {
+			if (col > 0) fputs("\t", fp);
+			fprintf(fp, "%d", IORD_16DIRECT(dev->base, LEPTON_REGS_BUFFER_OFFSET + row * 80 * sizeof(uint16_t) + col * sizeof(uint16_t)));
 		}
-
-		fprintf(fp, "%d\t", IORD_16DIRECT(dev->base, i));
 	}
 
 	fclose(fp);

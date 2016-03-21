@@ -260,6 +260,7 @@ begin
 
     if reset = '1' then
       readdata <= (others => '0');
+      ram_rdaddress <= (others => '0');
     elsif rising_edge(clk) then
       readdata <= (others => '0');
       if read = '1' then
