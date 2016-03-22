@@ -32,11 +32,15 @@ bool lepton_error_check(lepton_dev *dev)
 
 void lepton_wait_until_eof(lepton_dev *dev)
 {
-	while (IORD_16DIRECT(dev->base, LEPTON_REGS_STATUS_OFFSET) != 0);
+	while ((IORD_16DIRECT(dev->base, LEPTON_REGS_STATUS_OFFSET) & 0x1) != 0) {
+		//printf("Processing row %x...\n", IORD_16DIRECT(dev->base, LEPTON_REGS_ROW_IDX_OFFSET));
+	}
 }
 
 void lepton_save_capture(lepton_dev *dev, bool adjusted)
 {
+	static int no = 0;
+	char fname[30];
 	int row, col, offset;
 	FILE *fp;
 
@@ -44,7 +48,8 @@ void lepton_save_capture(lepton_dev *dev, bool adjusted)
 	if (adjusted)
 		offset = LEPTON_REGS_ADJUSTED_BUFFER_OFFSET;
 
-	fp = fopen("/mnt/host/output.pgm", "w");
+	sprintf(fname, "/mnt/host/output%d.pgm", no++);
+	fp = fopen(fname, "w");
 
 	// Write header
 	fprintf(fp, "P2\n80 60\n%d", IORD_16DIRECT(dev->base, LEPTON_REGS_MAX_OFFSET));

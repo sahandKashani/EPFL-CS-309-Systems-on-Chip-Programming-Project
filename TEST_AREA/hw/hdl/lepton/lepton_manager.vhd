@@ -41,8 +41,7 @@ architecture rtl of lepton_manager is
   type state_t is (Idle, CSn, ReadHeader, ReadPayload, DiscardPayload, WaitBeforeIdle);
   signal state, next_state : state_t;
 
-  -- msn stands for most significant nibble
-  signal header_2cd_msn : std_logic_vector(3 downto 0);
+  signal header_3_last_nibbles : std_logic_vector(11 downto 0);
 
   constant CLOCK_TICKS_PER_37_MS  : integer := 37 * (INPUT_CLK_FREQ / 1e3);  -- the timeout delay for a frame
   constant CLOCK_TICKS_PER_200_MS : integer := 200 * (INPUT_CLK_FREQ / 1e3);
@@ -70,7 +69,7 @@ begin
   end process p_fsm;
 
   -- purpose: compute the next state
-  p_nsl : process (header_2cd_msn, header_end, payload_end, start,
+  p_nsl : process (header_3_last_nibbles, header_end, payload_end, start,
                    spi_miso_sink_valid, state, waited_long_enough, line_counter)
   begin
     next_state <= state;
@@ -88,7 +87,7 @@ begin
 
       when ReadHeader =>
         if header_end then
-          if header_2cd_msn = X"F" then
+          if header_3_last_nibbles(11 downto 8) = X"F" then
             next_state <= DiscardPayload;
           else
             next_state <= ReadPayload;
@@ -135,7 +134,7 @@ begin
     end if;
   end process p_counter;
 
-  p_timeout_counter : process (clk, reset)
+  p_error : process (clk, reset)
   begin
     if reset = '1' then
       error <= '0';
@@ -151,8 +150,11 @@ begin
           timeout_counter <= timeout_counter + 1;
         end if;
       end if;
+      if state = ReadPayload and header_3_last_nibbles /= std_logic_vector(to_unsigned(line_counter-1, header_3_last_nibbles'length)) then
+        error <= '1';
+      end if;
     end if;
-  end process p_timeout_counter;
+  end process p_error;
 
   -- purpose: wire the datapath
   p_datapath : process (counter, counter_enabled, counter_max, line_counter,
@@ -201,9 +203,9 @@ begin
         payload_end        <= counter_ended;
         spi_mosi_src_valid <= spi_mosi_src_ready;
         if spi_miso_sink_valid = '1' then
-          if counter = 1 and line_counter = 1 then
+          if counter = 1 and counter_enabled and line_counter = 1 then
             lepton_out_sof <= '1';
-          elsif counter = counter_max and line_counter = NUMBER_OF_LINES_PER_FRAME then
+          elsif counter_ended and line_counter = NUMBER_OF_LINES_PER_FRAME then
             lepton_out_eof <= '1';
           end if;
         end if;
@@ -218,16 +220,20 @@ begin
     end case;
   end process p_datapath;
 
-  p_capture_header_2cd_msn : process (clk, reset)
+  p_capture_header : process (clk, reset)
   begin
     if reset = '1' then
-      header_2cd_msn <= X"0";
+      header_3_last_nibbles <= X"000";
     elsif rising_edge(clk) then
-      if counter = 1 and spi_miso_sink_valid = '1' then
-        header_2cd_msn <= spi_miso_sink_data(3 downto 0);
+      if state = ReadHeader and spi_miso_sink_valid = '1' then
+	if counter = 1 then
+          header_3_last_nibbles(11 downto 8) <= spi_miso_sink_data(3 downto 0);
+        elsif counter = 2 then
+          header_3_last_nibbles(7 downto 0) <= spi_miso_sink_data;
+        end if;
       end if;
     end if;
-  end process p_capture_header_2cd_msn;
+  end process p_capture_header;
 
   row_idx <= std_logic_vector(to_unsigned(line_counter, row_idx'length));
 

@@ -22,18 +22,26 @@
 
 int main() {
 	lepton_dev dev;
+	bool error;
 
 	dev = lepton_open(LEPTON_0_BASE);
-	do {
-	  lepton_start_capture(&dev);
-	  lepton_wait_until_eof(&dev);
-	} while (lepton_check_error(&dev));
-	
-	printf("Wow! It's transferred !\n");
 
-	lepton_save_capture(&dev, true);
+	while (1) {
+		error = false;
 
-	printf("Wow! It's written on hostfs !\n");
+		do {
+			if (error) {
+				printf("Synchronization error detected. Retrying...\n");
+			}
+			lepton_start_capture(&dev);
+			lepton_wait_until_eof(&dev);
+		} while ((error = lepton_error_check(&dev)));
 
+		printf("Wow! It's transferred !\n");
+
+		lepton_save_capture(&dev, true);
+
+		printf("Wow! It's written on hostfs !\n");
+	}
 	return 0;
 }

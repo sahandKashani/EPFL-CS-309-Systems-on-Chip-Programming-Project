@@ -270,7 +270,7 @@ begin
         error_reg <= '0';
       elsif pix_eof = '1' then
         lepton_manager_start <= '0';
-      elsif lepton_manager_error = '0' then
+      elsif lepton_manager_error = '1' then
         error_reg <= '1';
       end if;
     end if;
