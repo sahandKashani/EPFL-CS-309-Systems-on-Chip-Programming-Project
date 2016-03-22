@@ -19,6 +19,17 @@ void lepton_start_capture(lepton_dev *dev)
 	IOWR_16DIRECT(dev->base, LEPTON_REGS_COMMAND_OFFSET, 1);
 }
 
+/**
+ * @abstract Check for errors at the device level.
+ * @param dev the device descriptor
+ * @return True iff there was any.
+ */
+bool lepton_error_check(lepton_dev *dev)
+{
+  uint16_t error_flag = IORD_16DIRECT(dev->base, LEPTON_REGS_STATUS_OFFSET);
+  return ((error_flag & 0x2) != 0);
+}
+
 void lepton_wait_until_eof(lepton_dev *dev)
 {
 	while (IORD_16DIRECT(dev->base, LEPTON_REGS_STATUS_OFFSET) != 0);

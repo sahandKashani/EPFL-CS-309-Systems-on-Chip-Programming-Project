@@ -71,6 +71,7 @@ architecture rtl of lepton is
       lepton_out_sof      : out std_logic;
       lepton_out_eof      : out std_logic;
       row_idx             : out std_logic_vector(5 downto 0);
+      error               : out std_logic;
       start               : in  std_logic;
       spi_cs_n            : out std_logic := '0');
   end component;
@@ -122,6 +123,7 @@ architecture rtl of lepton is
   signal spi_miso_data        : std_logic_vector(7 downto 0);
   signal spi_miso_valid       : std_logic;
   signal lepton_manager_start : std_logic;
+  signal lepton_manager_error : std_logic;
   signal byte_data            : std_logic_vector(7 downto 0);
   signal byte_valid           : std_logic;
   signal byte_sof             : std_logic;
@@ -161,9 +163,10 @@ architecture rtl of lepton is
 
   constant ADJUSTED_BUFFER_LIMIT : unsigned(address'range) := unsigned(ADJUSTED_BUFFER_REG_OFFSET) + IMAGE_SIZE;
 
-  signal max_reg : std_logic_vector(stat_max'range);
-  signal min_reg : std_logic_vector(stat_min'range);
-  signal sum_reg : std_logic_vector(stat_sum'range);
+  signal max_reg   : std_logic_vector(stat_max'range);
+  signal min_reg   : std_logic_vector(stat_min'range);
+  signal sum_reg   : std_logic_vector(stat_sum'range);
+  signal error_reg : std_logic;
 
 begin
 
@@ -196,6 +199,7 @@ begin
       lepton_out_sof      => byte_sof,
       lepton_out_eof      => byte_eof,
       row_idx             => row_idx,
+      error               => lepton_manager_error,
       start               => lepton_manager_start,
       spi_cs_n            => spi_cs_n);
 
@@ -259,11 +263,15 @@ begin
   begin
     if reset = '1' then
       lepton_manager_start <= '0';
+      error_reg <= '0';
     elsif rising_edge(clk) then
       if write = '1' and address = COMMAND_REG_OFFSET then
         lepton_manager_start <= writedata(0);
+        error_reg <= '0';
       elsif pix_eof = '1' then
         lepton_manager_start <= '0';
+      elsif lepton_manager_error = '0' then
+        error_reg <= '1';
       end if;
     end if;
   end process p_lepton_start;
@@ -295,6 +303,7 @@ begin
         case address is
 
           when STATUS_REG_OFFSET =>
+            readdata(1) <= error_reg;
             readdata(0) <= lepton_manager_start;
 
           when MIN_REG_OFFSET =>

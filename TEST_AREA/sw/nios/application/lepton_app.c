@@ -24,9 +24,11 @@ int main() {
 	lepton_dev dev;
 
 	dev = lepton_open(LEPTON_0_BASE);
-	lepton_start_capture(&dev);
-	lepton_wait_until_eof(&dev);
-
+	do {
+	  lepton_start_capture(&dev);
+	  lepton_wait_until_eof(&dev);
+	} while (lepton_check_error(&dev));
+	
 	printf("Wow! It's transferred !\n");
 
 	lepton_save_capture(&dev, true);

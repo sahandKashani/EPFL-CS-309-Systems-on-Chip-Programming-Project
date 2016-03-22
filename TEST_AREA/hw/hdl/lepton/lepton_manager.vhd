@@ -27,6 +27,7 @@ entity lepton_manager is
 
     -- Some status
     row_idx : out std_logic_vector(5 downto 0);
+    error   : out std_logic;
 
     -- Avalon MM Slave interface for configuration
     start : in std_logic;
@@ -36,25 +37,26 @@ entity lepton_manager is
 end entity lepton_manager;
 
 architecture rtl of lepton_manager is
-  
-  type   state_t is (Idle, CSn, ReadHeader, ReadPayload, DiscardPayload, WaitBeforeIdle);
+
+  type state_t is (Idle, CSn, ReadHeader, ReadPayload, DiscardPayload, WaitBeforeIdle);
   signal state, next_state : state_t;
 
   -- msn stands for most significant nibble
   signal header_2cd_msn : std_logic_vector(3 downto 0);
 
+  constant CLOCK_TICKS_PER_37_MS  : integer := 37 * (INPUT_CLK_FREQ / 1e3);  -- the timeout delay for a frame
   constant CLOCK_TICKS_PER_200_MS : integer := 200 * (INPUT_CLK_FREQ / 1e3);
   constant CLOCK_TICKS_PER_200_NS : integer := (200 * (INPUT_CLK_FREQ / 1e6)) / 1e3;
   constant BYTES_PER_HEADER       : integer := 4;
   constant BYTES_PER_PAYLOAD      : integer := 160;
 
   constant NUMBER_OF_LINES_PER_FRAME : positive := 60;
-  signal   counter, counter_max      : integer range 1 to CLOCK_TICKS_PER_200_MS;
-  signal   line_counter              : integer range 1 to NUMBER_OF_LINES_PER_FRAME;
-  signal   counter_enabled           : boolean;
-  signal   waited_long_enough        : boolean;
-  signal   header_end, payload_end   : boolean;
-  
+  signal counter, counter_max        : integer range 1 to CLOCK_TICKS_PER_200_MS;
+  signal line_counter                : integer range 1 to NUMBER_OF_LINES_PER_FRAME;
+  signal timeout_counter             : integer range 1 to CLOCK_TICKS_PER_37_MS;
+  signal counter_enabled             : boolean;
+  signal waited_long_enough          : boolean;
+  signal header_end, payload_end     : boolean;
 begin
 
   -- purpose: register for state
@@ -133,13 +135,32 @@ begin
     end if;
   end process p_counter;
 
+  p_timeout_counter : process (clk, reset)
+  begin
+    if reset = '1' then
+      error <= '0';
+      timeout_counter <= 1;
+    elsif rising_edge(clk) then
+      if state /= ReadHeader and state /= ReadPayload and state /= ReadHeader then
+        timeout_counter <= 1;
+        error <= '0';
+      else
+        if timeout_counter = CLOCK_TICKS_PER_37_MS then
+          error <= '1';
+        else
+          timeout_counter <= timeout_counter + 1;
+        end if;
+      end if;
+    end if;
+  end process p_timeout_counter;
+
   -- purpose: wire the datapath
   p_datapath : process (counter, counter_enabled, counter_max, line_counter,
                         spi_miso_sink_data, spi_miso_sink_valid,
                         spi_mosi_src_ready, state)
 
     variable counter_ended : boolean;
-    
+
   begin
     counter_max        <= 1;
     counter_enabled    <= true;
@@ -161,7 +182,7 @@ begin
         counter_max        <= CLOCK_TICKS_PER_200_MS;
         waited_long_enough <= counter_ended;
         spi_cs_n           <= '1';
-        
+
       when CSn =>
         counter_max        <= CLOCK_TICKS_PER_200_NS;
         waited_long_enough <= counter_ended;
@@ -186,13 +207,13 @@ begin
             lepton_out_eof <= '1';
           end if;
         end if;
-        
+
       when DiscardPayload =>
         counter_max        <= BYTES_PER_PAYLOAD;
         counter_enabled    <= spi_miso_sink_valid = '1';
         payload_end        <= counter_ended;
         spi_mosi_src_valid <= spi_mosi_src_ready;
-        
+
       when others => null;
     end case;
   end process p_datapath;
