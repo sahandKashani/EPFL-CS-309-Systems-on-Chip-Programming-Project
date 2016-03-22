@@ -29,7 +29,7 @@ int main() {
 
 	printf("Wow! It's transferred !\n");
 
-	lepton_save_capture(&dev);
+	lepton_save_capture(&dev, true);
 
 	printf("Wow! It's written on hostfs !\n");
 

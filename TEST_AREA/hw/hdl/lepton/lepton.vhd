@@ -104,6 +104,16 @@ architecture rtl of lepton is
       stat_valid : out std_logic);
   end component;
 
+  component level_adjuster
+    port (
+      clk            : in  std_logic;
+      raw_pixel      : in  std_logic_vector(13 downto 0);
+      raw_max        : in  std_logic_vector(13 downto 0);
+      raw_min        : in  std_logic_vector(13 downto 0);
+      raw_sum        : in  std_logic_vector(26 downto 0);
+      adjusted_pixel : out std_logic_vector(13 downto 0));
+  end component;
+
 
   signal spi_cs_n             : std_logic;
   signal spi_mosi_data        : std_logic_vector(7 downto 0);
@@ -130,17 +140,26 @@ architecture rtl of lepton is
   signal ram_rdaddress        : std_logic_vector (12 downto 0);
   signal ram_q                : std_logic_vector (15 downto 0);
   signal row_idx              : std_logic_vector(5 downto 0);
+  signal raw_pixel            : std_logic_vector(13 downto 0);
+  signal raw_max              : std_logic_vector(13 downto 0);
+  signal raw_min              : std_logic_vector(13 downto 0);
+  signal raw_sum              : std_logic_vector(26 downto 0);
+  signal adjusted_pixel       : std_logic_vector(13 downto 0);
 
-  constant COMMAND_REG_OFFSET : std_logic_vector(address'range) := "00000000000000";
-  constant STATUS_REG_OFFSET  : std_logic_vector(address'range) := "00000000000001";
-  constant MIN_REG_OFFSET     : std_logic_vector(address'range) := "00000000000010";
-  constant MAX_REG_OFFSET     : std_logic_vector(address'range) := "00000000000011";
-  constant SUM_MSB_REG_OFFSET : std_logic_vector(address'range) := "00000000000100";
-  constant SUM_LSB_REG_OFFSET : std_logic_vector(address'range) := "00000000000101";
-  constant ROW_IDX_REG_OFFSET : std_logic_vector(address'range) := "00000000000110";
-  constant BUFFER_REG_OFFSET  : unsigned(address'range)         := "00000000001000";
-  constant IMAGE_SIZE         : integer                         := 80*60;
-  constant BUFFER_REG_LIMIT   : unsigned(address'range)         := unsigned(BUFFER_REG_OFFSET) + IMAGE_SIZE;
+  constant COMMAND_REG_OFFSET         : std_logic_vector(address'range) := "00000000000000";
+  constant STATUS_REG_OFFSET          : std_logic_vector(address'range) := "00000000000001";
+  constant MIN_REG_OFFSET             : std_logic_vector(address'range) := "00000000000010";
+  constant MAX_REG_OFFSET             : std_logic_vector(address'range) := "00000000000011";
+  constant SUM_MSB_REG_OFFSET         : std_logic_vector(address'range) := "00000000000100";
+  constant SUM_LSB_REG_OFFSET         : std_logic_vector(address'range) := "00000000000101";
+  constant ROW_IDX_REG_OFFSET         : std_logic_vector(address'range) := "00000000000110";
+  constant BUFFER_REG_OFFSET          : unsigned(address'range)         := "00000000001000";
+  constant ADJUSTED_BUFFER_REG_OFFSET : unsigned(address'range)         := "10000000000000";
+
+  constant IMAGE_SIZE       : integer                 := 80*60;
+  constant BUFFER_REG_LIMIT : unsigned(address'range) := unsigned(BUFFER_REG_OFFSET) + IMAGE_SIZE;
+
+  constant ADJUSTED_BUFFER_LIMIT : unsigned(address'range) := unsigned(ADJUSTED_BUFFER_REG_OFFSET) + IMAGE_SIZE;
 
   signal max_reg : std_logic_vector(stat_max'range);
   signal min_reg : std_logic_vector(stat_min'range);
@@ -227,6 +246,15 @@ begin
       wren      => ram_wren,
       q         => ram_q);
 
+  level_adjuster0 : level_adjuster
+    port map (
+      clk            => clk,
+      raw_pixel      => ram_q(13 downto 0),
+      raw_max        => max_reg,
+      raw_min        => min_reg,
+      raw_sum        => sum_reg,
+      adjusted_pixel => adjusted_pixel);
+
   p_lepton_start : process (clk, reset)
   begin
     if reset = '1' then
@@ -259,7 +287,7 @@ begin
   begin
 
     if reset = '1' then
-      readdata <= (others => '0');
+      readdata      <= (others => '0');
       ram_rdaddress <= (others => '0');
     elsif rising_edge(clk) then
       readdata <= (others => '0');
@@ -288,6 +316,9 @@ begin
             if unsigned(address) >= BUFFER_REG_OFFSET and unsigned(address) < BUFFER_REG_LIMIT then
               ram_rdaddress <= std_logic_vector(resize(unsigned(address) - BUFFER_REG_OFFSET, ram_rdaddress'length));
               readdata      <= ram_q;
+            elsif unsigned(address) >= ADJUSTED_BUFFER_REG_OFFSET and unsigned(address) < ADJUSTED_BUFFER_LIMIT then
+              ram_rdaddress <= std_logic_vector(resize(unsigned(address) - ADJUSTED_BUFFER_REG_OFFSET, ram_rdaddress'length));
+              readdata      <= "00" & adjusted_pixel;
             end if;
         end case;
       end if;
