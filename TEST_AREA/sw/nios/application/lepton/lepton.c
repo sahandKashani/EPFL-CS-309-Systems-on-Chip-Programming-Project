@@ -21,9 +21,7 @@ void lepton_start_capture(lepton_dev *dev)
 
 void lepton_wait_until_eof(lepton_dev *dev)
 {
-	while (IORD_16DIRECT(dev->base, LEPTON_REGS_STATUS_OFFSET) != 0) {
-		//printf("Currently acquiring row %x...\n", IORD_16DIRECT(dev->base, LEPTON_REGS_ROW_IDX_OFFSET));
-	}
+	while (IORD_16DIRECT(dev->base, LEPTON_REGS_STATUS_OFFSET) != 0);
 }
 
 void lepton_save_capture(lepton_dev *dev, bool adjusted)

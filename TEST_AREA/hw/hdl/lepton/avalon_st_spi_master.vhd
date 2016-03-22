@@ -6,7 +6,7 @@ use work.utils.all;
 entity avalon_st_spi_master is
   generic(
     INPUT_CLK_FREQ : integer   := 50000000;
-    SPI_SCLK_FREQ  : integer   := 5000000;
+    SPI_SCLK_FREQ  : integer   := 10000000;
     CPOL           : integer   := 1;
     CPHA           : integer   := 1
     );
