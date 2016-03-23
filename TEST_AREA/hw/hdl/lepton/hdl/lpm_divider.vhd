@@ -41,66 +41,59 @@ LIBRARY lpm;
 USE lpm.all;
 
 ENTITY lpm_divider IS
-	PORT
-	(
-		clock		: IN STD_LOGIC ;
-		denom		: IN STD_LOGIC_VECTOR (13 DOWNTO 0);
-		numer		: IN STD_LOGIC_VECTOR (27 DOWNTO 0);
-		quotient		: OUT STD_LOGIC_VECTOR (27 DOWNTO 0);
-		remain		: OUT STD_LOGIC_VECTOR (13 DOWNTO 0)
-	);
+    PORT(
+        clock    : IN  STD_LOGIC;
+        denom    : IN  STD_LOGIC_VECTOR(13 DOWNTO 0);
+        numer    : IN  STD_LOGIC_VECTOR(27 DOWNTO 0);
+        quotient : OUT STD_LOGIC_VECTOR(27 DOWNTO 0);
+        remain   : OUT STD_LOGIC_VECTOR(13 DOWNTO 0)
+    );
 END lpm_divider;
 
-
 ARCHITECTURE SYN OF lpm_divider IS
+    SIGNAL sub_wire0 : STD_LOGIC_VECTOR(27 DOWNTO 0);
+    SIGNAL sub_wire1 : STD_LOGIC_VECTOR(13 DOWNTO 0);
 
-	SIGNAL sub_wire0	: STD_LOGIC_VECTOR (27 DOWNTO 0);
-	SIGNAL sub_wire1	: STD_LOGIC_VECTOR (13 DOWNTO 0);
-
-
-
-	COMPONENT lpm_divide
-	GENERIC (
-		lpm_drepresentation		: STRING;
-		lpm_hint		: STRING;
-		lpm_nrepresentation		: STRING;
-		lpm_pipeline		: NATURAL;
-		lpm_type		: STRING;
-		lpm_widthd		: NATURAL;
-		lpm_widthn		: NATURAL
-	);
-	PORT (
-			clock	: IN STD_LOGIC ;
-			denom	: IN STD_LOGIC_VECTOR (13 DOWNTO 0);
-			numer	: IN STD_LOGIC_VECTOR (27 DOWNTO 0);
-			quotient	: OUT STD_LOGIC_VECTOR (27 DOWNTO 0);
-			remain	: OUT STD_LOGIC_VECTOR (13 DOWNTO 0)
-	);
-	END COMPONENT;
+    COMPONENT lpm_divide
+        GENERIC(
+            lpm_drepresentation : STRING;
+            lpm_hint            : STRING;
+            lpm_nrepresentation : STRING;
+            lpm_pipeline        : NATURAL;
+            lpm_type            : STRING;
+            lpm_widthd          : NATURAL;
+            lpm_widthn          : NATURAL
+        );
+        PORT(
+            clock    : IN  STD_LOGIC;
+            denom    : IN  STD_LOGIC_VECTOR(13 DOWNTO 0);
+            numer    : IN  STD_LOGIC_VECTOR(27 DOWNTO 0);
+            quotient : OUT STD_LOGIC_VECTOR(27 DOWNTO 0);
+            remain   : OUT STD_LOGIC_VECTOR(13 DOWNTO 0)
+        );
+    END COMPONENT;
 
 BEGIN
-	quotient    <= sub_wire0(27 DOWNTO 0);
-	remain    <= sub_wire1(13 DOWNTO 0);
+    quotient <= sub_wire0(27 DOWNTO 0);
+    remain   <= sub_wire1(13 DOWNTO 0);
 
-	LPM_DIVIDE_component : LPM_DIVIDE
-	GENERIC MAP (
-		lpm_drepresentation => "UNSIGNED",
-		lpm_hint => "LPM_REMAINDERPOSITIVE=TRUE",
-		lpm_nrepresentation => "UNSIGNED",
-		lpm_pipeline => 5,
-		lpm_type => "LPM_DIVIDE",
-		lpm_widthd => 14,
-		lpm_widthn => 28
-	)
-	PORT MAP (
-		clock => clock,
-		denom => denom,
-		numer => numer,
-		quotient => sub_wire0,
-		remain => sub_wire1
-	);
-
-
+    LPM_DIVIDE_component : LPM_DIVIDE
+        GENERIC MAP(
+            lpm_drepresentation => "UNSIGNED",
+            lpm_hint            => "LPM_REMAINDERPOSITIVE=TRUE",
+            lpm_nrepresentation => "UNSIGNED",
+            lpm_pipeline        => 5,
+            lpm_type            => "LPM_DIVIDE",
+            lpm_widthd          => 14,
+            lpm_widthn          => 28
+        )
+        PORT MAP(
+            clock    => clock,
+            denom    => denom,
+            numer    => numer,
+            quotient => sub_wire0,
+            remain   => sub_wire1
+        );
 
 END SYN;
 

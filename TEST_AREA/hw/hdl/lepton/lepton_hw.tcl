@@ -3,21 +3,21 @@
 # DO NOT MODIFY
 
 
-# 
+#
 # lepton "lepton" v15.1
 #  2016.03.22.00:52:34
-# 
-# 
+#
+#
 
-# 
+#
 # request TCL package from ACDS 15.1
-# 
+#
 package require -exact qsys 15.1
 
 
-# 
+#
 # module lepton
-# 
+#
 set_module_property DESCRIPTION ""
 set_module_property NAME lepton
 set_module_property VERSION 15.1
@@ -32,39 +32,38 @@ set_module_property ALLOW_GREYBOX_GENERATION false
 set_module_property REPORT_HIERARCHY false
 
 
-# 
+#
 # file sets
-# 
+#
 add_fileset QUARTUS_SYNTH QUARTUS_SYNTH "" ""
 set_fileset_property QUARTUS_SYNTH TOP_LEVEL lepton
 set_fileset_property QUARTUS_SYNTH ENABLE_RELATIVE_INCLUDE_PATHS false
 set_fileset_property QUARTUS_SYNTH ENABLE_FILE_OVERWRITE_MODE false
-add_fileset_file avalon_st_spi_master.vhd VHDL PATH ../hdl/lepton/avalon_st_spi_master.vhd
-add_fileset_file byte2pix.vhd VHDL PATH ../hdl/lepton/byte2pix.vhd
-add_fileset_file dual_ported_ram.vhd VHDL PATH ../hdl/lepton/dual_ported_ram.vhd
-add_fileset_file lepton.vhd VHDL PATH ../hdl/lepton/lepton.vhd TOP_LEVEL_FILE
-add_fileset_file lepton_manager.vhd VHDL PATH ../hdl/lepton/lepton_manager.vhd
-add_fileset_file lepton_stats.vhd VHDL PATH ../hdl/lepton/lepton_stats.vhd
-add_fileset_file lepton_tb.vhd VHDL PATH ../hdl/lepton/lepton_tb.vhd
-add_fileset_file ram_writer.vhd VHDL PATH ../hdl/lepton/ram_writer.vhd
-add_fileset_file utils.vhd VHDL PATH ../hdl/lepton/utils.vhd
-add_fileset_file level_adjuster.vhd VHDL PATH ../hdl/lepton/level_adjuster.vhd
-add_fileset_file lpm_divider.vhd VHDL PATH ../hdl/lepton/lpm_divider.vhd
+add_fileset_file avalon_st_spi_master.vhd VHDL PATH hdl/avalon_st_spi_master.vhd
+add_fileset_file byte2pix.vhd VHDL PATH hdl/byte2pix.vhd
+add_fileset_file dual_ported_ram.vhd VHDL PATH hdl/dual_ported_ram.vhd
+add_fileset_file lepton.vhd VHDL PATH hdl/lepton.vhd TOP_LEVEL_FILE
+add_fileset_file lepton_manager.vhd VHDL PATH hdl/lepton_manager.vhd
+add_fileset_file lepton_stats.vhd VHDL PATH hdl/lepton_stats.vhd
+add_fileset_file ram_writer.vhd VHDL PATH hdl/ram_writer.vhd
+add_fileset_file utils.vhd VHDL PATH hdl/utils.vhd
+add_fileset_file level_adjuster.vhd VHDL PATH hdl/level_adjuster.vhd
+add_fileset_file lpm_divider.vhd VHDL PATH hdl/lpm_divider.vhd
 
 
-# 
+#
 # parameters
-# 
+#
 
 
-# 
+#
 # display items
-# 
+#
 
 
-# 
+#
 # connection point clock
-# 
+#
 add_interface clock clock end
 set_interface_property clock clockRate 0
 set_interface_property clock ENABLED true
@@ -76,9 +75,9 @@ set_interface_property clock SVD_ADDRESS_GROUP ""
 add_interface_port clock clk clk Input 1
 
 
-# 
+#
 # connection point reset
-# 
+#
 add_interface reset reset end
 set_interface_property reset associatedClock clock
 set_interface_property reset synchronousEdges DEASSERT
@@ -91,9 +90,9 @@ set_interface_property reset SVD_ADDRESS_GROUP ""
 add_interface_port reset reset reset Input 1
 
 
-# 
+#
 # connection point avalon_slave_0
-# 
+#
 add_interface avalon_slave_0 avalon end
 set_interface_property avalon_slave_0 addressUnits WORDS
 set_interface_property avalon_slave_0 associatedClock clock
@@ -129,9 +128,9 @@ set_interface_assignment avalon_slave_0 embeddedsw.configuration.isNonVolatileSt
 set_interface_assignment avalon_slave_0 embeddedsw.configuration.isPrintableDevice 0
 
 
-# 
+#
 # connection point spi
-# 
+#
 add_interface spi conduit end
 set_interface_property spi associatedClock clock
 set_interface_property spi associatedReset ""
