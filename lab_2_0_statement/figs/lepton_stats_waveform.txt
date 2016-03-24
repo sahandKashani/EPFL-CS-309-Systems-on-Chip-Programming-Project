@@ -1,0 +1,11 @@
+{signal: [
+  {name: 'clk', wave: 'p.......|...'},
+  {name: 'pix_data', wave: 'xx345x3x|4x.', data: ['pix1', 'pix2', 'pix3', 'pix4', 'pixn']},
+  {name: 'pix_valid', wave: '0.1..010|10.'},
+  {name: 'pix_sof', wave: '0.10....|...'},
+  {name: 'pix_eof', wave: '0.......|10.'},
+  {name: 'stat_min', wave: 'x..222.2|.2x', data: ['a', 'd', 'g', '', 'x']},
+  {name: 'stat_max', wave: 'x..222.2|.2x', data: ['b', 'e', 'h', '', 'y']},
+  {name: 'stat_sum', wave: 'x..222.2|.2x', data: ['c', 'f', 'i', '', 'z']},
+  {name: 'stat_valid', wave: '0.......|.10'}
+]}
