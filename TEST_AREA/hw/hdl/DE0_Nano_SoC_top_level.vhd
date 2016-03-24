@@ -26,7 +26,7 @@ entity DE0_Nano_SoC_top_level is
      -- ADC_SDO          : in    std_logic;
 
      -- -- ARDUINO
-     -- ARDUINO_IO       : inout std_logic_vector(15 downto 0);
+        ARDUINO_IO       : inout std_logic_vector(15 downto 0);
      -- ARDUINO_RESET_N  : inout std_logic;
 
         -- CLOCK
@@ -130,9 +130,9 @@ begin
             mcp3204_0_conduit_end_mosi => GPIO_0(3), -- connect to MISO pin on mcp3204
             mcp3204_0_conduit_end_miso => GPIO_0(4), -- connect to MOSI pin on mcp3204
             mcp3204_0_conduit_end_sclk => GPIO_0(5),
-            lepton_0_spi_cs_n          => GPIO_0(6),
-            lepton_0_spi_miso          => GPIO_0(7), -- connect to MISO pin on lepton (inverted naming compared to mcp3204)
-            lepton_0_spi_mosi          => GPIO_0(8), -- connect to MOSI pin on lepton (inverted naming compared to mcp3204)
-            lepton_0_spi_sclk          => GPIO_0(9)
+            lepton_0_spi_cs_n          => ARDUINO_IO(10),
+            lepton_0_spi_miso          => ARDUINO_IO(12), -- connect to MISO pin on lepton (inverted naming compared to mcp3204)
+            lepton_0_spi_mosi          => ARDUINO_IO(11), -- connect to MOSI pin on lepton (inverted naming compared to mcp3204)
+            lepton_0_spi_sclk          => ARDUINO_IO(13)
         );
 end;

@@ -110,10 +110,9 @@ void lepton_save_capture(lepton_dev *dev, bool adjusted, const char *fname) {
                 fputs(" ", fp);
             }
 
-            uint16_t pix_value = IORD_16DIRECT(dev->base, offset +
-                                                          (row * num_cols * sizeof(uint16_t)) +
-                                                          (col * sizeof(uint16_t)));
-            fprintf(fp, "%5" PRIu16, pix_value);
+            uint16_t current_ofst = offset + (row * num_cols + col) * sizeof(uint16_t);
+            uint16_t pix_value = IORD_16DIRECT(dev->base, current_ofst);
+            fprintf(fp, "%" PRIu16, pix_value);
         }
     }
 
