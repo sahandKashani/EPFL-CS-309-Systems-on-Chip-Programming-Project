@@ -150,8 +150,8 @@ architecture rtl of lepton is
     constant STATUS_REG_OFFSET          : std_logic_vector(address'range) := "00000000000001";
     constant MIN_REG_OFFSET             : std_logic_vector(address'range) := "00000000000010";
     constant MAX_REG_OFFSET             : std_logic_vector(address'range) := "00000000000011";
-    constant SUM_MSB_REG_OFFSET         : std_logic_vector(address'range) := "00000000000100";
-    constant SUM_LSB_REG_OFFSET         : std_logic_vector(address'range) := "00000000000101";
+    constant SUM_LSB_REG_OFFSET         : std_logic_vector(address'range) := "00000000000100";
+    constant SUM_MSB_REG_OFFSET         : std_logic_vector(address'range) := "00000000000101";
     constant ROW_IDX_REG_OFFSET         : std_logic_vector(address'range) := "00000000000110";
     constant BUFFER_REG_OFFSET          : unsigned(address'range)         := "00000000001000";
     constant ADJUSTED_BUFFER_REG_OFFSET : unsigned(address'range)         := "10000000000000";
