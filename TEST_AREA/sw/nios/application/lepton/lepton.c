@@ -65,9 +65,7 @@ bool lepton_error_check(lepton_dev *dev) {
  * @param dev lepton device structure.
  */
 void lepton_wait_until_eof(lepton_dev *dev) {
-    while ((IORD_16DIRECT(dev->base, LEPTON_REGS_STATUS_OFST) & 0x1) != 0) {
-        // printf("Processing row %x...\n", IORD_16DIRECT(dev->base, LEPTON_REGS_ROW_IDX_OFST));
-    }
+    while ((IORD_16DIRECT(dev->base, LEPTON_REGS_STATUS_OFST) & 0x1) != 0);
 }
 
 /**
@@ -88,23 +86,26 @@ void lepton_save_capture(lepton_dev *dev, bool adjusted, const char *fname) {
     FILE *fp = fopen(fname, "w");
     assert(fp);
 
-    uint16_t offset = LEPTON_REGS_BUFFER_OFST;
-    if (adjusted) {
-        offset = LEPTON_REGS_ADJUSTED_BUFFER_OFST;
-    }
-
     const uint8_t num_rows = 60;
     const uint8_t num_cols = 80;
 
-    // Write header
+    uint16_t offset = LEPTON_REGS_BUFFER_OFST;
     uint16_t max_value = IORD_16DIRECT(dev->base, LEPTON_REGS_MAX_OFST);
+    if (adjusted) {
+        offset = LEPTON_REGS_ADJUSTED_BUFFER_OFST;
+        max_value = 0xffff;
+    }
+
+    /* Write header */
     fprintf(fp, "P2\n%" PRIu8 " %" PRIu8 "\n%" PRIu16, num_cols, num_rows, max_value);
 
-    // Write body
-    for (uint8_t row = 0; row < num_rows; ++row) {
+    /* Write body */
+    uint8_t row = 0;
+    for (row = 0; row < num_rows; ++row) {
         fputs("\n", fp);
 
-        for (uint8_t col = 0; col < num_cols; ++col) {
+        uint8_t col = 0;
+        for (col = 0; col < num_cols; ++col) {
             if (col > 0) {
                 fputs(" ", fp);
             }
