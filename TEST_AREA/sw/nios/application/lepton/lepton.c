@@ -93,7 +93,7 @@ void lepton_save_capture(lepton_dev *dev, bool adjusted, const char *fname) {
     uint16_t max_value = IORD_16DIRECT(dev->base, LEPTON_REGS_MAX_OFST);
     if (adjusted) {
         offset = LEPTON_REGS_ADJUSTED_BUFFER_OFST;
-        max_value = 0xffff;
+        max_value = 0x3fff;
     }
 
     /* Write header */
