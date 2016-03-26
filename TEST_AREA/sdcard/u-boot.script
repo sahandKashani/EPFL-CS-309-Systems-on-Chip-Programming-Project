@@ -1,0 +1,27 @@
+# Load rbf from FAT partition into memory
+fatload mmc 0:1 $fpgadata lab2.rbf;
+
+# Program FPGA
+fpga load 0 $fpgadata $filesize;
+
+echo --- Setting Env variables ---
+
+# Set the devicetree image to be used
+setenv fdtimage lab2.dtb;
+
+# Set the kernel image to be used
+setenv bootimage lab2_zImage;
+
+setenv mmcboot 'setenv bootargs mem=768M console=ttyS0,115200 root=${mmcroot} rw rootwait;bootz ${loadaddr} - ${fdtaddr}'
+
+# enable the FPGA 2 HPS and HPS 2 FPGA bridges
+run bridge_enable_handoff;
+
+echo --- Booting Linux ---
+
+# mmcload & mmcboot are scripts included in the default socfpga uboot environment
+# it loads the devicetree image and kernel to memory
+run mmcload;
+
+# mmcboot sets the bootargs and boots the kernel with the dtb specified above
+run mmcboot;
