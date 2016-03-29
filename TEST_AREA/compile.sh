@@ -51,7 +51,7 @@ compile_quartus_project() {
 
     popd
 
-    quartus_cpf -c "hw/quartus/output_files/${quartus_project_name}.sof" "sdcard/socfpga.rbf"
+    quartus_cpf -c "hw/quartus/output_files/${quartus_project_name}.sof" "sdcard/fat32/socfpga.rbf"
 }
 
 compile_preloader_and_uboot() {
@@ -143,7 +143,8 @@ run mmcload;
 run mmcboot;
 EOF
 
-    mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "${quartus_project_name}" -d "sw/hps/preloader/uboot-socfpga/u-boot.script" "sdcard/u-boot.scr"
+    mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "${quartus_project_name}" -d "sw/hps/preloader/uboot-socfpga/u-boot.script" "sdcard/fat32/u-boot.scr"
+    cp "sw/hps/preloader/uboot-socfpga/u-boot.img" "sdcard/fat32/"
 }
 
 compile_linux() {
@@ -154,8 +155,8 @@ compile_linux() {
     make -C "${linux_src_dir_abs}" zImage
     make -C "${linux_src_dir_abs}" socfpga_cyclone5_de0_sockit.dtb
 
-    cp "${linux_src_dir_abs}/arch/arm/boot/zImage" "sdcard/zImage"
-    cp "${linux_src_dir_abs}/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dtb" "sdcard/socfpga.dtb"
+    cp "${linux_src_dir_abs}/arch/arm/boot/zImage" "sdcard/fat32/zImage"
+    cp "${linux_src_dir_abs}/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dtb" "sdcard/fat32/socfpga.dtb"
 }
 
 check_args
