@@ -3,34 +3,52 @@
 usage() {
     cat <<EOF
 ===================================================================
-usage: compile.sh linux_src_dir
+usage: compile.sh [sdcard_device]
 
 positional arguments:
-    linux_src_dir    path to linux source tree     [ex: "~/linux"]
     sdcard_device    path to sdcard device file    [ex: "/dev/sdb"]
 ===================================================================
 EOF
 }
-
-# linux_src_dir is required
-# sdcard_device is optional
-if [ ! "$#" -ge 1 ]; then
-    usage
-    exit 1
-fi
 
 # make sure to be in the same directory as this script
 script_dir_abs=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd "${script_dir_abs}"
 
 # constants
-linux_src_dir_abs="$(readlink -e "${1}")"
-sdcard_dev_abs="$(readlink -e "${2}")"
-quartus_project_file="$(basename "$(find . -name "*.qpf")")"
-quartus_project_name="${quartus_project_file%.*}"
+sdcard_dev_abs="$(readlink -e "${1}")"
+
+quartus_dir="$(readlink -m "hw/quartus")"
+quartus_project_name="$(basename "$(find "${quartus_dir}" -name "*.qpf")" .qpf)"
+quartus_sof_file="$(readlink -m "${quartus_dir}/output_files/${quartus_project_name}.sof")"
+
+preloader_dir="$(readlink -m "sw/hps/preloader")"
+preloader_settings_dir="$(readlink -m "${quartus_dir}/hps_isw_handoff/soc_system_hps_0")"
+preloader_settings_file="$(readlink -m "${preloader_dir}/settings.bsp")"
+preloader_source_tgz_file="$(readlink -m "${SOCEDS_DEST_ROOT}/host_tools/altera/preloader/uboot-socfpga.tar.gz")"
+
+uboot_dir="$(readlink -m "${preloader_dir}/uboot-socfpga")"
+uboot_script_file="$(readlink -m "${uboot_dir}/u-boot.script")"
+uboot_img_file="$(readlink -m "${uboot_dir}/u-boot.img")"
+
+linux_src_dir="$(readlink -m "sw/hps/linux")"
+linux_zImage_file="$(readlink -m "${linux_src_dir}/arch/arm/boot/zImage")"
+linux_dtb_file="$(readlink -m "${linux_src_dir}/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dtb")"
+
+rootfs_dir="$(readlink -m sdcard/rootfs)"
+rootfs_src_tgz_file="$(readlink -m "sdcard/ubuntu-core-14.04.4-core-armhf.tar.gz")"
+
+sdcard_fat32_dir="$(readlink -m "sdcard/fat32")"
+sdcard_fat32_rbf_file="$(readlink -m "${sdcard_fat32_dir}/socfpga.rbf")"
+sdcard_fat32_uboot_scr_file="$(readlink -m "${sdcard_fat32_dir}/u-boot.scr")"
+sdcard_fat32_uboot_img_file="$(readlink -m "${sdcard_fat32_dir}/u-boot.img")"
+sdcard_fat32_zImage_file="$(readlink -m "${sdcard_fat32_dir}/zImage")"
+sdcard_fat32_dtb_file="$(readlink -m "${sdcard_fat32_dir}/socfpga.dtb")"
+
+sdcard_ext4_rootfs_tgz_file="$(readlink -m "sdcard/rootfs.tar.gz")"
 
 compile_quartus_project() {
-    pushd "hw/quartus"
+    pushd "${quartus_dir}"
 
     # Analysis and synthesis
     quartus_map "${quartus_project_name}"
@@ -48,17 +66,17 @@ compile_quartus_project() {
 
     popd
 
-    quartus_cpf -c "hw/quartus/output_files/${quartus_project_name}.sof" "sdcard/fat32/socfpga.rbf"
+    quartus_cpf -c "${quartus_sof_file}" "${sdcard_fat32_rbf_file}"
 }
 
 compile_preloader_and_uboot() {
     bsp-create-settings \
-    --bsp-dir "sw/hps/preloader" \
-    --preloader-settings-dir "hw/quartus/hps_isw_handoff/soc_system_hps_0" \
-    --settings "sw/hps/preloader/settings.bsp" \
+    --bsp-dir "${preloader_dir}" \
+    --preloader-settings-dir "${preloader_settings_dir}" \
+    --settings "${preloader_settings_file}" \
     --type spl \
     --set spl.CROSS_COMPILE "arm-altera-eabi-" \
-    --set spl.PRELOADER_TGZ "${SOCEDS_DEST_ROOT}/host_tools/altera/preloader/uboot-socfpga.tar.gz" \
+    --set spl.PRELOADER_TGZ "${preloader_source_tgz_file}" \
     --set spl.boot.BOOTROM_HANDSHAKE_CFGIO "1" \
     --set spl.boot.BOOT_FROM_NAND "0" \
     --set spl.boot.BOOT_FROM_QSPI "0" \
@@ -67,7 +85,7 @@ compile_preloader_and_uboot() {
     --set spl.boot.CHECKSUM_NEXT_IMAGE "1" \
     --set spl.boot.EXE_ON_FPGA "0" \
     --set spl.boot.FAT_BOOT_PARTITION "1" \
-    --set spl.boot.FAT_LOAD_PAYLOAD_NAME "u-boot.img" \
+    --set spl.boot.FAT_LOAD_PAYLOAD_NAME "$(basename "${uboot_img_file}")" \
     --set spl.boot.FAT_SUPPORT "1" \
     --set spl.boot.FPGA_DATA_BASE "0xffff0000" \
     --set spl.boot.FPGA_DATA_MAX_SIZE "0x10000" \
@@ -104,15 +122,17 @@ compile_preloader_and_uboot() {
     --set spl.warm_reset_handshake.SDRAM "0"
 
     bsp-generate-files \
-    --bsp-dir "sw/hps/preloader" \
-    --settings "sw/hps/preloader/settings.bsp"
+    --bsp-dir "${preloader_dir}" \
+    --settings "${preloader_settings_file}"
 
-    make -C "sw/hps/preloader"
-    make -C "sw/hps/preloader" uboot
+    make -C "${preloader_dir}"
+    make -C "${preloader_dir}" uboot
 
-    cat <<EOF > "sw/hps/preloader/uboot-socfpga/u-boot.script"
+    cp "${uboot_img_file}" "${sdcard_fat32_uboot_img_file}"
+
+    cat <<EOF > "${uboot_script_file}"
 # Load rbf from FAT partition into memory
-fatload mmc 0:1 \$fpgadata socfpga.rbf;
+fatload mmc 0:1 \$fpgadata $(basename ${sdcard_fat32_rbf_file});
 
 # Program FPGA
 fpga load 0 \$fpgadata \$filesize;
@@ -120,10 +140,10 @@ fpga load 0 \$fpgadata \$filesize;
 echo --- Setting Env variables ---
 
 # Set the devicetree image to be used
-setenv fdtimage socfpga.dtb;
+setenv fdtimage $(basename ${sdcard_fat32_dtb_file});
 
 # Set the kernel image to be used
-setenv bootimage zImage;
+setenv bootimage $(basename ${sdcard_fat32_zImage_file});
 
 setenv mmcboot 'setenv bootargs mem=768M console=ttyS0,115200 root=\${mmcroot} rw rootwait;bootz \${loadaddr} - \${fdtaddr}'
 
@@ -140,53 +160,58 @@ run mmcload;
 run mmcboot;
 EOF
 
-    mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "${quartus_project_name}" -d "sw/hps/preloader/uboot-socfpga/u-boot.script" "sdcard/fat32/u-boot.scr"
-    cp "sw/hps/preloader/uboot-socfpga/u-boot.img" "sdcard/fat32/"
+    # compile uboot script to binary form
+    mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "${quartus_project_name}" -d "${uboot_script_file}" "${sdcard_fat32_uboot_scr_file}"
 }
 
 compile_linux() {
     export ARCH=arm
     export CROSS_COMPILE=arm-linux-gnueabihf-
 
-    make -C "${linux_src_dir_abs}" socfpga_defconfig
-    make -C "${linux_src_dir_abs}" zImage
-    make -C "${linux_src_dir_abs}" socfpga_cyclone5_de0_sockit.dtb
+    make -C "${linux_src_dir}" socfpga_defconfig
+    make -C "${linux_src_dir}" zImage
+    make -C "${linux_src_dir}" socfpga_cyclone5_de0_sockit.dtb
 
-    cp "${linux_src_dir_abs}/arch/arm/boot/zImage" "sdcard/fat32/zImage"
-    cp "${linux_src_dir_abs}/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dtb" "sdcard/fat32/socfpga.dtb"
+    cp "${linux_zImage_file}" "${sdcard_fat32_zImage_file}"
+    cp "${linux_dtb_file}" "${sdcard_fat32_dtb_file}"
 }
 
 create_rootfs() {
     # extract ubuntu core rootfs
-    sudo tar -xzpf "ubuntu-core-14.04.4-core-armhf.tar.gz" -C "sdcard/rootfs"
+    pushd "${rootfs_dir}"
+    sudo tar -xzpf "${rootfs_src_tgz_file}"
+    popd
 
     # mount directories needed for chroot environment to work
-    sudo mount -o bind "/dev" "sdcard/rootfs/dev"
-    sudo mount -t sysfs "/sys" "sdcard/rootfs/sys"
-    sudo mount -t proc "/proc" "sdcard/rootfs/proc"
+    sudo mount -o bind "/dev" "${rootfs_dir}/dev"
+    sudo mount -t sysfs "/sys" "${rootfs_dir}/sys"
+    sudo mount -t proc "/proc" "${rootfs_dir}/proc"
 
     # chroot environment needs to know what is mounted, so we copy over
     # /proc/mounts from the host for this temporarily
-    sudo cp "/proc/mounts" "sdcard/rootfs/etc/mtab"
+    sudo cp "/proc/mounts" "${rootfs_dir}/etc/mtab"
 
     # chroot environment needs network connectivity, so we copy /etc/resolv.conf
     # so DNS name resolution can occur
-    sudo cp "/etc/resolv.conf" "sdcard/rootfs/etc/resolv.conf"
+    sudo cp "/etc/resolv.conf" "${rootfs_dir}/etc/resolv.conf"
 
     # the ubuntu core image is for armhf, not x86, so we need qemu to actually
     # emulate the chroot (x86 cannot execute bash included in the rootfs, since
     # it is for armhf)
-    sudo cp "/usr/bin/qemu-arm-static" "sdcard/rootfs/usr/bin/"
+    sudo cp "/usr/bin/qemu-arm-static" "${rootfs_dir}/usr/bin/"
 
     # perform chroot and configure rootfs through script
-    sudo chroot "sdcard/rootfs" ./rootfs_config.sh
+    sudo chroot "${rootfs_dir}" ./rootfs_config.sh
 
     # unmount host directories temporarily used for chroot
-    sudo umount "sdcard/rootfs/dev"
-    sudo umount "sdcard/rootfs/sys"
-    sudo umount "sdcard/rootfs/proc"
+    sudo umount "${rootfs_dir}/dev"
+    sudo umount "${rootfs_dir}/sys"
+    sudo umount "${rootfs_dir}/proc"
 
-    tar -czf "sdcard/ext4/rootfs.tar.gz" "sdcard/rootfs/*"
+    # create archive of updated rootfs
+    pushd "${rootfs_dir}"
+    sudo tar -czpf "${sdcard_ext4_rootfs_tgz_file}" . --exclude="rootfs_config.sh"
+    popd
 }
 
 write_sdcard() {
@@ -207,10 +232,14 @@ write_sdcard() {
                 # /dev/sdb2       69632 1118207 1048576  512M 83 Linux
                 # /dev/sdb3        2048    4095    2048    1M a2 unknown
 
+    if [ -z "${sdcard_dev_abs}" ]; then
+        echo "Error: could not find sdcard at \"${sdcard_dev_abs}\""
+        exit 1
+    fi
+
     # writing the sdcard
-        # write the preloader and u-boot in the BINARY partition
-            # dd if=preloader_with_header.img of=/dev/sdx3 bs=64k seek=0
-            # sudo dd if=u-boot.img of=/dev/sdx3 bs=64K seek=4
+        # write the preloader
+            # sudo dd if=sw/hps/preloader-mkpimage.bin of=/dev/sdx3 bs=64k seek=0
 
         # write the linux kernel, device tree, and FPGA rbf to the FAT32 partition
             # sudo mount /dev/sdx1 /media/sdcard
@@ -225,14 +254,10 @@ write_sdcard() {
             # sudo cp rootfs /media/sdcard
             # sudo umount /media/sdcard
             # sudo sync
-    echo "here"
 }
 
-compile_quartus_project
-compile_preloader_and_uboot
-compile_linux
+# compile_quartus_project
+# compile_preloader_and_uboot
+# compile_linux
 create_rootfs
-
-if [ ! -z "${sdcard_dev_abs}" ]; then
-    write_sdcard
-fi
+# write_sdcard
