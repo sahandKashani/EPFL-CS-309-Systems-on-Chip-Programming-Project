@@ -166,7 +166,6 @@ create_rootfs() {
 
         # mount directories needed for chroot environment to work
         sudo mount -o bind /dev ext4/dev
-        sudo mount -o bind /dev/pts ext4/dev/pts
         sudo mount -t sysfs /sys ext4/sys
         sudo mount -t proc /proc ext4/proc
 
@@ -187,10 +186,9 @@ create_rootfs() {
         sudo chroot ext4 ./rootfs_config.sh
 
         # unmount host directories temporarily used for chroot
-        sudo umount -lf ext4/dev
-        sudo umount -lf ext4/dev/pts
-        sudo umount -lf ext4/sys
-        sudo umount -lf ext4/proc
+        sudo umount ext4/dev
+        sudo umount ext4/sys
+        sudo umount ext4/proc
     popd
 }
 
