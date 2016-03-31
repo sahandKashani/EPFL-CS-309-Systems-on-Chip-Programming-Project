@@ -158,33 +158,35 @@ compile_linux() {
 
 create_rootfs() {
     # extract ubuntu core rootfs
-    sudo tar -xzvpf ubuntu-core-14.04.4-core-armhf.tar.gz -C sdcard/ext4
+    sudo tar -xzpf "ubuntu-core-14.04.4-core-armhf.tar.gz" -C "sdcard/rootfs"
 
     # mount directories needed for chroot environment to work
-    sudo mount -o bind /dev sdcard/ext4/dev
-    sudo mount -t sysfs /sys sdcard/ext4/sys
-    sudo mount -t proc /proc sdcard/ext4/proc
+    sudo mount -o bind "/dev" "sdcard/rootfs/dev"
+    sudo mount -t sysfs "/sys" "sdcard/rootfs/sys"
+    sudo mount -t proc "/proc" "sdcard/rootfs/proc"
 
     # chroot environment needs to know what is mounted, so we copy over
     # /proc/mounts from the host for this temporarily
-    sudo cp /proc/mounts sdcard/ext4/etc/mtab
+    sudo cp "/proc/mounts" "sdcard/rootfs/etc/mtab"
 
     # chroot environment needs network connectivity, so we copy /etc/resolv.conf
     # so DNS name resolution can occur
-    sudo cp /etc/resolv.conf sdcard/ext4/etc/resolv.conf
+    sudo cp "/etc/resolv.conf" "sdcard/rootfs/etc/resolv.conf"
 
     # the ubuntu core image is for armhf, not x86, so we need qemu to actually
     # emulate the chroot (x86 cannot execute bash included in the rootfs, since
     # it is for armhf)
-    sudo cp /usr/bin/qemu-arm-static sdcard/ext4/usr/bin/
+    sudo cp "/usr/bin/qemu-arm-static" "sdcard/rootfs/usr/bin/"
 
     # perform chroot and configure rootfs through script
-    sudo chroot sdcard/ext4 ./rootfs_config.sh
+    sudo chroot "sdcard/rootfs" ./rootfs_config.sh
 
     # unmount host directories temporarily used for chroot
-    sudo umount sdcard/ext4/dev
-    sudo umount sdcard/ext4/sys
-    sudo umount sdcard/ext4/proc
+    sudo umount "sdcard/rootfs/dev"
+    sudo umount "sdcard/rootfs/sys"
+    sudo umount "sdcard/rootfs/proc"
+
+    tar -czf "sdcard/ext4/rootfs.tar.gz" "sdcard/rootfs/*"
 }
 
 write_sdcard() {
