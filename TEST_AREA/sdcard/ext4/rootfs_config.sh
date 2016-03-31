@@ -17,7 +17,7 @@ EOF
 
 # apt sources
 # uncomment the "deb" lines (no need to uncomment "deb src" lines)
-vim.tiny /etc/apt/sources.list
+perl -pi -e 's/^#+\s+(deb\s+http)/$1/g' /etc/apt/sources.list
 
 # fstab (boot partition, swap partition)
 

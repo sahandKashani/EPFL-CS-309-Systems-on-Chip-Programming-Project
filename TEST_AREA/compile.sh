@@ -159,7 +159,43 @@ compile_linux() {
     cp "${linux_src_dir_abs}/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dtb" "sdcard/fat32/socfpga.dtb"
 }
 
+create_rootfs() {
+    pushd "sdcard"
+        # extract ubuntu core rootfs
+        sudo tar -xzvpf ubuntu-core-14.04.4-core-armhf.tar.gz -C ext4
+
+        # mount directories needed for chroot environment to work
+        sudo mount -o bind /dev ext4/dev
+        sudo mount -o bind /dev/pts ext4/dev/pts
+        sudo mount -t sysfs /sys ext4/sys
+        sudo mount -t proc /proc ext4/proc
+
+        # chroot environment needs to know what is mounted, so we copy over
+        # /proc/mounts from the host for this temporarily
+        sudo cp /proc/mounts ext4/etc/mtab
+
+        # chroot environment needs network connectivity, so we copy /etc/resolv.conf
+        # so DNS name resolution can occur
+        sudo cp /etc/resolv.conf ext4/etc/resolv.conf
+
+        # the ubuntu core image is for armhf, not x86, so we need qemu to actually
+        # emulate the chroot (x86 cannot execute bash included in the rootfs, since
+        # it is for armhf)
+        sudo cp /usr/bin/qemu-arm-static ext4/usr/bin/
+
+        # perform chroot and configure rootfs through script
+        sudo chroot ext4 ./rootfs_config.sh
+
+        # unmount host directories temporarily used for chroot
+        sudo umount -lf ext4/dev
+        sudo umount -lf ext4/dev/pts
+        sudo umount -lf ext4/sys
+        sudo umount -lf ext4/proc
+    popd
+}
+
 check_args
-compile_quartus_project
-compile_preloader_and_uboot
-compile_linux
+# compile_quartus_project
+# compile_preloader_and_uboot
+# compile_linux
+create_rootfs
