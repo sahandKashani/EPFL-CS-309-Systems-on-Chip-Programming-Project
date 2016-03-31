@@ -1,36 +1,33 @@
 #!/bin/bash
 
+usage() {
+    cat <<EOF
+===================================================================
+usage: compile.sh linux_src_dir
+
+positional arguments:
+    linux_src_dir    path to linux source tree     [ex: "~/linux"]
+    sdcard_device    path to sdcard device file    [ex: "/dev/sdb"]
+===================================================================
+EOF
+}
+
+# linux_src_dir is required
+# sdcard_device is optional
+if [ ! "$#" -ge 1 ]; then
+    usage
+    exit 1
+fi
+
 # make sure to be in the same directory as this script
 script_dir_abs=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd "${script_dir_abs}"
 
 # constants
-linux_src_dir_abs="$(readlink -m "${1}")"
+linux_src_dir_abs="$(readlink -e "${1}")"
+sdcard_dev_abs="$(readlink -e "${2}")"
 quartus_project_file="$(basename "$(find . -name "*.qpf")")"
 quartus_project_name="${quartus_project_file%.*}"
-
-echoerr() {
-    cat <<< "${@}" 1>&2;
-}
-
-usage() {
-    cat <<EOF
-=================================================================
-usage: compile.sh linux_src_dir
-
-positional arguments:
-    linux_src_dir    path to linux source tree    [ex: "~/linux"]
-=================================================================
-EOF
-}
-
-check_args() {
-    if [ ! -d "${linux_src_dir_abs}" ]; then
-        usage
-        echoerr "Error: could not find \"${linux_src_dir_abs}\""
-        exit 1
-    fi
-}
 
 compile_quartus_project() {
     pushd "hw/quartus"
@@ -160,40 +157,80 @@ compile_linux() {
 }
 
 create_rootfs() {
-    pushd "sdcard"
-        # extract ubuntu core rootfs
-        sudo tar -xzvpf ubuntu-core-14.04.4-core-armhf.tar.gz -C ext4
+    # extract ubuntu core rootfs
+    sudo tar -xzvpf ubuntu-core-14.04.4-core-armhf.tar.gz -C sdcard/ext4
 
-        # mount directories needed for chroot environment to work
-        sudo mount -o bind /dev ext4/dev
-        sudo mount -t sysfs /sys ext4/sys
-        sudo mount -t proc /proc ext4/proc
+    # mount directories needed for chroot environment to work
+    sudo mount -o bind /dev sdcard/ext4/dev
+    sudo mount -t sysfs /sys sdcard/ext4/sys
+    sudo mount -t proc /proc sdcard/ext4/proc
 
-        # chroot environment needs to know what is mounted, so we copy over
-        # /proc/mounts from the host for this temporarily
-        sudo cp /proc/mounts ext4/etc/mtab
+    # chroot environment needs to know what is mounted, so we copy over
+    # /proc/mounts from the host for this temporarily
+    sudo cp /proc/mounts sdcard/ext4/etc/mtab
 
-        # chroot environment needs network connectivity, so we copy /etc/resolv.conf
-        # so DNS name resolution can occur
-        sudo cp /etc/resolv.conf ext4/etc/resolv.conf
+    # chroot environment needs network connectivity, so we copy /etc/resolv.conf
+    # so DNS name resolution can occur
+    sudo cp /etc/resolv.conf sdcard/ext4/etc/resolv.conf
 
-        # the ubuntu core image is for armhf, not x86, so we need qemu to actually
-        # emulate the chroot (x86 cannot execute bash included in the rootfs, since
-        # it is for armhf)
-        sudo cp /usr/bin/qemu-arm-static ext4/usr/bin/
+    # the ubuntu core image is for armhf, not x86, so we need qemu to actually
+    # emulate the chroot (x86 cannot execute bash included in the rootfs, since
+    # it is for armhf)
+    sudo cp /usr/bin/qemu-arm-static sdcard/ext4/usr/bin/
 
-        # perform chroot and configure rootfs through script
-        sudo chroot ext4 ./rootfs_config.sh
+    # perform chroot and configure rootfs through script
+    sudo chroot sdcard/ext4 ./rootfs_config.sh
 
-        # unmount host directories temporarily used for chroot
-        sudo umount ext4/dev
-        sudo umount ext4/sys
-        sudo umount ext4/proc
-    popd
+    # unmount host directories temporarily used for chroot
+    sudo umount sdcard/ext4/dev
+    sudo umount sdcard/ext4/sys
+    sudo umount sdcard/ext4/proc
 }
 
-check_args
-# compile_quartus_project
-# compile_preloader_and_uboot
-# compile_linux
+write_sdcard() {
+    # partitioning the sdcard
+        # sudo fdisk /dev/sdx
+        # use the following commands
+            # n p 3 <default> 4095  t 3 a2 (2048 is default first sector)
+            # n p 1 <default> +32M  t 1  b (4096 is default first sector)
+            # n p 2 <default> +512M t 2 83 (69632 is default first sector)
+            # w
+        # filesystem
+            # sudo mkfs.msdos /dev/sdx1
+            # sudo mkfs.ext3 /dev/sdx2
+        # result
+            # custom
+                # Device     Boot Start     End Sectors  Size Id Type
+                # /dev/sdb1        4096   69631   65536   32M  b W95 FAT32
+                # /dev/sdb2       69632 1118207 1048576  512M 83 Linux
+                # /dev/sdb3        2048    4095    2048    1M a2 unknown
+
+    # writing the sdcard
+        # write the preloader and u-boot in the BINARY partition
+            # dd if=preloader_with_header.img of=/dev/sdx3 bs=64k seek=0
+            # sudo dd if=u-boot.img of=/dev/sdx3 bs=64K seek=4
+
+        # write the linux kernel, device tree, and FPGA rbf to the FAT32 partition
+            # sudo mount /dev/sdx1 /media/sdcard
+            # sudo cp zImage /media/sdcard
+            # sudo cp soc_system.dtb /media/sdcard
+            # sudo cp soc_system.rbf /media/sdcard
+            # sudo unmount /media/sdcard
+            # sudo sync
+
+        # write the rootfs to the LINUX partition
+            # sudo mount /dev/sdx2 /media/sdcard
+            # sudo cp rootfs /media/sdcard
+            # sudo umount /media/sdcard
+            # sudo sync
+    echo "here"
+}
+
+compile_quartus_project
+compile_preloader_and_uboot
+compile_linux
 create_rootfs
+
+if [ ! -z "${sdcard_dev_abs}" ]; then
+    write_sdcard
+fi
