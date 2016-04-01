@@ -55,4 +55,5 @@ EOF
 adduser psoc
 
 # ubuntu requires the admin to be part of the "adm" and "sudo" groups
-usermod -aG adm,sudo psoc
+addgroup psoc adm
+addgroup psoc sudo

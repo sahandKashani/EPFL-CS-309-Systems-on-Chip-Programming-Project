@@ -33,6 +33,7 @@ uboot_script_file="$(readlink -m "${uboot_dir}/u-boot.script")"
 uboot_img_file="$(readlink -m "${uboot_dir}/u-boot.img")"
 
 linux_src_dir="$(readlink -m "sw/hps/linux")"
+linux_kernel_mem_arg="768M"
 linux_zImage_file="$(readlink -m "${linux_src_dir}/arch/arm/boot/zImage")"
 linux_dtb_file="$(readlink -m "${linux_src_dir}/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dtb")"
 
@@ -150,7 +151,7 @@ setenv fdtimage $(basename ${sdcard_fat32_dtb_file});
 # Set the kernel image to be used
 setenv bootimage $(basename ${sdcard_fat32_zImage_file});
 
-setenv mmcboot 'setenv bootargs mem=768M console=ttyS0,115200 root=\${mmcroot} rw rootwait;bootz \${loadaddr} - \${fdtaddr}'
+setenv mmcboot 'setenv bootargs mem=${linux_kernel_mem_arg} console=ttyS0,115200 root=\${mmcroot} rw rootwait;bootz \${loadaddr} - \${fdtaddr}';
 
 # enable the FPGA 2 HPS and HPS 2 FPGA bridges
 run bridge_enable_handoff;
@@ -222,20 +223,20 @@ create_rootfs() {
 write_sdcard() {
     # partitioning the sdcard
         # sudo fdisk /dev/sdx
-        # use the following commands
+            # use the following commands
             # n p 3 <default> 4095  t 3 a2 (2048 is default first sector)
             # n p 1 <default> +32M  t 1  b (4096 is default first sector)
             # n p 2 <default> +512M t 2 83 (69632 is default first sector)
             # w
-        # filesystem
-            # sudo mkfs.msdos /dev/sdx1
-            # sudo mkfs.ext3 /dev/sdx2
         # result
-            # custom
-                # Device     Boot Start     End Sectors  Size Id Type
-                # /dev/sdb1        4096   69631   65536   32M  b W95 FAT32
-                # /dev/sdb2       69632 1118207 1048576  512M 83 Linux
-                # /dev/sdb3        2048    4095    2048    1M a2 unknown
+            # Device     Boot Start     End Sectors  Size Id Type
+            # /dev/sdb1        4096   69631   65536   32M  b W95 FAT32
+            # /dev/sdb2       69632 1118207 1048576  512M 83 Linux
+            # /dev/sdb3        2048    4095    2048    1M a2 unknown
+
+    # create filesystems
+        # sudo mkfs.msdos /dev/sdx1
+        # sudo mkfs.ext3 /dev/sdx2
 
     if [ ! -b "${sdcard_dev}" ]; then
         echo "Error: could not find block device at \"${sdcard_dev}\""
@@ -247,9 +248,15 @@ write_sdcard() {
         exit 1
     fi
 
+    # sudo dd if="${sdcard_a2_dir}" of="/dev/sdb3" bs=64K seek=0
+    # sudo cp "${sdcard_fat32_dir}"/* /media/sahand/8FD4-8A7A
+    # sudo tar -xzf "${sdcard_ext3_rootfs_tgz_file}" /media/sahand/6798498f-e767-4c2f-8c6b-bb5293b05a79
+    # sudo sync
+
     # writing the sdcard
         # write the preloader
-            # sudo dd if=sw/hps/preloader-mkpimage.bin of=/dev/sdx3 bs=64k seek=0
+            # sudo dd if=sw/hps/preloader-mkpimage.bin of=/dev/sdx3 bs=64K seek=0
+            # sudo dd if=sw/hps/preloader/uboot-socfpga/u-boot.img of=/dev/sdx3 bs=64K seek=4
 
         # write the linux kernel, device tree, and FPGA rbf to the FAT32 partition
             # sudo mount /dev/sdx1 /media/sdcard
@@ -266,8 +273,8 @@ write_sdcard() {
             # sudo sync
 }
 
-# compile_quartus_project
-# compile_preloader_and_uboot
-# compile_linux
-# create_rootfs
-write_sdcard
+compile_quartus_project
+compile_preloader_and_uboot
+compile_linux
+create_rootfs
+# write_sdcard
