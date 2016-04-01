@@ -289,10 +289,10 @@ write_sdcard() {
     sudo rm -rf "${sdcard_dev_ext3_mount_point}"
 }
 
-# compile_quartus_project
+compile_quartus_project
 compile_preloader_and_uboot
-# compile_linux
-# create_rootfs
+compile_linux
+create_rootfs
 
 if [ ! -b "${sdcard_dev}" ]; then
     echo "Error: could not find block device at \"${sdcard_dev}\""
