@@ -16,7 +16,7 @@ script_dir_abs=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd "${script_dir_abs}"
 
 # constants
-sdcard_dev_abs="$(readlink -e "${1}")"
+sdcard_dev="$(readlink -m "${1}")"
 
 quartus_dir="$(readlink -m "hw/quartus")"
 quartus_project_name="$(basename "$(find "${quartus_dir}" -name "*.qpf")" .qpf)"
@@ -45,7 +45,7 @@ sdcard_fat32_uboot_img_file="$(readlink -m "${sdcard_fat32_dir}/u-boot.img")"
 sdcard_fat32_zImage_file="$(readlink -m "${sdcard_fat32_dir}/zImage")"
 sdcard_fat32_dtb_file="$(readlink -m "${sdcard_fat32_dir}/socfpga.dtb")"
 
-sdcard_ext4_rootfs_tgz_file="$(readlink -m "sdcard/rootfs.tar.gz")"
+sdcard_ext4_rootfs_tgz_file="$(readlink -m "sdcard/ext4_rootfs.tar.gz")"
 
 compile_quartus_project() {
     pushd "${quartus_dir}"
@@ -232,8 +232,8 @@ write_sdcard() {
                 # /dev/sdb2       69632 1118207 1048576  512M 83 Linux
                 # /dev/sdb3        2048    4095    2048    1M a2 unknown
 
-    if [ -z "${sdcard_dev_abs}" ]; then
-        echo "Error: could not find sdcard at \"${sdcard_dev_abs}\""
+    if [ ! -b "${sdcard_dev}" ]; then
+        echo "Error: could not find block device at \"${sdcard_dev}\""
         exit 1
     fi
 
@@ -259,5 +259,5 @@ write_sdcard() {
 # compile_quartus_project
 # compile_preloader_and_uboot
 # compile_linux
-create_rootfs
-# write_sdcard
+# create_rootfs
+write_sdcard
