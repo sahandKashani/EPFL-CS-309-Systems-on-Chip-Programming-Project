@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 usage() {
     cat <<EOF
@@ -29,7 +29,7 @@ preloader_source_tgz_file="$(readlink -m "${SOCEDS_DEST_ROOT}/host_tools/altera/
 preloader_bin_file="${preloader_dir}/preloader-mkpimage.bin"
 
 uboot_dir="$(readlink -m "${preloader_dir}/uboot-socfpga")"
-uboot_script_file="$(readlink -m "${uboot_dir}/u-boot.script")"
+uboot_script_file="$(readlink -m "${uboot_dir}/boot.script")"
 uboot_img_file="$(readlink -m "${uboot_dir}/u-boot.img")"
 
 linux_src_dir="$(readlink -m "sw/hps/linux")"
@@ -51,6 +51,12 @@ sdcard_ext3_rootfs_tgz_file="$(readlink -m "sdcard/ext3_rootfs.tar.gz")"
 
 sdcard_a2_dir="$(readlink -m "sdcard/a2")"
 sdcard_a2_preloader_bin_file="${sdcard_a2_dir}/$(basename "${preloader_bin_file}")"
+
+sdcard_dev_fat32="${sdcard_dev}1"
+sdcard_dev_ext3="${sdcard_dev}2"
+sdcard_dev_a2="${sdcard_dev}3"
+sdcard_dev_fat32_mount_point="/mnt/fat32"
+sdcard_dev_ext3_mount_point="/mnt/ext3"
 
 compile_quartus_project() {
     pushd "${quartus_dir}"
@@ -137,11 +143,16 @@ compile_preloader_and_uboot() {
     cp "${preloader_bin_file}" "${sdcard_a2_preloader_bin_file}"
 
     cat <<EOF > "${uboot_script_file}"
+echo --- Programming FPGA ---
+
 # Load rbf from FAT partition into memory
 fatload mmc 0:1 \$fpgadata $(basename ${sdcard_fat32_rbf_file});
 
 # Program FPGA
 fpga load 0 \$fpgadata \$filesize;
+
+# enable the FPGA 2 HPS and HPS 2 FPGA bridges
+run bridge_enable_handoff;
 
 echo --- Setting Env variables ---
 
@@ -151,10 +162,7 @@ setenv fdtimage $(basename ${sdcard_fat32_dtb_file});
 # Set the kernel image to be used
 setenv bootimage $(basename ${sdcard_fat32_zImage_file});
 
-setenv mmcboot 'setenv bootargs mem=${linux_kernel_mem_arg} console=ttyS0,115200 root=\${mmcroot} rw rootwait;bootz \${loadaddr} - \${fdtaddr}';
-
-# enable the FPGA 2 HPS and HPS 2 FPGA bridges
-run bridge_enable_handoff;
+setenv mmcboot 'setenv bootargs mem=${linux_kernel_mem_arg} console=ttyS0,115200 root=\${mmcroot} rw rootwait; bootz \${loadaddr} - \${fdtaddr}';
 
 echo --- Booting Linux ---
 
@@ -220,8 +228,8 @@ create_rootfs() {
     popd
 }
 
-write_sdcard() {
-    # partitioning the sdcard
+partition_sdcard() {
+    # manually partitioning the sdcard
         # sudo fdisk /dev/sdx
             # use the following commands
             # n p 3 <default> 4095  t 3 a2 (2048 is default first sector)
@@ -234,47 +242,65 @@ write_sdcard() {
             # /dev/sdb2       69632 1118207 1048576  512M 83 Linux
             # /dev/sdb3        2048    4095    2048    1M a2 unknown
 
+    # automatically partitioning the sdcard
+    fdisk_output="$(sudo fdisk -l "${sdcard_dev}")"
+    if [ "$(echo "${fdisk_output}" | grep -i -P "${sdcard_dev_fat32}.+b\s+W95 FAT32.*" | wc -l)" -eq 0 ] ||
+       [ "$(echo "${fdisk_output}" | grep -i -P "${sdcard_dev_ext3}.+83\s+Linux.*" | wc -l)" -eq 0 ] ||
+       [ "$(echo "${fdisk_output}" | grep -i -P "${sdcard_dev_a2}.+a2\s+Unknown.*" | wc -l)" -eq 0 ]; then
+       cat <<EOF
+Did not find required device ids on device ${sdcard_dev}:
+    Required:    Device    Id       System
+              ${sdcard_dev_fat32}     b    W95 FAT32
+              ${sdcard_dev_ext3}    83        Linux
+              ${sdcard_dev_a2}    a2      Unknown
+
+Formatting sdcard ...
+EOF
+        # wipe partition table
+        sudo dd if="/dev/zero" of="${sdcard_dev}" bs=512 count=1
+
+        # create partitions
+        echo -e "n\np\n3\n\n4095\nt\na2\nn\np\n1\n\n+32M\nt\n1\nb\nn\np\n2\n\n+512M\nt\n2\n83\nw\nq\n" | sudo fdisk "${sdcard_dev}"
+    fi
+
     # create filesystems
-        # sudo mkfs.msdos /dev/sdx1
-        # sudo mkfs.ext3 /dev/sdx2
-
-    if [ ! -b "${sdcard_dev}" ]; then
-        echo "Error: could not find block device at \"${sdcard_dev}\""
-        exit 1
-    fi
-
-    if [ ! "$(echo "${sdcard_dev}" | grep -P "/dev/sd\w\s*$")" ]; then
-        echo "Error: must select a root drive (ex: /dev/sdb), not a subpartition (ex: /dev/sdb1)"
-        exit 1
-    fi
-
-    # sudo dd if="${sdcard_a2_dir}" of="/dev/sdb3" bs=64K seek=0
-    # sudo cp "${sdcard_fat32_dir}"/* /media/sahand/8FD4-8A7A
-    # sudo tar -xzf "${sdcard_ext3_rootfs_tgz_file}" /media/sahand/6798498f-e767-4c2f-8c6b-bb5293b05a79
-    # sudo sync
-
-    # writing the sdcard
-        # write the preloader
-            # sudo dd if=sw/hps/preloader-mkpimage.bin of=/dev/sdx3 bs=64K seek=0
-            # sudo dd if=sw/hps/preloader/uboot-socfpga/u-boot.img of=/dev/sdx3 bs=64K seek=4
-
-        # write the linux kernel, device tree, and FPGA rbf to the FAT32 partition
-            # sudo mount /dev/sdx1 /media/sdcard
-            # sudo cp zImage /media/sdcard
-            # sudo cp soc_system.dtb /media/sdcard
-            # sudo cp soc_system.rbf /media/sdcard
-            # sudo unmount /media/sdcard
-            # sudo sync
-
-        # write the rootfs to the LINUX partition
-            # sudo mount /dev/sdx2 /media/sdcard
-            # sudo cp rootfs /media/sdcard
-            # sudo umount /media/sdcard
-            # sudo sync
+    sudo mkfs.vfat "${sdcard_dev_fat32}"
+    sudo mkfs.ext3 "${sdcard_dev_ext3}"
 }
 
-compile_quartus_project
-compile_preloader_and_uboot
-compile_linux
-create_rootfs
-# write_sdcard
+write_sdcard() {
+    sudo mkdir "${sdcard_dev_fat32_mount_point}"
+    sudo mkdir "${sdcard_dev_ext3_mount_point}"
+
+    sudo mount "${sdcard_dev_fat32}" "${sdcard_dev_fat32_mount_point}"
+    sudo mount "${sdcard_dev_ext3}" "${sdcard_dev_ext3_mount_point}"
+
+    # writing
+    sudo dd if="${sdcard_a2_preloader_bin_file}" of="${sdcard_dev_a2}" bs=64K seek=0
+    # sudo dd if="${sdcard_fat32_uboot_img_file}" of="${sdcard_dev_a2}" bs=64K seek=4
+    sudo cp "${sdcard_fat32_dir}"/* "${sdcard_dev_fat32_mount_point}"
+    sudo tar -xzf "${sdcard_ext3_rootfs_tgz_file}" -C "${sdcard_dev_ext3_mount_point}"
+    sudo sync
+
+    sudo umount "${sdcard_dev_fat32_mount_point}"
+    sudo umount "${sdcard_dev_ext3_mount_point}"
+
+    sudo rm -rf "${sdcard_dev_fat32_mount_point}"
+    sudo rm -rf "${sdcard_dev_ext3_mount_point}"
+}
+
+# compile_quartus_project
+# compile_preloader_and_uboot
+# compile_linux
+# create_rootfs
+
+if [ ! -b "${sdcard_dev}" ]; then
+    echo "Error: could not find block device at \"${sdcard_dev}\""
+    exit 1
+elif [ ! "$(echo "${sdcard_dev}" | grep -P "/dev/sd\w\s*$")" ]; then
+    echo "Error: must select a root drive (ex: /dev/sdb), not a subpartition (ex: /dev/sdb1)"
+    exit 1
+fi
+
+partition_sdcard
+write_sdcard
