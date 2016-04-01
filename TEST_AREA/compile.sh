@@ -26,6 +26,7 @@ preloader_dir="$(readlink -m "sw/hps/preloader")"
 preloader_settings_dir="$(readlink -m "${quartus_dir}/hps_isw_handoff/soc_system_hps_0")"
 preloader_settings_file="$(readlink -m "${preloader_dir}/settings.bsp")"
 preloader_source_tgz_file="$(readlink -m "${SOCEDS_DEST_ROOT}/host_tools/altera/preloader/uboot-socfpga.tar.gz")"
+preloader_bin_file="${preloader_dir}/preloader-mkpimage.bin"
 
 uboot_dir="$(readlink -m "${preloader_dir}/uboot-socfpga")"
 uboot_script_file="$(readlink -m "${uboot_dir}/u-boot.script")"
@@ -45,7 +46,10 @@ sdcard_fat32_uboot_img_file="$(readlink -m "${sdcard_fat32_dir}/u-boot.img")"
 sdcard_fat32_zImage_file="$(readlink -m "${sdcard_fat32_dir}/zImage")"
 sdcard_fat32_dtb_file="$(readlink -m "${sdcard_fat32_dir}/socfpga.dtb")"
 
-sdcard_ext4_rootfs_tgz_file="$(readlink -m "sdcard/ext4_rootfs.tar.gz")"
+sdcard_ext3_rootfs_tgz_file="$(readlink -m "sdcard/ext3_rootfs.tar.gz")"
+
+sdcard_a2_dir="$(readlink -m "sdcard/a2")"
+sdcard_a2_preloader_bin_file="${sdcard_a2_dir}/$(basename "${preloader_bin_file}")"
 
 compile_quartus_project() {
     pushd "${quartus_dir}"
@@ -129,6 +133,7 @@ compile_preloader_and_uboot() {
     make -C "${preloader_dir}" uboot
 
     cp "${uboot_img_file}" "${sdcard_fat32_uboot_img_file}"
+    cp "${preloader_bin_file}" "${sdcard_a2_preloader_bin_file}"
 
     cat <<EOF > "${uboot_script_file}"
 # Load rbf from FAT partition into memory
@@ -210,7 +215,7 @@ create_rootfs() {
 
     # create archive of updated rootfs
     pushd "${rootfs_dir}"
-    sudo tar -czpf "${sdcard_ext4_rootfs_tgz_file}" . --exclude="rootfs_config.sh"
+    sudo tar -czpf "${sdcard_ext3_rootfs_tgz_file}" . --exclude="rootfs_config.sh"
     popd
 }
 
@@ -234,6 +239,11 @@ write_sdcard() {
 
     if [ ! -b "${sdcard_dev}" ]; then
         echo "Error: could not find block device at \"${sdcard_dev}\""
+        exit 1
+    fi
+
+    if [ ! "$(echo "${sdcard_dev}" | grep -P "/dev/sd\w\s*$")" ]; then
+        echo "Error: must select a root drive (ex: /dev/sdb), not a subpartition (ex: /dev/sdb1)"
         exit 1
     fi
 
