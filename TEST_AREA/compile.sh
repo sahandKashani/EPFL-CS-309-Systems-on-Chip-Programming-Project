@@ -139,9 +139,6 @@ compile_preloader_and_uboot() {
     make -C "${preloader_dir}"
     make -C "${preloader_dir}" uboot
 
-    cp "${uboot_img_file}" "${sdcard_fat32_uboot_img_file}"
-    cp "${preloader_bin_file}" "${sdcard_a2_preloader_bin_file}"
-
     cat <<EOF > "${uboot_script_file}"
 echo --- Programming FPGA ---
 
@@ -176,6 +173,9 @@ EOF
 
     # compile uboot script to binary form
     mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "${quartus_project_name}" -d "${uboot_script_file}" "${sdcard_fat32_uboot_scr_file}"
+
+    cp "${uboot_img_file}" "${sdcard_fat32_uboot_img_file}"
+    cp "${preloader_bin_file}" "${sdcard_a2_preloader_bin_file}"
 }
 
 compile_linux() {
@@ -289,10 +289,10 @@ write_sdcard() {
     sudo rm -rf "${sdcard_dev_ext3_mount_point}"
 }
 
-compile_quartus_project
+# compile_quartus_project
 compile_preloader_and_uboot
-compile_linux
-create_rootfs
+# compile_linux
+# create_rootfs
 
 if [ ! -b "${sdcard_dev}" ]; then
     echo "Error: could not find block device at \"${sdcard_dev}\""
@@ -304,3 +304,5 @@ fi
 
 partition_sdcard
 write_sdcard
+
+# Make sure MSEL = 000000
