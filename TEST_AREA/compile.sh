@@ -29,7 +29,7 @@ preloader_source_tgz_file="$(readlink -m "${SOCEDS_DEST_ROOT}/host_tools/altera/
 preloader_bin_file="${preloader_dir}/preloader-mkpimage.bin"
 
 uboot_dir="$(readlink -m "${preloader_dir}/uboot-socfpga")"
-uboot_script_file="$(readlink -m "${uboot_dir}/boot.script")"
+uboot_script_file="$(readlink -m "${uboot_dir}/u-boot.script")"
 uboot_img_file="$(readlink -m "${uboot_dir}/u-boot.img")"
 
 linux_src_dir="$(readlink -m "sw/hps/linux")"
@@ -289,10 +289,10 @@ write_sdcard() {
     sudo rm -rf "${sdcard_dev_ext3_mount_point}"
 }
 
-# compile_quartus_project
-# compile_preloader_and_uboot
-# compile_linux
-# create_rootfs
+compile_quartus_project
+compile_preloader_and_uboot
+compile_linux
+create_rootfs
 
 if [ ! -b "${sdcard_dev}" ]; then
     echo "Error: could not find block device at \"${sdcard_dev}\""
