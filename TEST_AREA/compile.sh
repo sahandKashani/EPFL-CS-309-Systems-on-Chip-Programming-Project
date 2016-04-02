@@ -1,21 +1,10 @@
 #!/bin/bash -x
 
-usage() {
-    cat <<EOF
-===================================================================
-usage: compile.sh [sdcard_device]
-
-positional arguments:
-    sdcard_device    path to sdcard device file    [ex: "/dev/sdb"]
-===================================================================
-EOF
-}
-
 # make sure to be in the same directory as this script
 script_dir_abs=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd "${script_dir_abs}"
 
-# constants
+# constants ####################################################################
 sdcard_dev="$(readlink -m "${1}")"
 
 quartus_dir="$(readlink -m "hw/quartus")"
@@ -58,9 +47,36 @@ sdcard_a2_uboot_img_file="$(readlink -m "${sdcard_a2_dir}/$(basename "${uboot_im
 sdcard_dev_fat32="${sdcard_dev}1"
 sdcard_dev_ext3="${sdcard_dev}2"
 sdcard_dev_a2="${sdcard_dev}3"
-sdcard_dev_fat32_mount_point="/mnt/fat32"
-sdcard_dev_ext3_mount_point="/mnt/ext3"
+sdcard_dev_fat32_mount_point="/tmp/${$}-fat32" # prepend PID for uniqueness
+sdcard_dev_ext3_mount_point="/tmp/${$}-ext3" # prepend PID for uniqueness
 
+# usage() ######################################################################
+usage() {
+    cat <<EOF
+===================================================================
+usage: compile.sh [sdcard_device]
+
+positional arguments:
+    sdcard_device    path to sdcard device file    [ex: "/dev/sdb"]
+===================================================================
+EOF
+}
+
+# echoerr() ####################################################################
+echoerr() {
+    cat <<< "${@}" 1>&2;
+}
+
+# mkdir_if_not_exists() ########################################################
+mkdir_if_not_exists() {
+    for d in "${@}"; do
+        if [ ! -d "${d}" ]; then
+            mkdir -p "${d}"
+        fi
+    done
+}
+
+# compile_quartus_project() ####################################################
 compile_quartus_project() {
     pushd "${quartus_dir}"
 
@@ -68,7 +84,8 @@ compile_quartus_project() {
     quartus_map "${quartus_project_name}"
 
     # Execute HPS DDR3 pin assignment TCL script
-    # it is normal for the following script to report an error, but it was sucessfully executed
+    # it is normal for the following script to report an error, but it was
+    # sucessfully executed
     ddr3_pin_assignment_script="$(find . -name "hps_sdram_p0_pin_assignments.tcl")"
     quartus_sta -t "${ddr3_pin_assignment_script}" "${quartus_project_name}"
 
@@ -80,10 +97,15 @@ compile_quartus_project() {
 
     popd
 
+    # convert .sof to .rbf in associated sdcard directory
     quartus_cpf -c "${quartus_sof_file}" "${sdcard_fat32_rbf_file}"
 }
 
+# compile_preloader_and_uboot() ################################################
 compile_preloader_and_uboot() {
+    mkdir_if_not_exists "${preloader_dir}"
+
+    # create bsp settings file
     bsp-create-settings \
     --bsp-dir "${preloader_dir}" \
     --preloader-settings-dir "${preloader_settings_dir}" \
@@ -135,13 +157,18 @@ compile_preloader_and_uboot() {
     --set spl.warm_reset_handshake.FPGA "1" \
     --set spl.warm_reset_handshake.SDRAM "0"
 
+    # generate bsp
     bsp-generate-files \
     --bsp-dir "${preloader_dir}" \
     --settings "${preloader_settings_file}"
 
+    # compile preloader
     make -j4 -C "${preloader_dir}"
+
+    # compile uboot
     make -j4 -C "${preloader_dir}" uboot
 
+    # create uboot script
     cat <<EOF > "${uboot_script_file}"
 echo --- Programming FPGA ---
 
@@ -177,23 +204,42 @@ EOF
     # compile uboot script to binary form
     mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "${quartus_project_name}" -d "${uboot_script_file}" "${sdcard_fat32_uboot_scr_file}"
 
+    # copy artifacts to associated sdcard directory
     cp "${uboot_img_file}" "${sdcard_a2_uboot_img_file}"
     cp "${preloader_bin_file}" "${sdcard_a2_preloader_bin_file}"
 }
 
+# compile_linux() ##############################################################
 compile_linux() {
+    # if linux source tree doesn't exist, then download it
+    if [ ! -d "${linux_src_dir}" ]; then
+        git clone "git@github.com:torvalds/linux.git" "${linux_src_dir}"
+    fi
+
+    # compile for the ARM architecture
     export ARCH=arm
+
+    # use cross compiler instead of standard x86 version of gcc
     export CROSS_COMPILE=arm-linux-gnueabihf-
 
+    # create kernel config for socfpga architecture
     make -j4 -C "${linux_src_dir}" socfpga_defconfig
+
+    # compile zImage
     make -j4 -C "${linux_src_dir}" zImage
+
+    # compile device tree
     make -j4 -C "${linux_src_dir}" socfpga_cyclone5_de0_sockit.dtb
 
+    # copy artifacts to associated sdcard directory
     cp "${linux_zImage_file}" "${sdcard_fat32_zImage_file}"
     cp "${linux_dtb_file}" "${sdcard_fat32_dtb_file}"
 }
 
+# create_rootfs() ##############################################################
 create_rootfs() {
+    mkdir_if_not_exists "${rootfs_chroot_dir}"
+
     # extract ubuntu core rootfs
     pushd "${rootfs_chroot_dir}"
     sudo tar -xzpf "${rootfs_src_tgz_file}"
@@ -213,8 +259,9 @@ create_rootfs() {
     sudo cp "/etc/resolv.conf" "${rootfs_chroot_dir}/etc/resolv.conf"
 
     # the ubuntu core image is for armhf, not x86, so we need qemu to actually
-    # emulate the chroot (x86 cannot execute bash included in the rootfs, since
-    # it is for armhf)
+    # emulate the chroot (x86 cannot run bash executable included in the rootfs,
+    # since it is for armhf)
+    # dependencies : sudo apt-get install qemu-user-static
     sudo cp "/usr/bin/qemu-arm-static" "${rootfs_chroot_dir}/usr/bin/"
 
     # copy chroot configuration script to chroot directory
@@ -237,6 +284,7 @@ create_rootfs() {
     popd
 }
 
+# partition_sdcard() ###########################################################
 partition_sdcard() {
     # manually partitioning the sdcard
         # sudo fdisk /dev/sdx
@@ -252,6 +300,7 @@ partition_sdcard() {
             # /dev/sdb3        2048    4095    2048    1M a2 unknown
 
     # automatically partitioning the sdcard
+    # if scard does not have suitable partitions, then partition the device
     fdisk_output="$(sudo fdisk -l "${sdcard_dev}")"
     if [ "$(echo "${fdisk_output}" | grep -i -P "${sdcard_dev_fat32}.+b\s+W95 FAT32.*" | wc -l)" -eq 0 ] ||
        [ "$(echo "${fdisk_output}" | grep -i -P "${sdcard_dev_ext3}.+83\s+Linux.*" | wc -l)" -eq 0 ] ||
@@ -269,6 +318,9 @@ EOF
         sudo dd if="/dev/zero" of="${sdcard_dev}" bs=512 count=1
 
         # create partitions
+        # no need to specify the partition number for the first invocation of
+        # the "t" command in fdisk, because there is only 1 partition at this
+        # point
         echo -e "n\np\n3\n\n4095\nt\na2\nn\np\n1\n\n+32M\nt\n1\nb\nn\np\n2\n\n+512M\nt\n2\n83\nw\nq\n" | sudo fdisk "${sdcard_dev}"
     fi
 
@@ -277,28 +329,45 @@ EOF
     sudo mkfs.ext3 "${sdcard_dev_ext3}"
 }
 
+# write_sdcard() ###############################################################
 write_sdcard() {
-    sudo mkdir "${sdcard_dev_fat32_mount_point}"
-    sudo mkdir "${sdcard_dev_ext3_mount_point}"
+    # create mount point for sdcard in /tmp
+    sudo mkdir -p "${sdcard_dev_fat32_mount_point}"
+    sudo mkdir -p "${sdcard_dev_ext3_mount_point}"
 
+    # mount sdcard partitions
     sudo mount "${sdcard_dev_fat32}" "${sdcard_dev_fat32_mount_point}"
     sudo mount "${sdcard_dev_ext3}" "${sdcard_dev_ext3_mount_point}"
 
-    # writing
+    # preloader
     sudo dd if="${sdcard_a2_preloader_bin_file}" of="${sdcard_dev_a2}" bs=64K seek=0
+
+    # uboot
     sudo dd if="${sdcard_a2_uboot_img_file}" of="${sdcard_dev_a2}" bs=64K seek=4
+
+    # fpga .rbf, uboot .scr, linux zImage, linux .dtb
     sudo cp "${sdcard_fat32_dir}"/* "${sdcard_dev_fat32_mount_point}"
+
+    # linux rootfs
     pushd "${sdcard_dev_ext3_mount_point}"
     sudo tar -xzf "${sdcard_ext3_rootfs_tgz_file}"
     popd
+
+    # flush write buffers to target
     sudo sync
 
+    # unmount sdcard partitions
     sudo umount "${sdcard_dev_fat32_mount_point}"
     sudo umount "${sdcard_dev_ext3_mount_point}"
 
+    # delete mount points (were created in /tmp, so we can safely delete them
     sudo rm -rf "${sdcard_dev_fat32_mount_point}"
     sudo rm -rf "${sdcard_dev_ext3_mount_point}"
 }
+
+# Script execution #############################################################
+mkdir_if_not_exists "${sdcard_a2_dir}" \
+                    "${sdcard_fat32_dir}"
 
 compile_quartus_project
 compile_preloader_and_uboot
@@ -306,10 +375,12 @@ compile_linux
 create_rootfs
 
 if [ ! -b "${sdcard_dev}" ]; then
-    echo "Error: could not find block device at \"${sdcard_dev}\""
+    usage
+    echoerr "Error: could not find block device at \"${sdcard_dev}\""
     exit 1
 elif [ ! "$(echo "${sdcard_dev}" | grep -P "/dev/sd\w\s*$")" ]; then
-    echo "Error: must select a root drive (ex: /dev/sdb), not a subpartition (ex: /dev/sdb1)"
+    usage
+    echoerr "Error: must select a root drive (ex: /dev/sdb), not a subpartition (ex: /dev/sdb1)"
     exit 1
 fi
 
