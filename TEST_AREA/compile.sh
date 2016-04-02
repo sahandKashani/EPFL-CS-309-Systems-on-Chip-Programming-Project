@@ -32,25 +32,28 @@ uboot_dir="$(readlink -m "${preloader_dir}/uboot-socfpga")"
 uboot_script_file="$(readlink -m "${uboot_dir}/u-boot.script")"
 uboot_img_file="$(readlink -m "${uboot_dir}/u-boot.img")"
 
-linux_src_dir="$(readlink -m "sw/hps/linux")"
+linux_dir="$(readlink -m "sw/hps/linux")"
+linux_src_dir="$(readlink -m "${linux_dir}/source")"
 linux_kernel_mem_arg="768M"
 linux_zImage_file="$(readlink -m "${linux_src_dir}/arch/arm/boot/zImage")"
 linux_dtb_file="$(readlink -m "${linux_src_dir}/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dtb")"
 
-rootfs_dir="$(readlink -m sdcard/rootfs)"
-rootfs_src_tgz_file="$(readlink -m "sdcard/ubuntu-core-14.04.4-core-armhf.tar.gz")"
+rootfs_dir="${linux_dir}/rootfs"
+rootfs_chroot_dir="$(readlink -m ${rootfs_dir}/ubuntu-core-rootfs)"
+rootfs_src_tgz_file="$(readlink -m "${rootfs_dir}/ubuntu-core-14.04.4-core-armhf.tar.gz")"
+rootfs_config_script_file="${rootfs_dir}/rootfs_config.sh"
 
 sdcard_fat32_dir="$(readlink -m "sdcard/fat32")"
 sdcard_fat32_rbf_file="$(readlink -m "${sdcard_fat32_dir}/socfpga.rbf")"
 sdcard_fat32_uboot_scr_file="$(readlink -m "${sdcard_fat32_dir}/u-boot.scr")"
-sdcard_fat32_uboot_img_file="$(readlink -m "${sdcard_fat32_dir}/u-boot.img")"
 sdcard_fat32_zImage_file="$(readlink -m "${sdcard_fat32_dir}/zImage")"
 sdcard_fat32_dtb_file="$(readlink -m "${sdcard_fat32_dir}/socfpga.dtb")"
 
 sdcard_ext3_rootfs_tgz_file="$(readlink -m "sdcard/ext3_rootfs.tar.gz")"
 
 sdcard_a2_dir="$(readlink -m "sdcard/a2")"
-sdcard_a2_preloader_bin_file="${sdcard_a2_dir}/$(basename "${preloader_bin_file}")"
+sdcard_a2_preloader_bin_file="$(readlink -m "${sdcard_a2_dir}/$(basename "${preloader_bin_file}")")"
+sdcard_a2_uboot_img_file="$(readlink -m "${sdcard_a2_dir}/$(basename "${uboot_img_file}")")"
 
 sdcard_dev_fat32="${sdcard_dev}1"
 sdcard_dev_ext3="${sdcard_dev}2"
@@ -136,8 +139,8 @@ compile_preloader_and_uboot() {
     --bsp-dir "${preloader_dir}" \
     --settings "${preloader_settings_file}"
 
-    make -C "${preloader_dir}"
-    make -C "${preloader_dir}" uboot
+    make -j4 -C "${preloader_dir}"
+    make -j4 -C "${preloader_dir}" uboot
 
     cat <<EOF > "${uboot_script_file}"
 echo --- Programming FPGA ---
@@ -174,7 +177,7 @@ EOF
     # compile uboot script to binary form
     mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "${quartus_project_name}" -d "${uboot_script_file}" "${sdcard_fat32_uboot_scr_file}"
 
-    cp "${uboot_img_file}" "${sdcard_fat32_uboot_img_file}"
+    cp "${uboot_img_file}" "${sdcard_a2_uboot_img_file}"
     cp "${preloader_bin_file}" "${sdcard_a2_preloader_bin_file}"
 }
 
@@ -182,9 +185,9 @@ compile_linux() {
     export ARCH=arm
     export CROSS_COMPILE=arm-linux-gnueabihf-
 
-    make -C "${linux_src_dir}" socfpga_defconfig
-    make -C "${linux_src_dir}" zImage
-    make -C "${linux_src_dir}" socfpga_cyclone5_de0_sockit.dtb
+    make -j4 -C "${linux_src_dir}" socfpga_defconfig
+    make -j4 -C "${linux_src_dir}" zImage
+    make -j4 -C "${linux_src_dir}" socfpga_cyclone5_de0_sockit.dtb
 
     cp "${linux_zImage_file}" "${sdcard_fat32_zImage_file}"
     cp "${linux_dtb_file}" "${sdcard_fat32_dtb_file}"
@@ -192,39 +195,45 @@ compile_linux() {
 
 create_rootfs() {
     # extract ubuntu core rootfs
-    pushd "${rootfs_dir}"
+    pushd "${rootfs_chroot_dir}"
     sudo tar -xzpf "${rootfs_src_tgz_file}"
     popd
 
     # mount directories needed for chroot environment to work
-    sudo mount -o bind "/dev" "${rootfs_dir}/dev"
-    sudo mount -t sysfs "/sys" "${rootfs_dir}/sys"
-    sudo mount -t proc "/proc" "${rootfs_dir}/proc"
+    sudo mount -o bind "/dev" "${rootfs_chroot_dir}/dev"
+    sudo mount -t sysfs "/sys" "${rootfs_chroot_dir}/sys"
+    sudo mount -t proc "/proc" "${rootfs_chroot_dir}/proc"
 
     # chroot environment needs to know what is mounted, so we copy over
     # /proc/mounts from the host for this temporarily
-    sudo cp "/proc/mounts" "${rootfs_dir}/etc/mtab"
+    sudo cp "/proc/mounts" "${rootfs_chroot_dir}/etc/mtab"
 
     # chroot environment needs network connectivity, so we copy /etc/resolv.conf
     # so DNS name resolution can occur
-    sudo cp "/etc/resolv.conf" "${rootfs_dir}/etc/resolv.conf"
+    sudo cp "/etc/resolv.conf" "${rootfs_chroot_dir}/etc/resolv.conf"
 
     # the ubuntu core image is for armhf, not x86, so we need qemu to actually
     # emulate the chroot (x86 cannot execute bash included in the rootfs, since
     # it is for armhf)
-    sudo cp "/usr/bin/qemu-arm-static" "${rootfs_dir}/usr/bin/"
+    sudo cp "/usr/bin/qemu-arm-static" "${rootfs_chroot_dir}/usr/bin/"
+
+    # copy chroot configuration script to chroot directory
+    sudo cp "${rootfs_config_script_file}" "${rootfs_chroot_dir}"
 
     # perform chroot and configure rootfs through script
-    sudo chroot "${rootfs_dir}" ./rootfs_config.sh
+    sudo chroot "${rootfs_chroot_dir}" ./"$(basename "${rootfs_config_script_file}")"
+
+    # remove chroot configuration script to chroot directory
+    sudo rm "${rootfs_chroot_dir}/$(basename "${rootfs_config_script_file}")"
 
     # unmount host directories temporarily used for chroot
-    sudo umount "${rootfs_dir}/dev"
-    sudo umount "${rootfs_dir}/sys"
-    sudo umount "${rootfs_dir}/proc"
+    sudo umount "${rootfs_chroot_dir}/dev"
+    sudo umount "${rootfs_chroot_dir}/sys"
+    sudo umount "${rootfs_chroot_dir}/proc"
 
     # create archive of updated rootfs
-    pushd "${rootfs_dir}"
-    sudo tar -czpf "${sdcard_ext3_rootfs_tgz_file}" . --exclude="rootfs_config.sh"
+    pushd "${rootfs_chroot_dir}"
+    sudo tar -czpf "${sdcard_ext3_rootfs_tgz_file}" .
     popd
 }
 
@@ -277,9 +286,11 @@ write_sdcard() {
 
     # writing
     sudo dd if="${sdcard_a2_preloader_bin_file}" of="${sdcard_dev_a2}" bs=64K seek=0
-    # sudo dd if="${sdcard_fat32_uboot_img_file}" of="${sdcard_dev_a2}" bs=64K seek=4
+    sudo dd if="${sdcard_a2_uboot_img_file}" of="${sdcard_dev_a2}" bs=64K seek=4
     sudo cp "${sdcard_fat32_dir}"/* "${sdcard_dev_fat32_mount_point}"
-    sudo tar -xzf "${sdcard_ext3_rootfs_tgz_file}" -C "${sdcard_dev_ext3_mount_point}"
+    pushd "${sdcard_dev_ext3_mount_point}"
+    sudo tar -xzf "${sdcard_ext3_rootfs_tgz_file}"
+    popd
     sudo sync
 
     sudo umount "${sdcard_dev_fat32_mount_point}"
