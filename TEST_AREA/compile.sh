@@ -22,6 +22,7 @@ uboot_script_file="$(readlink -m "${uboot_dir}/u-boot.script")"
 uboot_img_file="$(readlink -m "${uboot_dir}/u-boot.img")"
 
 linux_dir="$(readlink -m "sw/hps/linux")"
+linux_src_git_repo="git@github.com:torvalds/linux.git"
 linux_src_dir="$(readlink -m "${linux_dir}/source")"
 linux_kernel_mem_arg="768M"
 linux_zImage_file="$(readlink -m "${linux_src_dir}/arch/arm/boot/zImage")"
@@ -29,6 +30,7 @@ linux_dtb_file="$(readlink -m "${linux_src_dir}/arch/arm/boot/dts/socfpga_cyclon
 
 rootfs_dir="${linux_dir}/rootfs"
 rootfs_chroot_dir="$(readlink -m ${rootfs_dir}/ubuntu-core-rootfs)"
+rootfs_src_tgz_link="http://cdimage.ubuntu.com/ubuntu-core/releases/14.04/release/ubuntu-core-14.04.4-core-armhf.tar.gz"
 rootfs_src_tgz_file="$(readlink -m "${rootfs_dir}/ubuntu-core-14.04.4-core-armhf.tar.gz")"
 rootfs_config_script_file="${rootfs_dir}/rootfs_config.sh"
 
@@ -213,7 +215,7 @@ EOF
 compile_linux() {
     # if linux source tree doesn't exist, then download it
     if [ ! -d "${linux_src_dir}" ]; then
-        git clone "git@github.com:torvalds/linux.git" "${linux_src_dir}"
+        git clone "${linux_src_git_repo}" "${linux_src_dir}"
     fi
 
     # compile for the ARM architecture
@@ -238,6 +240,10 @@ compile_linux() {
 
 # create_rootfs() ##############################################################
 create_rootfs() {
+    if [ ! -f "${rootfs_src_tgz_file}" ]; then
+        wget "${rootfs_src_tgz_link}" -O "${rootfs_src_tgz_file}"
+    fi
+
     mkdir_if_not_exists "${rootfs_chroot_dir}"
 
     # extract ubuntu core rootfs
