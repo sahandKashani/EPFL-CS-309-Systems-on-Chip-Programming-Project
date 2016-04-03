@@ -52,8 +52,10 @@ exec /sbin/getty -L 115200 ttyS0 vt102
 EOF
 
 # create user account (called "psoc" here)
-adduser psoc
+adduser --disabled-password --gecos "" psoc
 
 # ubuntu requires the admin to be part of the "adm" and "sudo" groups
 addgroup psoc adm
 addgroup psoc sudo
+
+# apt-get install networking net-tools

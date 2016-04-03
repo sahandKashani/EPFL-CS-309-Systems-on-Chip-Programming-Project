@@ -122,7 +122,7 @@ compile_preloader_and_uboot() {
     --set spl.boot.BOOT_FROM_SDMMC "1" \
     --set spl.boot.CHECKSUM_NEXT_IMAGE "1" \
     --set spl.boot.EXE_ON_FPGA "0" \
-    --set spl.boot.FAT_BOOT_PARTITION "1" \
+    --set spl.boot.FAT_BOOT_PARTITION "0" \
     --set spl.boot.FAT_LOAD_PAYLOAD_NAME "$(basename "${uboot_img_file}")" \
     --set spl.boot.FAT_SUPPORT "1" \
     --set spl.boot.FPGA_DATA_BASE "0xffff0000" \
