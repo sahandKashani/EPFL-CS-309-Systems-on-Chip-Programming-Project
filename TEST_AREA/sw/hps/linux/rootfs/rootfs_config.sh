@@ -61,5 +61,3 @@ useradd -m -p "${encrypted_password}" -s /bin/bash "${username}"
 # ubuntu requires the admin to be part of the "adm" and "sudo" groups
 addgroup psoc adm
 addgroup psoc sudo
-
-# apt-get install networking net-tools

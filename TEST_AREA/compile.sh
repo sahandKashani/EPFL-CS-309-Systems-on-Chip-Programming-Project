@@ -222,6 +222,13 @@ compile_linux() {
         git clone "${linux_src_git_repo}" "${linux_src_dir}"
     fi
 
+    # checkout the following commit (tested and working)
+    # commit 9735a22799b9214d17d3c231fe377fc852f042e9
+    # Author: Linus Torvalds <torvalds@linux-foundation.org>
+    # Date:   Sun Apr 3 09:09:40 2016 -0500
+
+    #     Linux 4.6-rc2
+
     # compile for the ARM architecture
     export ARCH=arm
 
