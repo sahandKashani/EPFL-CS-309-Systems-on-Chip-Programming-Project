@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # locale
 localedef -i en_US -c -f UTF-8 en_US.UTF-8
@@ -51,8 +51,12 @@ exec /sbin/getty -L 115200 ttyS0 vt102
 # exec /sbin/getty -l /usr/bin/autologin -n 115200 ttyS0
 EOF
 
-# create user account (called "psoc" here)
-adduser --disabled-password --gecos "" psoc
+# create user "psoc" with password "1234"
+username="psoc"
+password="1234"
+# encrypted password (needed for useradd)
+encrypted_password="$(perl -e 'printf("%s\n", crypt($ARGV[0], "password"))' "${password}")"
+useradd -m -p "${encrypted_password}" -s /bin/bash "${username}"
 
 # ubuntu requires the admin to be part of the "adm" and "sudo" groups
 addgroup psoc adm
