@@ -69,18 +69,17 @@ echoerr() {
     cat <<< "${@}" 1>&2;
 }
 
-# mkdir_if_not_exists() ########################################################
-mkdir_if_not_exists() {
-    for d in "${@}"; do
-        if [ ! -d "${d}" ]; then
-            mkdir -p "${d}"
-        fi
-    done
-}
-
 # compile_quartus_project() ####################################################
 compile_quartus_project() {
     pushd "${quartus_dir}"
+
+    rm -rf "c5_pin_model_dump.txt" \
+           "db/" \
+           "hps_isw_handoff/" \
+           "hps_sdram_p0_all_pins.txt" \
+           "incremental_db/" \
+           "output_files" \
+           "${sdcard_fat32_rbf_file}"
 
     # Analysis and synthesis
     quartus_map "${quartus_project_name}"
@@ -105,7 +104,12 @@ compile_quartus_project() {
 
 # compile_preloader_and_uboot() ################################################
 compile_preloader_and_uboot() {
-    mkdir_if_not_exists "${preloader_dir}"
+    rm -rf "${preloader_dir}" \
+           "${sdcard_fat32_uboot_scr_file}" \
+           "${sdcard_a2_uboot_img_file}" \
+           "${sdcard_a2_preloader_bin_file}"
+
+    mkdir -p "${preloader_dir}"
 
     # create bsp settings file
     bsp-create-settings \
@@ -122,9 +126,9 @@ compile_preloader_and_uboot() {
     --set spl.boot.BOOT_FROM_SDMMC "1" \
     --set spl.boot.CHECKSUM_NEXT_IMAGE "1" \
     --set spl.boot.EXE_ON_FPGA "0" \
-    --set spl.boot.FAT_BOOT_PARTITION "0" \
+    --set spl.boot.FAT_BOOT_PARTITION "1" \
     --set spl.boot.FAT_LOAD_PAYLOAD_NAME "$(basename "${uboot_img_file}")" \
-    --set spl.boot.FAT_SUPPORT "1" \
+    --set spl.boot.FAT_SUPPORT "0" \
     --set spl.boot.FPGA_DATA_BASE "0xffff0000" \
     --set spl.boot.FPGA_DATA_MAX_SIZE "0x10000" \
     --set spl.boot.FPGA_MAX_SIZE "0x10000" \
@@ -244,7 +248,10 @@ create_rootfs() {
         wget "${rootfs_src_tgz_link}" -O "${rootfs_src_tgz_file}"
     fi
 
-    mkdir_if_not_exists "${rootfs_chroot_dir}"
+    sudo rm -rf "${rootfs_chroot_dir}" \
+                "${sdcard_ext3_rootfs_tgz_file}"
+
+    mkdir -p "${rootfs_chroot_dir}"
 
     # extract ubuntu core rootfs
     pushd "${rootfs_chroot_dir}"
@@ -332,7 +339,7 @@ EOF
 
     # create filesystems
     sudo mkfs.vfat "${sdcard_dev_fat32}"
-    sudo mkfs.ext3 "${sdcard_dev_ext3}"
+    sudo mkfs.ext3 -F "${sdcard_dev_ext3}"
 }
 
 # write_sdcard() ###############################################################
@@ -372,8 +379,13 @@ write_sdcard() {
 }
 
 # Script execution #############################################################
-mkdir_if_not_exists "${sdcard_a2_dir}" \
-                    "${sdcard_fat32_dir}"
+if [ ! -d "${sdcard_a2_dir}" ]; then
+    mkdir -p "${sdcard_a2_dir}"
+fi
+
+if [ ! -d "${sdcard_fat32_dir}" ]; then
+    mkdir -p "${sdcard_fat32_dir}"
+fi
 
 compile_quartus_project
 compile_preloader_and_uboot
