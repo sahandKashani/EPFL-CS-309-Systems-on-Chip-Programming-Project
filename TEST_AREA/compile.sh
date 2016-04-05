@@ -17,9 +17,10 @@ preloader_settings_file="$(readlink -m "${preloader_dir}/settings.bsp")"
 preloader_source_tgz_file="$(readlink -m "${SOCEDS_DEST_ROOT}/host_tools/altera/preloader/uboot-socfpga.tar.gz")"
 preloader_bin_file="${preloader_dir}/preloader-mkpimage.bin"
 
-uboot_dir="$(readlink -m "${preloader_dir}/uboot-socfpga")"
-uboot_script_file="$(readlink -m "${uboot_dir}/u-boot.script")"
-uboot_img_file="$(readlink -m "${uboot_dir}/u-boot.img")"
+uboot_src_dir="$(readlink -m "sw/hps/u-boot")"
+uboot_src_git_repo="git://git.denx.de/u-boot.git"
+uboot_script_file="$(readlink -m "${uboot_src_dir}/u-boot.script")"
+uboot_img_file="$(readlink -m "${uboot_src_dir}/u-boot.img")"
 
 linux_dir="$(readlink -m "sw/hps/linux")"
 linux_src_git_repo="git@github.com:torvalds/linux.git"
@@ -103,11 +104,9 @@ compile_quartus_project() {
     quartus_cpf -c "${quartus_sof_file}" "${sdcard_fat32_rbf_file}"
 }
 
-# compile_preloader_and_uboot() ################################################
-compile_preloader_and_uboot() {
+# compile_preloader() ##########################################################
+compile_preloader() {
     rm -rf "${preloader_dir}" \
-           "${sdcard_fat32_uboot_scr_file}" \
-           "${sdcard_a2_uboot_img_file}" \
            "${sdcard_a2_preloader_bin_file}"
 
     mkdir -p "${preloader_dir}"
@@ -172,8 +171,31 @@ compile_preloader_and_uboot() {
     # compile preloader
     make -j4 -C "${preloader_dir}"
 
+    # copy artifacts to associated sdcard directory
+    cp "${preloader_bin_file}" "${sdcard_a2_preloader_bin_file}"
+}
+
+# compile_uboot ################################################################
+compile_uboot() {
+    rm -rf "${sdcard_fat32_uboot_scr_file}" \
+           "${sdcard_a2_uboot_img_file}"
+
+    # if uboot source tree doesn't exist, then download it
+    if [ ! -d "${uboot_src_dir}" ]; then
+        git clone "${uboot_src_git_repo}" "${uboot_src_dir}"
+    fi
+
+    # use cross compiler instead of standard x86 version of gcc
+    export CROSS_COMPILE=arm-linux-gnueabihf-
+
+    # clean up source tree
+    make -C "${uboot_src_dir}" distclean
+
+    # create uboot config for socfpga_cyclone5 architecture
+    make -C "${uboot_src_dir}" socfpga_cyclone5_config
+
     # compile uboot
-    make -j4 -C "${preloader_dir}" uboot
+    make -j4 -C "${uboot_src_dir}"
 
     # create uboot script
     cat <<EOF > "${uboot_script_file}"
@@ -213,7 +235,6 @@ EOF
 
     # copy artifacts to associated sdcard directory
     cp "${uboot_img_file}" "${sdcard_a2_uboot_img_file}"
-    cp "${preloader_bin_file}" "${sdcard_a2_preloader_bin_file}"
 }
 
 # compile_linux() ##############################################################
@@ -222,6 +243,12 @@ compile_linux() {
     if [ ! -d "${linux_src_dir}" ]; then
         git clone "${linux_src_git_repo}" "${linux_src_dir}"
     fi
+
+    # compile for the ARM architecture
+    export ARCH=arm
+
+    # use cross compiler instead of standard x86 version of gcc
+    export CROSS_COMPILE=arm-linux-gnueabihf-
 
     # clean up source tree
     make -C "${linux_src_dir}" distclean
@@ -234,14 +261,8 @@ compile_linux() {
     #     Linux 4.6-rc2
     git checkout 9735a22799b9214d17d3c231fe377fc852f042e9
 
-    # compile for the ARM architecture
-    export ARCH=arm
-
-    # use cross compiler instead of standard x86 version of gcc
-    export CROSS_COMPILE=arm-linux-gnueabihf-
-
     # create kernel config for socfpga architecture
-    make -j4 -C "${linux_src_dir}" socfpga_defconfig
+    make -C "${linux_src_dir}" socfpga_defconfig
 
     # compile zImage
     make -j4 -C "${linux_src_dir}" zImage
@@ -400,7 +421,8 @@ if [ ! -d "${sdcard_fat32_dir}" ]; then
 fi
 
 compile_quartus_project
-compile_preloader_and_uboot
+compile_preloader
+compile_uboot
 compile_linux
 create_rootfs
 
