@@ -79,6 +79,7 @@ compile_quartus_project() {
            "hps_sdram_p0_all_pins.txt" \
            "incremental_db/" \
            "output_files" \
+           "soc_system.sopcinfo" \
            "${sdcard_fat32_rbf_file}"
 
     # Analysis and synthesis
@@ -222,12 +223,16 @@ compile_linux() {
         git clone "${linux_src_git_repo}" "${linux_src_dir}"
     fi
 
+    # clean up source tree
+    make -C "${linux_src_dir}" distclean
+
     # checkout the following commit (tested and working)
     # commit 9735a22799b9214d17d3c231fe377fc852f042e9
     # Author: Linus Torvalds <torvalds@linux-foundation.org>
     # Date:   Sun Apr 3 09:09:40 2016 -0500
-
+    #
     #     Linux 4.6-rc2
+    git checkout 9735a22799b9214d17d3c231fe377fc852f042e9
 
     # compile for the ARM architecture
     export ARCH=arm
