@@ -72,8 +72,10 @@ echoerr() {
 
 # compile_quartus_project() ####################################################
 compile_quartus_project() {
+    # change working directory to quartus directory
     pushd "${quartus_dir}"
 
+    # delete old artifacts
     rm -rf "c5_pin_model_dump.txt" \
            "db/" \
            "hps_isw_handoff/" \
@@ -98,18 +100,24 @@ compile_quartus_project() {
     # Assembler
     quartus_asm "${quartus_project_name}"
 
-    popd
-
     # convert .sof to .rbf in associated sdcard directory
     quartus_cpf -c "${quartus_sof_file}" "${sdcard_fat32_rbf_file}"
+
+    # change working directory back to script directory
+    popd
 }
 
 # compile_preloader() ##########################################################
 compile_preloader() {
+    # delete old artifacts
     rm -rf "${preloader_dir}" \
            "${sdcard_a2_preloader_bin_file}"
 
+    # create directory for preloader
     mkdir -p "${preloader_dir}"
+
+    # change working directory to preloader directory
+    pushd "${preloader_dir}"
 
     # create bsp settings file
     bsp-create-settings \
@@ -169,14 +177,18 @@ compile_preloader() {
     --settings "${preloader_settings_file}"
 
     # compile preloader
-    make -j4 -C "${preloader_dir}"
+    make -j4
 
     # copy artifacts to associated sdcard directory
     cp "${preloader_bin_file}" "${sdcard_a2_preloader_bin_file}"
+
+    # change working directory back to script directory
+    popd
 }
 
 # compile_uboot ################################################################
 compile_uboot() {
+    # delete old artifacts
     rm -rf "${sdcard_fat32_uboot_scr_file}" \
            "${sdcard_a2_uboot_img_file}"
 
@@ -185,17 +197,29 @@ compile_uboot() {
         git clone "${uboot_src_git_repo}" "${uboot_src_dir}"
     fi
 
+    # change working directory to uboot source tree directory
+    pushd "${uboot_src_dir}"
+
     # use cross compiler instead of standard x86 version of gcc
     export CROSS_COMPILE=arm-linux-gnueabihf-
 
     # clean up source tree
-    make -C "${uboot_src_dir}" distclean
+    make distclean
+
+    # checkout the following commit (tested and working):
+    # commit 4ed6ed3c27a069a00c8a557d606a05276cc4653e
+    # Merge: 7e10a7c 07654ba
+    # Author: Tom Rini <trini@konsulko.com>
+    # Date:   Mon Apr 4 14:34:09 2016 -0400
+    #
+    #     Merge branch 'master' of git://www.denx.de/git/u-boot-microblaze
+    git checkout 4ed6ed3c27a069a00c8a557d606a05276cc4653e
 
     # create uboot config for socfpga_cyclone5 architecture
-    make -C "${uboot_src_dir}" socfpga_cyclone5_config
+    make socfpga_cyclone5_config
 
     # compile uboot
-    make -j4 -C "${uboot_src_dir}"
+    make -j4
 
     # create uboot script
     cat <<EOF > "${uboot_script_file}"
@@ -235,6 +259,9 @@ EOF
 
     # copy artifacts to associated sdcard directory
     cp "${uboot_img_file}" "${sdcard_a2_uboot_img_file}"
+
+    # change working directory back to script directory
+    popd
 }
 
 # compile_linux() ##############################################################
@@ -244,6 +271,9 @@ compile_linux() {
         git clone "${linux_src_git_repo}" "${linux_src_dir}"
     fi
 
+    # change working directory to linux source tree directory
+    pushd "${linux_src_dir}"
+
     # compile for the ARM architecture
     export ARCH=arm
 
@@ -251,9 +281,9 @@ compile_linux() {
     export CROSS_COMPILE=arm-linux-gnueabihf-
 
     # clean up source tree
-    make -C "${linux_src_dir}" distclean
+    make distclean
 
-    # checkout the following commit (tested and working)
+    # checkout the following commit (tested and working):
     # commit 9735a22799b9214d17d3c231fe377fc852f042e9
     # Author: Linus Torvalds <torvalds@linux-foundation.org>
     # Date:   Sun Apr 3 09:09:40 2016 -0500
@@ -262,28 +292,34 @@ compile_linux() {
     git checkout 9735a22799b9214d17d3c231fe377fc852f042e9
 
     # create kernel config for socfpga architecture
-    make -C "${linux_src_dir}" socfpga_defconfig
+    make socfpga_defconfig
 
     # compile zImage
-    make -j4 -C "${linux_src_dir}" zImage
+    make -j4 zImage
 
     # compile device tree
-    make -j4 -C "${linux_src_dir}" socfpga_cyclone5_de0_sockit.dtb
+    make -j4 socfpga_cyclone5_de0_sockit.dtb
 
     # copy artifacts to associated sdcard directory
     cp "${linux_zImage_file}" "${sdcard_fat32_zImage_file}"
     cp "${linux_dtb_file}" "${sdcard_fat32_dtb_file}"
+
+    # change working directory back to script directory
+    popd
 }
 
 # create_rootfs() ##############################################################
 create_rootfs() {
+    # if rootfs tarball doesn't exist, then download it
     if [ ! -f "${rootfs_src_tgz_file}" ]; then
         wget "${rootfs_src_tgz_link}" -O "${rootfs_src_tgz_file}"
     fi
 
+    # delete old artifacts
     sudo rm -rf "${rootfs_chroot_dir}" \
                 "${sdcard_ext3_rootfs_tgz_file}"
 
+    # create dir to extract rootfs
     mkdir -p "${rootfs_chroot_dir}"
 
     # extract ubuntu core rootfs
