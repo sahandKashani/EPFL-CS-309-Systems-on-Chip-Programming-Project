@@ -11,6 +11,8 @@ quartus_dir="$(readlink -m "hw/quartus")"
 quartus_project_name="$(basename "$(find "${quartus_dir}" -name "*.qpf")" .qpf)"
 quartus_sof_file="$(readlink -m "${quartus_dir}/output_files/${quartus_project_name}.sof")"
 
+fpga_device_part_number="5CSEMA4U23C6"
+
 preloader_dir="$(readlink -m "sw/hps/preloader")"
 preloader_settings_dir="$(readlink -m "${quartus_dir}/hps_isw_handoff/soc_system_hps_0")"
 preloader_settings_file="$(readlink -m "${preloader_dir}/settings.bsp")"
@@ -81,9 +83,13 @@ compile_quartus_project() {
            "hps_isw_handoff/" \
            "hps_sdram_p0_all_pins.txt" \
            "incremental_db/" \
-           "output_files" \
+           "output_files/" \
            "soc_system.sopcinfo" \
+           "soc_system/" \
+           "${quartus_project_name}.qws" \
            "${sdcard_fat32_rbf_file}"
+
+    qsys-generate "soc_system.qsys" --synthesis=VHDL --output-directory="soc_system/" --part="${fpga_device_part_number}"
 
     # Analysis and synthesis
     quartus_map "${quartus_project_name}"
