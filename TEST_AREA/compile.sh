@@ -377,7 +377,7 @@ partition_sdcard() {
     # manually partitioning the sdcard
         # sudo fdisk /dev/sdx
             # use the following commands
-            # n p 3 <default> 4095  t 3 a2 (2048 is default first sector)
+            # n p 3 <default> 4095  t   a2 (2048 is default first sector)
             # n p 1 <default> +32M  t 1  b (4096 is default first sector)
             # n p 2 <default> +512M t 2 83 (69632 is default first sector)
             # w
