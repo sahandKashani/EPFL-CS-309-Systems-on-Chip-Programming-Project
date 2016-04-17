@@ -49,9 +49,19 @@ sdcard_ext3_rootfs_tgz_file="$(readlink -m "sdcard/ext3_rootfs.tar.gz")"
 sdcard_a2_dir="$(readlink -m "sdcard/a2")"
 sdcard_a2_preloader_bin_file="$(readlink -m "${sdcard_a2_dir}/$(basename "${preloader_bin_file}")")"
 
-sdcard_dev_fat32="${sdcard_dev}1"
-sdcard_dev_ext3="${sdcard_dev}2"
-sdcard_dev_a2="${sdcard_dev}3"
+if [ "$(echo "${sdcard_dev}" | grep -P "/dev/sd\w.*$")" ]; then
+    sdcard_dev_fat32_id="1"
+    sdcard_dev_ext3_id="2"
+    sdcard_dev_a2_id="3"
+elif [ "$(echo "${sdcard_dev}" | grep -P "/dev/mmcblk\w.*$")" ]; then
+    sdcard_dev_fat32_id="p1"
+    sdcard_dev_ext3_id="p2"
+    sdcard_dev_a2_id="p3"
+fi
+
+sdcard_dev_fat32="${sdcard_dev}${sdcard_dev_fat32_id}"
+sdcard_dev_ext3="${sdcard_dev}${sdcard_dev_ext3_id}"
+sdcard_dev_a2="${sdcard_dev}${sdcard_dev_a2_id}"
 sdcard_dev_fat32_mount_point="/tmp/${$}-fat32" # prepend PID for uniqueness
 sdcard_dev_ext3_mount_point="/tmp/${$}-ext3" # prepend PID for uniqueness
 
