@@ -59,5 +59,5 @@ encrypted_password="$(perl -e 'printf("%s\n", crypt($ARGV[0], "password"))' "${p
 useradd -m -p "${encrypted_password}" -s /bin/bash "${username}"
 
 # ubuntu requires the admin to be part of the "adm" and "sudo" groups
-addgroup psoc adm
-addgroup psoc sudo
+addgroup ${username} adm
+addgroup ${username} sudo
