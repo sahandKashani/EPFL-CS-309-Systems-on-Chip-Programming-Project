@@ -49,6 +49,9 @@ sdcard_ext3_rootfs_tgz_file="$(readlink -m "sdcard/ext3_rootfs.tar.gz")"
 sdcard_a2_dir="$(readlink -m "sdcard/a2")"
 sdcard_a2_preloader_bin_file="$(readlink -m "${sdcard_a2_dir}/$(basename "${preloader_bin_file}")")"
 
+sdcard_partition_size_fat32="32M"
+sdcard_partition_size_linux="512M"
+
 if [ "$(echo "${sdcard_dev}" | grep -P "/dev/sd\w.*$")" ]; then
     sdcard_dev_fat32_id="1"
     sdcard_dev_ext3_id="2"
@@ -68,12 +71,12 @@ sdcard_dev_ext3_mount_point="/tmp/${$}-ext3" # prepend PID for uniqueness
 # usage() ######################################################################
 usage() {
     cat <<EOF
-===================================================================
+===================================================================================
 usage: compile.sh [sdcard_device]
 
 positional arguments:
-    sdcard_device    path to sdcard device file    [ex: "/dev/sdb"]
-===================================================================
+    sdcard_device    path to sdcard device file    [ex: "/dev/sdb", "/dev/mmcblk0"]
+===================================================================================
 EOF
 }
 
@@ -396,6 +399,8 @@ partition_sdcard() {
             # /dev/sdb1        4096   69631   65536   32M  b W95 FAT32
             # /dev/sdb2       69632 1118207 1048576  512M 83 Linux
             # /dev/sdb3        2048    4095    2048    1M a2 unknown
+        # note that you can choose any size for the FAT32 and Linux partitions,
+        # but the a2 partition must be 1M.
 
     # automatically partitioning the sdcard
     # if scard does not have suitable partitions, then partition the device
@@ -419,7 +424,7 @@ EOF
         # no need to specify the partition number for the first invocation of
         # the "t" command in fdisk, because there is only 1 partition at this
         # point
-        echo -e "n\np\n3\n\n4095\nt\na2\nn\np\n1\n\n+32M\nt\n1\nb\nn\np\n2\n\n+512M\nt\n2\n83\nw\nq\n" | sudo fdisk "${sdcard_dev}"
+        echo -e "n\np\n3\n\n4095\nt\na2\nn\np\n1\n\n+${sdcard_partition_size_fat32}\nt\n1\nb\nn\np\n2\n\n+${sdcard_partition_size_linux}\nt\n2\n83\nw\nq\n" | sudo fdisk "${sdcard_dev}"
     fi
 
     # create filesystems
