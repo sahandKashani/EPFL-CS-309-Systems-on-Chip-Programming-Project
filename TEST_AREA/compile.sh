@@ -39,6 +39,7 @@ rootfs_config_script_file="${rootfs_dir}/rootfs_config.sh"
 
 sdcard_fat32_dir="$(readlink -m "sdcard/fat32")"
 sdcard_fat32_rbf_file="$(readlink -m "${sdcard_fat32_dir}/socfpga.rbf")"
+sdcard_fat32_uboot_img_file="$(readlink -m "${sdcard_fat32_dir}/$(basename "${uboot_img_file}")")"
 sdcard_fat32_uboot_scr_file="$(readlink -m "${sdcard_fat32_dir}/u-boot.scr")"
 sdcard_fat32_zImage_file="$(readlink -m "${sdcard_fat32_dir}/zImage")"
 sdcard_fat32_dtb_file="$(readlink -m "${sdcard_fat32_dir}/socfpga.dtb")"
@@ -47,7 +48,6 @@ sdcard_ext3_rootfs_tgz_file="$(readlink -m "sdcard/ext3_rootfs.tar.gz")"
 
 sdcard_a2_dir="$(readlink -m "sdcard/a2")"
 sdcard_a2_preloader_bin_file="$(readlink -m "${sdcard_a2_dir}/$(basename "${preloader_bin_file}")")"
-sdcard_a2_uboot_img_file="$(readlink -m "${sdcard_a2_dir}/$(basename "${uboot_img_file}")")"
 
 sdcard_dev_fat32="${sdcard_dev}1"
 sdcard_dev_ext3="${sdcard_dev}2"
@@ -142,7 +142,7 @@ compile_preloader() {
     --set spl.boot.EXE_ON_FPGA "0" \
     --set spl.boot.FAT_BOOT_PARTITION "1" \
     --set spl.boot.FAT_LOAD_PAYLOAD_NAME "$(basename "${uboot_img_file}")" \
-    --set spl.boot.FAT_SUPPORT "0" \
+    --set spl.boot.FAT_SUPPORT "1" \
     --set spl.boot.FPGA_DATA_BASE "0xffff0000" \
     --set spl.boot.FPGA_DATA_MAX_SIZE "0x10000" \
     --set spl.boot.FPGA_MAX_SIZE "0x10000" \
@@ -196,7 +196,7 @@ compile_preloader() {
 compile_uboot() {
     # delete old artifacts
     rm -rf "${sdcard_fat32_uboot_scr_file}" \
-           "${sdcard_a2_uboot_img_file}"
+           "${sdcard_fat32_uboot_img_file}"
 
     # if uboot source tree doesn't exist, then download it
     if [ ! -d "${uboot_src_dir}" ]; then
@@ -264,7 +264,7 @@ EOF
     mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "${quartus_project_name}" -d "${uboot_script_file}" "${sdcard_fat32_uboot_scr_file}"
 
     # copy artifacts to associated sdcard directory
-    cp "${uboot_img_file}" "${sdcard_a2_uboot_img_file}"
+    cp "${uboot_img_file}" "${sdcard_fat32_uboot_img_file}"
 
     # change working directory back to script directory
     popd
@@ -430,10 +430,7 @@ write_sdcard() {
     # preloader
     sudo dd if="${sdcard_a2_preloader_bin_file}" of="${sdcard_dev_a2}" bs=64K seek=0
 
-    # uboot
-    sudo dd if="${sdcard_a2_uboot_img_file}" of="${sdcard_dev_a2}" bs=64K seek=4
-
-    # fpga .rbf, uboot .scr, linux zImage, linux .dtb
+    # fpga .rbf, uboot .img, uboot .scr, linux zImage, linux .dtb
     sudo cp "${sdcard_fat32_dir}"/* "${sdcard_dev_fat32_mount_point}"
 
     # linux rootfs
@@ -471,10 +468,6 @@ create_rootfs
 if [ ! -b "${sdcard_dev}" ]; then
     usage
     echoerr "Error: could not find block device at \"${sdcard_dev}\""
-    exit 1
-elif [ ! "$(echo "${sdcard_dev}" | grep -P "/dev/sd\w\s*$")" ]; then
-    usage
-    echoerr "Error: must select a root drive (ex: /dev/sdb), not a subpartition (ex: /dev/sdb1)"
     exit 1
 fi
 
