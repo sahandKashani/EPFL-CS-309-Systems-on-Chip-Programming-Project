@@ -72,7 +72,7 @@ sdcard_dev_ext3_mount_point="/tmp/${$}-ext3" # prepend PID for uniqueness
 usage() {
     cat <<EOF
 ===================================================================================
-usage: compile.sh [sdcard_device]
+usage: create_linux_system.sh [sdcard_device]
 
 positional arguments:
     sdcard_device    path to sdcard device file    [ex: "/dev/sdb", "/dev/mmcblk0"]
@@ -317,7 +317,7 @@ compile_linux() {
     make -j2 zImage
 
     # compile device tree
-    make -j2 socfpga_cyclone5_de0_sockit.dtb
+    make -j2 "$(basename "${linux_dtb_file}")"
 
     # copy artifacts to associated sdcard directory
     cp "${linux_zImage_file}" "${sdcard_fat32_zImage_file}"
@@ -375,9 +375,9 @@ create_rootfs() {
     sudo rm "${rootfs_chroot_dir}/$(basename "${rootfs_config_script_file}")"
 
     # unmount host directories temporarily used for chroot
-    sudo umount "${rootfs_chroot_dir}/dev"
-    sudo umount "${rootfs_chroot_dir}/sys"
     sudo umount "${rootfs_chroot_dir}/proc"
+    sudo umount "${rootfs_chroot_dir}/sys"
+    sudo umount "${rootfs_chroot_dir}/dev"
 
     # create archive of updated rootfs
     pushd "${rootfs_chroot_dir}"
