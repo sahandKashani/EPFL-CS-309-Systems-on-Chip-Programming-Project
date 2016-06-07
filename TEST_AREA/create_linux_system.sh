@@ -9,7 +9,7 @@ quartus_dir="$(readlink -m "hw/quartus")"
 quartus_project_name="$(basename "$(find "${quartus_dir}" -name "*.qpf")" .qpf)"
 quartus_sof_file="$(readlink -m "${quartus_dir}/output_files/${quartus_project_name}.sof")"
 
-fpga_device_part_number="5CSEMA4U23C6"
+fpga_device_part_number="5CSEMA4U23C6" # 5CSEMA5F31C6
 
 preloader_dir="$(readlink -m "sw/hps/preloader")"
 preloader_settings_dir="$(readlink -m "${quartus_dir}/hps_isw_handoff/soc_system_hps_0")"
@@ -21,6 +21,7 @@ uboot_src_dir="$(readlink -m "sw/hps/u-boot")"
 uboot_src_git_repo="git://git.denx.de/u-boot.git"
 uboot_src_git_checkout_commit="b104b3dc1dd90cdbf67ccf3c51b06e4f1592fe91"
 uboot_src_make_config_file="socfpga_de0_nano_soc_defconfig" # socfpga_cyclone5_config
+uboot_src_config_file="${uboot_src_dir}/include/configs/socfpga_de0_nano_soc.h" # socfpga_cyclone5_socdk.h
 uboot_script_file="$(readlink -m "${uboot_src_dir}/u-boot.script")"
 uboot_img_file="$(readlink -m "${uboot_src_dir}/u-boot.img")"
 
@@ -239,6 +240,21 @@ compile_uboot() {
     # configure uboot for socfpga_cyclone5 architecture
     make "${uboot_src_make_config_file}"
 
+    ## patch the uboot configuration file that describes environment variables
+    # replace value of CONFIG_BOOTCOMMAND macro (we will always use a script for configuring everything)
+    # result:
+    #     #define CONFIG_BOOTCOMMAND  "run callscript"
+    perl -pi -e 's/^(#define\s+CONFIG_BOOTCOMMAND)(.*)/$1\t"run callscript"/g' "${uboot_src_config_file}"
+
+    # replace value of CONFIG_EXTRA_ENV_SETTINGS macro
+    # result:
+    #     #define CONFIG_EXTRA_ENV_SETTINGS \
+    #         "scriptfile=u-boot.scr" "\0" \
+    #         "fpgadata=0x2000000" "\0" \
+    #         "callscript=fatload mmc 0:1 $fpgadata $scriptfile;" \
+    #             "source $fpgadata" "\0"
+    perl -pi -e 'BEGIN{undef $/;} s/^(#define\s+CONFIG_EXTRA_ENV_SETTINGS)(.*)#include/$1\t"scriptfile=u-boot.scr\\0" "fpgadata=0x2000000\\0" "callscript=fatload mmc 0:1 \$fpgadata \$scriptfile; source \$fpgadata\\0"\n\n#include/smg' "${uboot_src_config_file}"
+
     # compile uboot
     make -j4
 
@@ -323,6 +339,9 @@ setenv mmcroot /dev/mmcblk0p${sdcard_partition_number_ext3}
 setenv stderr serial
 setenv stdin serial
 setenv stdout serial
+
+# save environment to sdcard (not needed, but useful to avoid CRC errors on a new sdcard)
+saveenv
 
 ################################################################################
 echo --- Programming FPGA ---
