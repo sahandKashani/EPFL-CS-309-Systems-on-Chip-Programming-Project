@@ -21,12 +21,16 @@ preloader_bin_file="${preloader_dir}/preloader-mkpimage.bin"
 
 uboot_src_dir="$(readlink -m "sw/hps/u-boot")"
 uboot_src_git_repo="git://git.denx.de/u-boot.git"
+uboot_src_git_checkout_commit="4ed6ed3c27a069a00c8a557d606a05276cc4653e"
+uboot_src_make_config_file="socfpga_cyclone5_config"
 uboot_script_file="$(readlink -m "${uboot_src_dir}/u-boot.script")"
 uboot_img_file="$(readlink -m "${uboot_src_dir}/u-boot.img")"
 
 linux_dir="$(readlink -m "sw/hps/linux")"
 linux_src_git_repo="https://github.com/altera-opensource/linux-socfpga.git"
 linux_src_dir="$(readlink -m "${linux_dir}/source")"
+linux_src_git_checkout_commit="ffea805b5209e0e6ad8645217f5ab742455a066b"
+linux_src_make_config_file="socfpga_defconfig"
 linux_kernel_mem_arg="768M"
 linux_zImage_file="$(readlink -m "${linux_src_dir}/arch/arm/boot/zImage")"
 linux_dtb_file="$(readlink -m "${linux_src_dir}/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dtb")"
@@ -226,16 +230,10 @@ compile_uboot() {
     make distclean
 
     # checkout the following commit (tested and working):
-    # commit 4ed6ed3c27a069a00c8a557d606a05276cc4653e
-    # Merge: 7e10a7c 07654ba
-    # Author: Tom Rini <trini@konsulko.com>
-    # Date:   Mon Apr 4 14:34:09 2016 -0400
-    #
-    #     Merge branch 'master' of git://www.denx.de/git/u-boot-microblaze
-    git checkout 4ed6ed3c27a069a00c8a557d606a05276cc4653e
+    git checkout "${uboot_src_git_checkout_commit}"
 
-    # create uboot config for socfpga_cyclone5 architecture
-    make socfpga_cyclone5_config
+    # configure uboot for socfpga_cyclone5 architecture
+    make "${uboot_src_make_config_file}"
 
     # compile uboot
     make -j4
@@ -302,21 +300,11 @@ compile_linux() {
     # clean up source tree
     make distclean
 
-    # checkout the following commit from the socfpga-4.5 branch (tested and working):
-    # commit ffea805b5209e0e6ad8645217f5ab742455a066b
-    # Author: Dinh Nguyen <dinguyen@opensource.altera.com>
-    # Date:   Tue May 3 08:59:01 2016 -0500
-    #
-    #     ARM: dts: socfpga: add ethernet alias on Arria10
-    #
-    #     Without having an ethernet alias, ethernet will have a random MAC address,
-    #     versus take an address that was provided from the bootloader.
-    #
-    #     Signed-off-by: Dinh Nguyen <dinguyen@opensource.altera.com>
-    git checkout ffea805b5209e0e6ad8645217f5ab742455a066b
+    # checkout the following commit (tested and working):
+    git checkout "${linux_src_git_checkout_commit}"
 
-    # create kernel config for socfpga architecture
-    make socfpga_defconfig
+    # configure kernel for socfpga architecture
+    make "${linux_src_make_config_file}"
 
     # compile zImage
     make -j4 zImage
