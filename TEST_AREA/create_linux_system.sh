@@ -261,6 +261,11 @@ compile_uboot() {
     # create uboot script
     cat <<EOF > "${uboot_script_file}"
 ################################################################################
+echo --- Resetting Env variables ---
+
+# reset environment variables to default
+env default -a
+
 echo --- Setting Env variables ---
 
 # rstmgr -> brgmodrst register (hps2fpga & fpga2hps axi bridges)
