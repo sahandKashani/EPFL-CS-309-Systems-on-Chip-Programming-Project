@@ -11,4 +11,8 @@ Lab virtual machine
 username = psoc
 password = 1234
 
+Download:
 https://drive.switch.ch/index.php/s/RoUI1jzaFUc9T6b/download
+
+Install "VirtualBox <VERSION> Oracle VM VirtualBox Extension Pack":
+https://www.virtualbox.org/wiki/Downloads
