@@ -2,6 +2,7 @@ TEST_AREA
 =========
 
 This folder contains all the sources (hdl, c, testbench) for the implemented modules.
+Each modules can be instantiated in QSYS using the .tcl script in their respective hdl folder.
 
 
 Lab virtual machine
