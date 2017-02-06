@@ -1,12 +1,12 @@
 /*
- * tete.h
+ * i2c_pio.h
  *
  *  Created on: Feb 5, 2017
- *      Author: psoc
+ *      Author: Florian Depraz
  */
 
-#ifndef TETE_H_
-#define TETE_H_
+#ifndef I2C_PIO_H_
+#define I2C_PIO_H_
 
 
 
@@ -29,4 +29,4 @@ uint16_t i2c_pio_read(i2c_pio_dev *dev);
 uint16_t i2c_pio_readbit(i2c_pio_dev *dev, uint8_t bit);
 
 
-#endif /* TETE_H_ */
+#endif /* I2C_PIO_H_ */

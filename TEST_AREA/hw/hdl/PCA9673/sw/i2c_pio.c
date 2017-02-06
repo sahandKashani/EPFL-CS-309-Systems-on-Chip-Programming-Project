@@ -1,13 +1,13 @@
 /*
- * tete.c
+ * i2c_pio.c
  *
  *  Created on: Feb 5, 2017
- *      Author: psoc
+ *      Author: Florian Depraz
  */
 
 #include "io.h"
 
-#include "tete.h"
+#include "i2c_pio.h"
 #include "system.h"
 
 #include <stdint.h>
