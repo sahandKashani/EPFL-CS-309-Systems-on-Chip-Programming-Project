@@ -9,3 +9,4 @@ output_files/
 soc_system.sopcinfo
 software/
 hps_sdram_p0_summary.csv
+soc_system/
