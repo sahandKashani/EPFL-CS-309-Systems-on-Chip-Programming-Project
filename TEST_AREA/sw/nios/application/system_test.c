@@ -5,9 +5,17 @@
 #include <unistd.h>
 
 #include "io.h"
+
 #include "system.h"
 #include "pwm.h"
 #include "mcp3204.h"
+#include "lepton.h"
+
+
+#define PANTILT_TEST 0
+#define MCP3204_TEST 0
+#define PCA9637_TEST 0
+#define LEPTON_TEST	 1
 
 //------------------------------------
 #define PANTILT_REF_DUTY 		25000
@@ -25,14 +33,37 @@
 #define MCP3204_CHANNELS		4
 #define MCP3204_MAX_VALUE		4096	// DOWN or RIGHT
 #define MCP3204_MIN_VALUE		0		// UP	or LEFT
+#define MCP3204_TOLERANCY_LOW	200
+#define MCP3204_TOLERANCY_HIGH	3896
 //------------------------------------
 
+void lepton_test(void){
+
+	printf("TESTING LEPTON START !\n");
+	lepton_dev lepton = lepton_inst(LEPTON_0_BASE);
+	lepton_init(&lepton);
+
+
+	do{
+		lepton_start_capture(&lepton);
+		lepton_wait_until_eof(&lepton);
+
+	}while(lepton_error_check(&lepton));
+	printf("Capture successful !\n");
+
+	lepton_save_capture(&lepton, true, "/mnt/host/test.pgm");
+
+	printf("TESTING LEPTON DONE !\n");
+
+}
 
 
 
 void pca9673_test(void){
 
+	printf("TESTING PCA9673 START !\n");
 
+	printf("TESTING PCA9673 DONE !\n");
 
 }
 
@@ -56,7 +87,8 @@ void joystick_test(void){
 	// JOYSTICK0 (on the LEFT):  channels 2(joystick UP/DOWN) and 3(joystick LEFT/RIGHT)
 	uint32_t mcp_channels[MCP3204_CHANNELS] = {0};
 	uint8_t i = 0;
-	while (1) {
+	uint8_t loop = 1;
+	while (loop) {
 
 		pwm_configure(&pwm0, duty_in_us0, PANTILT_REF_DUTY);
 		pwm_configure(&pwm1, duty_in_us1, PANTILT_REF_DUTY);
@@ -77,9 +109,62 @@ void joystick_test(void){
 		duty_in_us1 = (uint32_t) j1;
 		//printf("%" PRIu32 " -- %" PRIu32 "\n", duty_in_us0, duty_in_us1);
 
+		if(mcp_channels[1] < MCP3204_TOLERANCY_LOW && mcp_channels[3] < MCP3204_TOLERANCY_LOW){
+			loop = 0;
+			printf("Both joysticks left, exiting!\n");
+		}
 
 		usleep(10000);
 	}
+
+	loop = 1;
+	printf("Set all joysticks UP!\n");
+	while (loop) {
+		mcp_channels[0] = mcp3204_read(&mcp, 0);
+		mcp_channels[2] = mcp3204_read(&mcp, 2);
+		usleep(1000);
+		if(mcp_channels[0] < MCP3204_TOLERANCY_LOW && mcp_channels[2] < MCP3204_TOLERANCY_LOW){
+			loop = 0;
+			printf("Ok!\n");
+		}
+	}
+
+	loop = 1;
+	printf("Set all joysticks DOWN!\n");
+	while (loop) {
+		mcp_channels[0] = mcp3204_read(&mcp, 0);
+		mcp_channels[2] = mcp3204_read(&mcp, 2);
+		usleep(1000);
+		if(mcp_channels[0] > MCP3204_TOLERANCY_HIGH && mcp_channels[2] > MCP3204_TOLERANCY_HIGH){
+			loop = 0;
+			printf("Ok!\n");
+		}
+	}
+
+	loop = 1;
+	printf("Set all joysticks LEFT!\n");
+	while (loop) {
+		mcp_channels[1] = mcp3204_read(&mcp, 1);
+		mcp_channels[3] = mcp3204_read(&mcp, 3);
+		usleep(1000);
+		if(mcp_channels[1] < MCP3204_TOLERANCY_LOW && mcp_channels[3] < MCP3204_TOLERANCY_LOW){
+			loop = 0;
+			printf("Ok!\n");
+		}
+	}
+
+	loop = 1;
+	printf("Set all joysticks RIGHT!\n");
+	while (loop) {
+		mcp_channels[1] = mcp3204_read(&mcp, 1);
+		mcp_channels[3] = mcp3204_read(&mcp, 3);
+		usleep(1000);
+		if(mcp_channels[1] > MCP3204_TOLERANCY_HIGH && mcp_channels[3] > MCP3204_TOLERANCY_HIGH){
+			loop = 0;
+			printf("Ok!\n");
+		}
+	}
+
 
 	printf("TESTING JOYSTICK DONE !\n");
 
@@ -181,9 +266,21 @@ void pantilt_test(void){
 
 int main() {
 
-	pantilt_test();
-	joystick_test();
-	pca9673_test();
+	if(PANTILT_TEST){
+		pantilt_test();
+	}
+
+	if( MCP3204_TEST){
+		joystick_test();
+	}
+
+	if(PCA9637_TEST){
+		pca9673_test();
+	}
+
+	if(LEPTON_TEST){
+		lepton_test();
+	}
 
 	return 0;
 }
