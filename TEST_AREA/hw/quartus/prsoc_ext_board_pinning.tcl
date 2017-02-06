@@ -44,7 +44,7 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ADC_SDI
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ADC_SDO
 
 #============================================================
-# ARDUINO
+# ARDUINO Extention
 #============================================================
 set_location_assignment PIN_AG13 -to CAM_D[9]
 set_location_assignment PIN_AG13 -to CAM_D_9
@@ -66,6 +66,11 @@ set_location_assignment PIN_AF17 -to CAM_D[1]
 set_location_assignment PIN_AF17 -to CAM_D_1
 set_location_assignment PIN_AE15 -to CAM_D[0]
 set_location_assignment PIN_AE15 -to CAM_D_0
+
+
+#============================================================
+# Arduino Extension LEPTON CAMERA THERMAL CAM_TH
+#============================================================
 set_location_assignment PIN_AF15 -to CAM_TH_SPI_CS_N
 set_location_assignment PIN_AG16 -to CAM_TH_MOSI
 set_location_assignment PIN_AH11 -to CAM_TH_MISO
@@ -394,7 +399,9 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW_3
 # GPIO_0, GPIO_0 connect to GPIO Default
 #============================================================
 set_location_assignment PIN_V12  -to PIO_INT_N
+
 set_location_assignment PIN_AF7  -to PIR_OUT
+
 set_location_assignment PIN_W12  -to CAM_PAL_VGA_SDA
 set_location_assignment PIN_AF8  -to CAM_PAL_VGA_SCL
 set_location_assignment PIN_Y8   -to PAL_VD_HSO
@@ -405,7 +412,9 @@ set_location_assignment PIN_Y4   -to PAL_VD_VD[6]
 set_location_assignment PIN_Y4   -to PAL_VD_VD_6
 set_location_assignment PIN_Y5   -to PAL_VD_VD[5]
 set_location_assignment PIN_Y5   -to PAL_VD_VD_5
+
 set_location_assignment PIN_U11  -to BOARD_ID
+
 set_location_assignment PIN_T8   -to PAL_VD_VD[3]
 set_location_assignment PIN_T8   -to PAL_VD_VD_3
 set_location_assignment PIN_T12  -to PAL_VD_VD[4]
@@ -417,10 +426,15 @@ set_location_assignment PIN_AH6  -to PAL_VD_VD_2
 set_location_assignment PIN_AH4  -to PAL_VD_CLKO
 set_location_assignment PIN_AG5  -to PAL_VD_VD[0]
 set_location_assignment PIN_AG5  -to PAL_VD_VD_0
+
 set_location_assignment PIN_AH3  -to SERVO_0
+
 set_location_assignment PIN_AH2  -to CAM_PIX_CLK
+
 set_location_assignment PIN_AF4  -to SERVO_1
+
 set_location_assignment PIN_AG6  -to CAM_LV
+
 set_location_assignment PIN_AF5  -to FROM_ESP_TXD
 set_location_assignment PIN_AE4  -to CAM_FV
 set_location_assignment PIN_T13  -to TO_ESP_RXD
