@@ -30,15 +30,16 @@ linux_src_git_repo="https://github.com/altera-opensource/linux-socfpga.git"
 linux_src_dir="$(readlink -m "${linux_dir}/source")"
 linux_src_git_checkout_commit="ffea805b5209e0e6ad8645217f5ab742455a066b"
 linux_src_make_config_file="socfpga_defconfig"
-linux_kernel_mem_arg="768M"
+linux_kernel_mem_arg="1024M"
 linux_zImage_file="$(readlink -m "${linux_src_dir}/arch/arm/boot/zImage")"
 linux_dtb_file="$(readlink -m "${linux_src_dir}/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dtb")" # socfpga_cyclone5_socdk.dtb
 
 rootfs_dir="${linux_dir}/rootfs"
 rootfs_chroot_dir="$(readlink -m ${rootfs_dir}/ubuntu-core-rootfs)"
-rootfs_src_tgz_link="http://cdimage.ubuntu.com/ubuntu-base/releases/14.04/release/ubuntu-base-14.04.4-core-armhf.tar.gz"
+rootfs_src_tgz_link="http://cdimage.ubuntu.com/ubuntu-base/releases/14.04.5/release/ubuntu-base-14.04.5-base-armhf.tar.gz"
 rootfs_src_tgz_file="$(readlink -m "${rootfs_dir}/${rootfs_src_tgz_link##*/}")"
-rootfs_config_script_file="${rootfs_dir}/rootfs_config.sh"
+rootfs_system_config_script_file="${rootfs_dir}/config_system.sh"
+rootfs_post_install_config_script_file="${rootfs_dir}/config_post_install.sh"
 
 sdcard_fat32_dir="$(readlink -m "sdcard/fat32")"
 sdcard_fat32_rbf_file="$(readlink -m "${sdcard_fat32_dir}/socfpga.rbf")"
@@ -393,38 +394,32 @@ create_rootfs() {
     sudo tar -xzpf "${rootfs_src_tgz_file}"
     popd
 
-    # mount directories needed for chroot environment to work
-    sudo mount -o bind "/dev" "${rootfs_chroot_dir}/dev"
-    sudo mount -t sysfs "/sys" "${rootfs_chroot_dir}/sys"
-    sudo mount -t proc "/proc" "${rootfs_chroot_dir}/proc"
+    # copy chroot SYSTEM configuration script to chroot directory
+    sudo cp "${rootfs_system_config_script_file}" "${rootfs_chroot_dir}"
 
-    # chroot environment needs to know what is mounted, so we copy over
-    # /proc/mounts from the host for this temporarily
-    sudo cp "/proc/mounts" "${rootfs_chroot_dir}/etc/mtab"
+    # edit chroot environment's /etc/rc.local to execute the rootfs
+    # configuration script
+    sudo tee "${rootfs_chroot_dir}/etc/rc.local" > "/dev/null" <<EOF
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
 
-    # chroot environment needs network connectivity, so we copy /etc/resolv.conf
-    # so DNS name resolution can occur
-    sudo cp "/etc/resolv.conf" "${rootfs_chroot_dir}/etc/resolv.conf"
+/$(basename ${rootfs_system_config_script_file})
 
-    # the ubuntu core image is for armhf, not x86, so we need qemu to actually
-    # emulate the chroot (x86 cannot run bash executable included in the rootfs,
-    # since it is for armhf)
-    # dependencies : sudo apt-get install qemu-user-static
-    sudo cp "/usr/bin/qemu-arm-static" "${rootfs_chroot_dir}/usr/bin/"
+exit 0
+EOF
 
-    # copy chroot configuration script to chroot directory
-    sudo cp "${rootfs_config_script_file}" "${rootfs_chroot_dir}"
-
-    # perform chroot and configure rootfs through script
-    sudo chroot "${rootfs_chroot_dir}" ./"$(basename "${rootfs_config_script_file}")"
-
-    # remove chroot configuration script to chroot directory
-    sudo rm "${rootfs_chroot_dir}/$(basename "${rootfs_config_script_file}")"
-
-    # unmount host directories temporarily used for chroot
-    sudo umount "${rootfs_chroot_dir}/proc"
-    sudo umount "${rootfs_chroot_dir}/sys"
-    sudo umount "${rootfs_chroot_dir}/dev"
+    # copy chroot POST-INSTALL configuration script to chroot directory
+    sudo cp "${rootfs_post_install_config_script_file}" "${rootfs_chroot_dir}"
 
     # create archive of updated rootfs
     pushd "${rootfs_chroot_dir}"
