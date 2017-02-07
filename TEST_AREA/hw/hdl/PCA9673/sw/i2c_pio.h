@@ -23,7 +23,7 @@ typedef struct i2c_pio_dev2 {
 i2c_pio_dev i2c_pio_inst(void *base);
 
 void i2c_pio_write(i2c_pio_dev *dev, uint16_t data);
-void i2c_pio_writebit(i2c_pio_dev *dev, uint8_t bit, uint16_t addr);
+void i2c_pio_writebit(i2c_pio_dev *dev, uint8_t bit, uint8_t data);
 
 uint16_t i2c_pio_read(i2c_pio_dev *dev);
 uint16_t i2c_pio_readbit(i2c_pio_dev *dev, uint8_t bit);
