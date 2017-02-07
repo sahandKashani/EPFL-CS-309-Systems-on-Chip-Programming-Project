@@ -823,7 +823,7 @@
   <parameter name="CLK_FREQ" value="50000000" />
   <parameter name="I2C_ADDR" value="72" />
   <parameter name="PORT_LEN" value="4" />
-  <parameter name="SCL_FREQ" value="1000000" />
+  <parameter name="SCL_FREQ" value="100000" />
  </module>
  <module
    name="jtag_uart_0"
