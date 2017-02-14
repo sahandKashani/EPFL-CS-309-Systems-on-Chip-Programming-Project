@@ -1,0 +1,201 @@
+/*
+WARNING: Do NOT edit the input and output ports in this file in a text
+editor if you plan to continue editing the block that represents it in
+the Block Editor! File corruption is VERY likely to occur.
+*/
+/*
+Copyright (C) 1991-2016 Altera Corporation. All rights reserved.
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, the Altera Quartus Prime License Agreement,
+the Altera MegaCore Function License Agreement, or other 
+applicable license agreement, including, without limitation, 
+that your use is for the sole purpose of programming logic 
+devices manufactured by Altera and sold by Altera or its 
+authorized distributors.  Please refer to the applicable 
+agreement for further details.
+*/
+(header "symbol" (version "1.1"))
+(symbol
+	(rect 0 0 416 552)
+	(text "soc_system_nios_only" (rect 141 -1 235 11)(font "Arial" (font_size 10)))
+	(text "inst" (rect 8 536 20 548)(font "Arial" ))
+	(port
+		(pt 0 72)
+		(input)
+		(text "clk_clk" (rect 0 0 27 12)(font "Arial" (font_size 8)))
+		(text "clk_clk" (rect 4 61 46 72)(font "Arial" (font_size 8)))
+		(line (pt 0 72)(pt 176 72)(line_width 1))
+	)
+	(port
+		(pt 0 168)
+		(input)
+		(text "i2c_pio_0_pca9673_int_n" (rect 0 0 101 12)(font "Arial" (font_size 8)))
+		(text "i2c_pio_0_pca9673_int_n" (rect 4 157 142 168)(font "Arial" (font_size 8)))
+		(line (pt 0 168)(pt 176 168)(line_width 1))
+	)
+	(port
+		(pt 0 240)
+		(input)
+		(text "lepton_0_spi_miso" (rect 0 0 74 12)(font "Arial" (font_size 8)))
+		(text "lepton_0_spi_miso" (rect 4 229 106 240)(font "Arial" (font_size 8)))
+		(line (pt 0 240)(pt 176 240)(line_width 1))
+	)
+	(port
+		(pt 0 344)
+		(input)
+		(text "mcp3204_0_conduit_end_miso" (rect 0 0 126 12)(font "Arial" (font_size 8)))
+		(text "mcp3204_0_conduit_end_miso" (rect 4 333 160 344)(font "Arial" (font_size 8)))
+		(line (pt 0 344)(pt 176 344)(line_width 1))
+	)
+	(port
+		(pt 0 480)
+		(input)
+		(text "reset_reset_n" (rect 0 0 56 12)(font "Arial" (font_size 8)))
+		(text "reset_reset_n" (rect 4 469 82 480)(font "Arial" (font_size 8)))
+		(line (pt 0 480)(pt 176 480)(line_width 1))
+	)
+	(port
+		(pt 0 112)
+		(output)
+		(text "i2c_pio_0_i2c_scl" (rect 0 0 70 12)(font "Arial" (font_size 8)))
+		(text "i2c_pio_0_i2c_scl" (rect 4 101 106 112)(font "Arial" (font_size 8)))
+		(line (pt 0 112)(pt 176 112)(line_width 1))
+	)
+	(port
+		(pt 0 184)
+		(output)
+		(text "i2c_pio_0_pca9673_reset_n" (rect 0 0 113 12)(font "Arial" (font_size 8)))
+		(text "i2c_pio_0_pca9673_reset_n" (rect 4 173 154 184)(font "Arial" (font_size 8)))
+		(line (pt 0 184)(pt 176 184)(line_width 1))
+	)
+	(port
+		(pt 0 224)
+		(output)
+		(text "lepton_0_spi_cs_n" (rect 0 0 75 12)(font "Arial" (font_size 8)))
+		(text "lepton_0_spi_cs_n" (rect 4 213 106 224)(font "Arial" (font_size 8)))
+		(line (pt 0 224)(pt 176 224)(line_width 1))
+	)
+	(port
+		(pt 0 256)
+		(output)
+		(text "lepton_0_spi_mosi" (rect 0 0 74 12)(font "Arial" (font_size 8)))
+		(text "lepton_0_spi_mosi" (rect 4 245 106 256)(font "Arial" (font_size 8)))
+		(line (pt 0 256)(pt 176 256)(line_width 1))
+	)
+	(port
+		(pt 0 272)
+		(output)
+		(text "lepton_0_spi_sclk" (rect 0 0 70 12)(font "Arial" (font_size 8)))
+		(text "lepton_0_spi_sclk" (rect 4 261 106 272)(font "Arial" (font_size 8)))
+		(line (pt 0 272)(pt 176 272)(line_width 1))
+	)
+	(port
+		(pt 0 312)
+		(output)
+		(text "mcp3204_0_conduit_end_cs_n" (rect 0 0 127 12)(font "Arial" (font_size 8)))
+		(text "mcp3204_0_conduit_end_cs_n" (rect 4 301 160 312)(font "Arial" (font_size 8)))
+		(line (pt 0 312)(pt 176 312)(line_width 1))
+	)
+	(port
+		(pt 0 328)
+		(output)
+		(text "mcp3204_0_conduit_end_mosi" (rect 0 0 126 12)(font "Arial" (font_size 8)))
+		(text "mcp3204_0_conduit_end_mosi" (rect 4 317 160 328)(font "Arial" (font_size 8)))
+		(line (pt 0 328)(pt 176 328)(line_width 1))
+	)
+	(port
+		(pt 0 360)
+		(output)
+		(text "mcp3204_0_conduit_end_sclk" (rect 0 0 122 12)(font "Arial" (font_size 8)))
+		(text "mcp3204_0_conduit_end_sclk" (rect 4 349 160 360)(font "Arial" (font_size 8)))
+		(line (pt 0 360)(pt 176 360)(line_width 1))
+	)
+	(port
+		(pt 0 400)
+		(output)
+		(text "pwm_0_conduit_end_pwm" (rect 0 0 107 12)(font "Arial" (font_size 8)))
+		(text "pwm_0_conduit_end_pwm" (rect 4 389 130 400)(font "Arial" (font_size 8)))
+		(line (pt 0 400)(pt 176 400)(line_width 1))
+	)
+	(port
+		(pt 0 440)
+		(output)
+		(text "pwm_1_conduit_end_pwm" (rect 0 0 106 12)(font "Arial" (font_size 8)))
+		(text "pwm_1_conduit_end_pwm" (rect 4 429 130 440)(font "Arial" (font_size 8)))
+		(line (pt 0 440)(pt 176 440)(line_width 1))
+	)
+	(port
+		(pt 0 520)
+		(output)
+		(text "ws2812_0_conduit_end_name" (rect 0 0 120 12)(font "Arial" (font_size 8)))
+		(text "ws2812_0_conduit_end_name" (rect 4 509 154 520)(font "Arial" (font_size 8)))
+		(line (pt 0 520)(pt 176 520)(line_width 1))
+	)
+	(port
+		(pt 0 128)
+		(bidir)
+		(text "i2c_pio_0_i2c_sda" (rect 0 0 74 12)(font "Arial" (font_size 8)))
+		(text "i2c_pio_0_i2c_sda" (rect 4 117 106 128)(font "Arial" (font_size 8)))
+		(line (pt 0 128)(pt 176 128)(line_width 1))
+	)
+	(drawing
+		(text "clk" (rect 161 43 340 99)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "clk" (rect 181 67 380 144)(font "Arial" (color 0 0 0)))
+		(text "i2c_pio_0_i2c" (rect 97 83 272 179)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "scl" (rect 181 107 380 224)(font "Arial" (color 0 0 0)))
+		(text "sda" (rect 181 123 380 256)(font "Arial" (color 0 0 0)))
+		(text "i2c_pio_0_pca9673" (rect 65 139 232 291)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "int_n" (rect 181 163 392 336)(font "Arial" (color 0 0 0)))
+		(text "reset_n" (rect 181 179 404 368)(font "Arial" (color 0 0 0)))
+		(text "lepton_0_spi" (rect 102 195 276 403)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "cs_n" (rect 181 219 386 448)(font "Arial" (color 0 0 0)))
+		(text "miso" (rect 181 235 386 480)(font "Arial" (color 0 0 0)))
+		(text "mosi" (rect 181 251 386 512)(font "Arial" (color 0 0 0)))
+		(text "sclk" (rect 181 267 386 544)(font "Arial" (color 0 0 0)))
+		(text "mcp3204_0_conduit_end" (rect 32 283 190 579)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "cs_n" (rect 181 307 386 624)(font "Arial" (color 0 0 0)))
+		(text "mosi" (rect 181 323 386 656)(font "Arial" (color 0 0 0)))
+		(text "miso" (rect 181 339 386 688)(font "Arial" (color 0 0 0)))
+		(text "sclk" (rect 181 355 386 720)(font "Arial" (color 0 0 0)))
+		(text "pwm_0_conduit_end" (rect 56 371 214 755)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "pwm" (rect 181 395 380 800)(font "Arial" (color 0 0 0)))
+		(text "pwm_1_conduit_end" (rect 58 411 218 835)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "pwm" (rect 181 435 380 880)(font "Arial" (color 0 0 0)))
+		(text "reset" (rect 147 451 324 915)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "reset_n" (rect 181 475 404 960)(font "Arial" (color 0 0 0)))
+		(text "ws2812_0_conduit_end" (rect 41 491 202 995)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "name" (rect 181 515 386 1040)(font "Arial" (color 0 0 0)))
+		(text " soc_system_nios_only " (rect 313 536 758 1082)(font "Arial" ))
+		(line (pt 176 32)(pt 240 32)(line_width 1))
+		(line (pt 240 32)(pt 240 536)(line_width 1))
+		(line (pt 176 536)(pt 240 536)(line_width 1))
+		(line (pt 176 32)(pt 176 536)(line_width 1))
+		(line (pt 177 52)(pt 177 76)(line_width 1))
+		(line (pt 178 52)(pt 178 76)(line_width 1))
+		(line (pt 177 92)(pt 177 132)(line_width 1))
+		(line (pt 178 92)(pt 178 132)(line_width 1))
+		(line (pt 177 148)(pt 177 188)(line_width 1))
+		(line (pt 178 148)(pt 178 188)(line_width 1))
+		(line (pt 177 204)(pt 177 276)(line_width 1))
+		(line (pt 178 204)(pt 178 276)(line_width 1))
+		(line (pt 177 292)(pt 177 364)(line_width 1))
+		(line (pt 178 292)(pt 178 364)(line_width 1))
+		(line (pt 177 380)(pt 177 404)(line_width 1))
+		(line (pt 178 380)(pt 178 404)(line_width 1))
+		(line (pt 177 420)(pt 177 444)(line_width 1))
+		(line (pt 178 420)(pt 178 444)(line_width 1))
+		(line (pt 177 460)(pt 177 484)(line_width 1))
+		(line (pt 178 460)(pt 178 484)(line_width 1))
+		(line (pt 177 500)(pt 177 524)(line_width 1))
+		(line (pt 178 500)(pt 178 524)(line_width 1))
+		(line (pt 0 0)(pt 416 0)(line_width 1))
+		(line (pt 416 0)(pt 416 552)(line_width 1))
+		(line (pt 0 552)(pt 416 552)(line_width 1))
+		(line (pt 0 0)(pt 0 552)(line_width 1))
+	)
+)

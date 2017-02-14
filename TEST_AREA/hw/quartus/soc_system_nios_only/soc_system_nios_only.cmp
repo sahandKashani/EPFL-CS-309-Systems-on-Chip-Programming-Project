@@ -1,0 +1,22 @@
+	component soc_system_nios_only is
+		port (
+			clk_clk                    : in    std_logic := 'X'; -- clk
+			i2c_pio_0_i2c_scl          : out   std_logic;        -- scl
+			i2c_pio_0_i2c_sda          : inout std_logic := 'X'; -- sda
+			i2c_pio_0_pca9673_int_n    : in    std_logic := 'X'; -- int_n
+			i2c_pio_0_pca9673_reset_n  : out   std_logic;        -- reset_n
+			lepton_0_spi_cs_n          : out   std_logic;        -- cs_n
+			lepton_0_spi_miso          : in    std_logic := 'X'; -- miso
+			lepton_0_spi_mosi          : out   std_logic;        -- mosi
+			lepton_0_spi_sclk          : out   std_logic;        -- sclk
+			mcp3204_0_conduit_end_cs_n : out   std_logic;        -- cs_n
+			mcp3204_0_conduit_end_mosi : out   std_logic;        -- mosi
+			mcp3204_0_conduit_end_miso : in    std_logic := 'X'; -- miso
+			mcp3204_0_conduit_end_sclk : out   std_logic;        -- sclk
+			pwm_0_conduit_end_pwm      : out   std_logic;        -- pwm
+			pwm_1_conduit_end_pwm      : out   std_logic;        -- pwm
+			reset_reset_n              : in    std_logic := 'X'; -- reset_n
+			ws2812_0_conduit_end_name  : out   std_logic         -- name
+		);
+	end component soc_system_nios_only;
+

@@ -1,9 +1,9 @@
 -- #############################################################################
--- DE0_Nano_SoC_top_level.vhd
+-- DE0_Nano_SoC_top_level_ext_board.vhd
 --
--- BOARD         : PrSoC top level
+-- BOARD         : PrSoC ext_board top level
 -- Author        : Florian Depraz based on Sahand Kashani-Akhavan work
--- Revision      : 1.0
+-- Revision      : 1.1
 -- Creation date : 06/02/2016
 --
 -- Syntax Rule : GROUP_NAME_N[bit]
@@ -17,20 +17,33 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity DE0_Nano_SoC_top_level is
+entity DE0_Nano_SoC_ext_board_top_level is
     port(
+
+
+        -------------------------------
+        -- Comment ALL unused ports. --
+        -------------------------------
 
         -- CLOCK
         FPGA_CLK1_50     : in    std_logic;
+        -- FPGA_CLK2_50     : in    std_logic;
+        -- FPGA_CLK3_50     : in    std_logic;
 
-        -- KEY
+        -- KEY on DE0 Nano SoC
         KEY_N            : in    std_logic_vector(1 downto 0);
 
-        -- Servomotors
+        -- LEDs on DE0 Nano SoC
+        LED              : out   std_logic_vector(7 downto 0);
+
+        -- SWITCHES on DE0 Nano SoC
+        -- SW               : in    std_logic_vector(3 downto 0);
+
+        -- Servomotors pwm
         SERVO_0          : out   std_logic;
         SERVO_1          : out   std_logic;
 
-        -- ADC
+        -- ADC Joysticks
         J0_SPI_CS_n      : out   std_logic;
         J0_SPI_MOSI      : out   std_logic;
         J0_SPI_MISO      : in    std_logic;
@@ -47,6 +60,61 @@ entity DE0_Nano_SoC_top_level is
         PIO_SDA          : inout std_logic;
         PIO_INT_N        : in    std_logic;
         RESET_N          : out   std_logic;
+
+        -- OV7670
+        -- CAM_D            : in    std_logic_vector(9 downto 0);
+        -- CAM_PIX_CLK      : in    std_logic;
+        -- CAM_LV           : in    std_logic;
+        -- CAM_FV           : in    std_logic;
+        -- CAM_SYS_CLK      : out   std_logic;
+
+
+        -- VGA and LCD shared signals
+        -- VIDEO_CLK        : out   std_logic;
+        -- VIDEO_VSYNC      : out   std_logic;
+        -- VIDEO_HSYNC      : out   std_logic;
+        -- VIDEO_B          : out   std_logic_vector(7 downto 0);
+        -- VIDEO_G          : out   std_logic_vector(7 downto 0);
+        -- VIDEO_R          : out   std_logic_vector(7 downto 0);
+
+        -- LCD Specific signals
+        -- LCD_DE           : out   std_logic;
+        -- LCD_PIN_DAV_N    : ???   std_logic;
+        -- LCD_DISPLAY_EN   : out   std_logic;
+        -- SPI_MISO         : in    std_logic;
+        -- SPI_ENA_N        : out   std_logic;
+        -- SPI_CLK          : out   std_logic;
+        -- SPI_MOSI         : out   std_logic;
+        -- SPI_DAT          : inout std_logic;
+
+        -- I2C TOUCH SCREEN
+        -- TS_SCL           : inout std_logic;
+        -- TS_SDA           : inout std_logic;
+
+        -- BLUETOOTH (BLE)
+        -- BLT_TXD          : in    std_logic;
+        -- BLT_RXD          : out   std_logic;
+
+        -- I2C For VGA, PAL and OV7670 cameras
+        -- CAM_PAL_VGA_SDA  : inout std_logic;
+        -- CAM_PAL_VGA_SCL  : inout std_logic;
+
+        -- ONE WIRE
+        -- BOARD_ID         : inout std_logic;
+
+        -- PAL Camera
+        -- PAL_VD_VD        : in    std_logic_vector(7 downto 0);
+        -- PAL_VD_VSO       : in    std_logic;
+        -- PAL_VD_HSO       : in    std_logic;
+        -- PAL_VD_CLKO      : in    std_logic;
+        -- PAL_PWDN         : out   std_logic;
+
+        -- WIFI
+        -- FROM_ESP_TXD     : in    std_logic;
+        -- TO_ESP_RXD       : out   std_logic;
+
+        -- LED RGB
+        LED_BGR          : out   std_logic;
 
         -- HPS
         HPS_CONV_USB_N   : inout std_logic;
@@ -98,9 +166,9 @@ entity DE0_Nano_SoC_top_level is
         HPS_USB_NXT      : in    std_logic;
         HPS_USB_STP      : out   std_logic
     );
-end entity DE0_Nano_SoC_top_level;
+end entity DE0_Nano_SoC_ext_board_top_level;
 
-architecture rtl of DE0_Nano_SoC_top_level is
+architecture rtl of DE0_Nano_SoC_ext_board_top_level is
     component soc_system is
         port (
             clk_clk                           : in    std_logic                     := 'X';             -- clk
@@ -178,6 +246,7 @@ architecture rtl of DE0_Nano_SoC_top_level is
             mcp3204_0_conduit_end_sclk        : out   std_logic;                                        -- sclk
             pwm_0_conduit_end_pwm             : out   std_logic;                                        -- pwm
             pwm_1_conduit_end_pwm             : out   std_logic;                                        -- pwm
+            ws2812_0_conduit_end_name         : out   std_logic;                                        -- name
             reset_reset_n                     : in    std_logic                     := 'X';             -- reset_n
             i2c_pio_0_i2c_scl                 : out   std_logic;                                        -- scl
             i2c_pio_0_i2c_sda                 : inout std_logic                     := 'X';             -- sda
@@ -210,6 +279,8 @@ begin
             i2c_pio_0_i2c_sda                 => PIO_SDA,
             i2c_pio_0_pca9673_int_n           => PIO_INT_N,
             i2c_pio_0_pca9673_reset_n         => RESET_N,
+
+            ws2812_0_conduit_end_name         => LED_BGR,
 
             hps_0_ddr_mem_a                   => HPS_DDR3_ADDR,
             hps_0_ddr_mem_ba                  => HPS_DDR3_BA,
@@ -276,4 +347,8 @@ begin
             hps_0_io_hps_io_gpio_inst_GPIO54  => HPS_KEY_N,
             hps_0_io_hps_io_gpio_inst_GPIO61  => HPS_GSENSOR_INT
         );
+
+
+        LED(0) <= KEY_N(0) or KEY_N(1);
+        LED(7 downto 1) <= "1000001";
 end;
