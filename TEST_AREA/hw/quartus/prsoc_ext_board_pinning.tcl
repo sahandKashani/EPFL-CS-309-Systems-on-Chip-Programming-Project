@@ -3,8 +3,9 @@
 #
 # BOARD         : DE0-Nano-SoC from Terasic
 # Author        : Philemon Favrod
+#               : adapted by Florian Depraz
 #                 Based on the work of Sahand Kashani-Akhavan
-# Revision      : 1.1
+# Revision      : 1.2
 # Creation date : May 12, 2016
 #
 # Syntax Rule : GROUP_NAME_N[bit]
@@ -44,7 +45,7 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ADC_SDI
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ADC_SDO
 
 #============================================================
-# ARDUINO Extention
+# ARDUINO Extention OV7670 CAMERA
 #============================================================
 set_location_assignment PIN_AG13 -to CAM_D[9]
 set_location_assignment PIN_AG13 -to CAM_D_9
@@ -67,18 +68,6 @@ set_location_assignment PIN_AF17 -to CAM_D_1
 set_location_assignment PIN_AE15 -to CAM_D[0]
 set_location_assignment PIN_AE15 -to CAM_D_0
 
-
-#============================================================
-# Arduino Extension LEPTON CAMERA THERMAL CAM_TH
-#============================================================
-set_location_assignment PIN_AF15 -to CAM_TH_SPI_CS_N
-set_location_assignment PIN_AG16 -to CAM_TH_MOSI
-set_location_assignment PIN_AH11 -to CAM_TH_MISO
-set_location_assignment PIN_AH12 -to CAM_TH_CLK
-set_location_assignment PIN_AH9  -to CAM_TH_I2C_SDA
-set_location_assignment PIN_AG11 -to CAM_TH_I2C_SCL
-set_location_assignment PIN_AH7  -to ARDUINO_RESET_N
-
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[9]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_9
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[8]
@@ -99,12 +88,26 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_1
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_0
+#============================================================
+# Arduino Extension LEPTON CAMERA THERMAL CAM_TH
+#============================================================
+set_location_assignment PIN_AF15 -to CAM_TH_SPI_CS_N
+set_location_assignment PIN_AG16 -to CAM_TH_MOSI
+set_location_assignment PIN_AH11 -to CAM_TH_MISO
+set_location_assignment PIN_AH12 -to CAM_TH_CLK
+set_location_assignment PIN_AH9  -to CAM_TH_I2C_SDA
+set_location_assignment PIN_AG11 -to CAM_TH_I2C_SCL
+
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_TH_SPI_CS_N
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_TH_MOSI
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_TH_MISO
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_TH_CLK
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_TH_I2C_SDA
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_TH_I2C_SCL
+
+
+set_location_assignment PIN_AH7  -to ARDUINO_RESET_N
+
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ARDUINO_RESET_N
 
 #============================================================
@@ -602,11 +605,18 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW_3
 # GPIO_0, GPIO_0 connect to GPIO Default
 #============================================================
 set_location_assignment PIN_V12  -to PIO_INT_N
+set_location_assignment PIN_AE11 -to PIO_SCL
+set_location_assignment PIN_AE12 -to PIO_SDA
 
 set_location_assignment PIN_AF7  -to PIR_OUT
 
 set_location_assignment PIN_W12  -to CAM_PAL_VGA_SDA
 set_location_assignment PIN_AF8  -to CAM_PAL_VGA_SCL
+set_location_assignment PIN_T11  -to CAM_SYS_CLK
+set_location_assignment PIN_AG6  -to CAM_LV
+set_location_assignment PIN_AH2  -to CAM_PIX_CLK
+set_location_assignment PIN_AE4  -to CAM_FV
+
 set_location_assignment PIN_Y8   -to PAL_VD_HSO
 set_location_assignment PIN_AB4  -to PAL_VD_VSO
 set_location_assignment PIN_W8   -to PAL_VD_VD[7]
@@ -615,9 +625,6 @@ set_location_assignment PIN_Y4   -to PAL_VD_VD[6]
 set_location_assignment PIN_Y4   -to PAL_VD_VD_6
 set_location_assignment PIN_Y5   -to PAL_VD_VD[5]
 set_location_assignment PIN_Y5   -to PAL_VD_VD_5
-
-set_location_assignment PIN_U11  -to BOARD_ID
-
 set_location_assignment PIN_T8   -to PAL_VD_VD[3]
 set_location_assignment PIN_T8   -to PAL_VD_VD_3
 set_location_assignment PIN_T12  -to PAL_VD_VD[4]
@@ -630,30 +637,26 @@ set_location_assignment PIN_AH4  -to PAL_VD_CLKO
 set_location_assignment PIN_AG5  -to PAL_VD_VD[0]
 set_location_assignment PIN_AG5  -to PAL_VD_VD_0
 
+set_location_assignment PIN_U11  -to BOARD_ID
+
 set_location_assignment PIN_AH3  -to SERVO_0
-
-set_location_assignment PIN_AH2  -to CAM_PIX_CLK
-
 set_location_assignment PIN_AF4  -to SERVO_1
 
-set_location_assignment PIN_AG6  -to CAM_LV
+set_location_assignment PIN_AD12 -to J0_SPI_CLK
+set_location_assignment PIN_AD11 -to J0_SPI_MISO
+set_location_assignment PIN_AF9  -to J0_SPI_CS_N
+set_location_assignment PIN_AD10 -to J0_SPI_MOSI
 
 set_location_assignment PIN_AF5  -to FROM_ESP_TXD
-set_location_assignment PIN_AE4  -to CAM_FV
 set_location_assignment PIN_T13  -to TO_ESP_RXD
-set_location_assignment PIN_T11  -to CAM_SYS_CLK
+
 set_location_assignment PIN_AE7  -to SPI_MISO
 set_location_assignment PIN_AF6  -to SPI_ENA_N
-set_location_assignment PIN_AF9  -to J0_SPI_CS_N
 set_location_assignment PIN_AE8  -to SPI_CLK
-set_location_assignment PIN_AD10 -to J0_SPI_MOSI
 set_location_assignment PIN_AE9  -to SPI_MOSI
-set_location_assignment PIN_AD11 -to J0_SPI_MISO
 set_location_assignment PIN_AF10 -to SPI_DAT
-set_location_assignment PIN_AD12 -to J0_SPI_CLK
-set_location_assignment PIN_AE11 -to PIO_SCL
+
 set_location_assignment PIN_AF11 -to LED_BGR
-set_location_assignment PIN_AE12 -to PIO_SDA
 
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PIO_INT_N
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PIR_OUT
@@ -703,28 +706,22 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PIO_SDA
 #============================================================
 # GPIO_1, GPIO_1 connect to GPIO Default
 #============================================================
-set_location_assignment PIN_Y15  -to LCD_PIN_DAV_N
-set_location_assignment PIN_AG28 -to GPIO_1[1]
-set_location_assignment PIN_AG28 -to TS_SCL
-set_location_assignment PIN_AA15 -to GPIO_1[2]
 set_location_assignment PIN_AA15 -to RESET_N
-set_location_assignment PIN_AH27 -to GPIO_1[3]
+
+set_location_assignment PIN_AG28 -to TS_SCL
 set_location_assignment PIN_AH27 -to TS_SDA
-set_location_assignment PIN_AG26 -to GPIO_1[4]
+
+set_location_assignment PIN_Y15  -to LCD_PIN_DAV_N
 set_location_assignment PIN_AG26 -to LCD_DE
-set_location_assignment PIN_AH24 -to GPIO_1[5]
-set_location_assignment PIN_AH24 -to BLT_TXD
-set_location_assignment PIN_AF23 -to GPIO_1[6]
 set_location_assignment PIN_AF23 -to LCD_DISPLAY_EN
-set_location_assignment PIN_AE22 -to GPIO_1[7]
+
+set_location_assignment PIN_AH24 -to BLT_TXD
 set_location_assignment PIN_AE22 -to BLT_RXD
-set_location_assignment PIN_AF21 -to GPIO_1[8]
-set_location_assignment PIN_AF21 -to VIDEO_HSYNC
-set_location_assignment PIN_AG20 -to GPIO_1[9]
+
 set_location_assignment PIN_AG20 -to BOARD_ID
-set_location_assignment PIN_AG19 -to GPIO_1[10]
+
+set_location_assignment PIN_AF21 -to VIDEO_HSYNC
 set_location_assignment PIN_AG19 -to VIDEO_VSYNC
-set_location_assignment PIN_AF20 -to GPIO_1[11]
 set_location_assignment PIN_AF20 -to VIDEO_CLK
 set_location_assignment PIN_AC23 -to VIDEO_B[7]
 set_location_assignment PIN_AC23 -to VIDEO_B_7
@@ -776,27 +773,16 @@ set_location_assignment PIN_AC22 -to VIDEO_R[0]
 set_location_assignment PIN_AC22 -to VIDEO_R_0
 
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_PIN_DAV_N
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TS_SCL
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[2]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to RESET_N
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[3]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TS_SDA
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[4]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DE
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[5]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to BLT_TXD
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[6]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DISPLAY_EN
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[7]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to BLT_RXD
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[8]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_HSYNC
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[9]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to BOARD_ID
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[10]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_VSYNC
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[11]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_CLK
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[7]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_7
@@ -846,5 +832,3 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_1
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_0
-
-
