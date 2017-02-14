@@ -1,8 +1,7 @@
-#include <io.h>
+#include "io_custom.h"
 
 #include "pwm.h"
 #include "pwm_regs.h"
-#include "system.h"
 
 /**
  * pwm_inst
@@ -39,12 +38,12 @@ void pwm_init(pwm_dev *dev) {
  * @param duty_cycle pwm duty cycle in us.
  * @param period pwm period in us.
  */
-void pwm_configure(pwm_dev *dev, uint32_t duty_cycle, uint32_t period) {
-    period = period * (ALT_CPU_CPU_FREQ / 1000000u);
-    IOWR_32DIRECT(dev->base, PWM_PERIOD_OFST, period);
+void pwm_configure(pwm_dev *dev, uint32_t duty_cycle, uint32_t period, uint32_t module_frequency) {
+    period = period * (module_frequency / 1000000u);
+    ioc_write_word(dev->base, PWM_PERIOD_OFST, period);
 
-    duty_cycle = duty_cycle * (ALT_CPU_CPU_FREQ / 10000000u);
-    IOWR_32DIRECT(dev->base, PWM_DUTY_CYCLE_OFST, duty_cycle);
+    duty_cycle = duty_cycle * (module_frequency / 10000000u);
+    ioc_write_word(dev->base, PWM_DUTY_CYCLE_OFST, duty_cycle);
 }
 
 /**
@@ -55,7 +54,7 @@ void pwm_configure(pwm_dev *dev, uint32_t duty_cycle, uint32_t period) {
  * @param dev pwm device structure.
  */
 void pwm_start(pwm_dev *dev) {
-    IOWR_32DIRECT(dev->base, PWM_CTRL_OFST, PWM_CTRL_START_MASK);
+	ioc_write_word(dev->base, PWM_CTRL_OFST, PWM_CTRL_START_MASK);
 }
 
 /**
@@ -66,5 +65,5 @@ void pwm_start(pwm_dev *dev) {
  * @param dev pwm device structure.
  */
 void pwm_stop(pwm_dev *dev) {
-    IOWR_32DIRECT(dev->base, PWM_CTRL_OFST, PWM_CTRL_STOP_MASK);
+	ioc_write_word(dev->base, PWM_CTRL_OFST, PWM_CTRL_STOP_MASK);
 }

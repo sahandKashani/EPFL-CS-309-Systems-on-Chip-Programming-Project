@@ -1,5 +1,5 @@
 #include <assert.h>
-#include <io.h>
+#include "io_custom.h"
 
 #include "mcp3204.h"
 
@@ -12,7 +12,6 @@
  */
 mcp3204_dev mcp3204_inst(void *base) {
     mcp3204_dev dev;
-
     dev.base = base;
 
     return dev;
@@ -39,5 +38,5 @@ void mcp3204_init(mcp3204_dev *dev) {
  */
 uint32_t mcp3204_read(mcp3204_dev *dev, uint32_t channel) {
     assert(channel < 4);
-    return IORD_32DIRECT(dev->base, 4 * channel);
+    return ioc_read_word(dev->base, 4 * channel);
 }

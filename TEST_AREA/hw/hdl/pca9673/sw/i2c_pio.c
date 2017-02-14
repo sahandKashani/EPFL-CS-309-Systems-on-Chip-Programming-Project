@@ -5,11 +5,9 @@
  *      Author: Florian Depraz
  */
 
-#include "io.h"
+#include "io_custom.h"
 
 #include "i2c_pio.h"
-#include "system.h"
-
 #include <stdint.h>
 
 /**
@@ -22,15 +20,11 @@
 i2c_pio_dev i2c_pio_inst(void *base)
 {
     i2c_pio_dev dev;
-
     dev.base = base;
 
     return dev;
 }
 
-static const uint32_t I2C_PIO_STATUS_REG_OFST = 0x10 * 4;
-static const uint32_t I2C_PIO_ERROR_MASK = 2;
-static const uint32_t I2C_PIO_BUSY_MASK = 1;
 /**
  * i2c_pio_write
  *
@@ -51,7 +45,7 @@ void i2c_pio_write(i2c_pio_dev *dev, uint16_t data)
 
 void i2c_pio_writebit(i2c_pio_dev *dev, uint8_t bit, uint8_t data)
 {
-    IOWR_32DIRECT(dev->base, bit * 4, data);
+    ioc_write_word(dev->base, bit * 4, data);
 }
 /**
  * i2c_pio_read
@@ -75,6 +69,6 @@ uint16_t i2c_pio_read(i2c_pio_dev *dev)
 
 uint16_t i2c_pio_readbit(i2c_pio_dev *dev, uint8_t bit)
 {
-    return IORD_32DIRECT(dev->base, bit*4);
+    return ioc_read_word(dev->base, bit*4);
 }
 
