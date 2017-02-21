@@ -15,20 +15,20 @@ use ieee.numeric_std.all;
 entity mcp3204 is
     port(
         -- Inputs
-        clk      : in  std_logic;
-        reset    : in  std_logic;
-        address  : in  std_logic_vector(1 downto 0);
-        read     : in  std_logic;
+        clk     : in std_logic;
+        reset   : in std_logic;
+        address : in std_logic_vector(1 downto 0);
+        read    : in std_logic;
 
         -- Outputs
         readdata : out std_logic_vector(31 downto 0);
 
-        CS_N     : out std_logic;
-        MOSI     : out std_logic;
-        MISO     : in  std_logic;
-        SCLK     : out std_logic
+        CS_N : out std_logic;
+        MOSI : out std_logic;
+        MISO : in  std_logic;
+        SCLK : out std_logic
     );
-end entity;                             -- mcp3204
+end entity;  -- mcp3204
 
 architecture arch of mcp3204 is
     type data_array is array (3 downto 0) of std_logic_vector(31 downto 0);
@@ -46,10 +46,10 @@ architecture arch of mcp3204 is
             data       : out std_logic_vector(11 downto 0);
 
             -- 1 MHz
-            SCLK       : out std_logic;
-            CS_N       : out std_logic;
-            MOSI       : out std_logic;
-            MISO       : in  std_logic
+            SCLK : out std_logic;
+            CS_N : out std_logic;
+            MOSI : out std_logic;
+            MISO : in  std_logic
         );
     end component mcp3204_spi;
 
@@ -63,18 +63,18 @@ architecture arch of mcp3204 is
     signal channel : unsigned(1 downto 0);
 begin
     SPI : mcp3204_spi port map(
-            clk        => clk,
-            reset      => reset,
-            busy       => spi_busy,
-            start      => spi_start,
-            channel    => spi_channel,
-            data_valid => spi_datavalid,
-            data       => spi_data,
-            SCLK       => SCLK,
-            CS_N       => CS_N,
-            MOSI       => MOSI,
-            MISO       => MISO
-        );
+        clk        => clk,
+        reset      => reset,
+        busy       => spi_busy,
+        start      => spi_start,
+        channel    => spi_channel,
+        data_valid => spi_datavalid,
+        data       => spi_data,
+        SCLK       => SCLK,
+        CS_N       => CS_N,
+        MOSI       => MOSI,
+        MISO       => MISO
+    );
 
     -- FSM that dictates which channel is being read.
     -- The state of the component should be thought as the pair (state, channel)

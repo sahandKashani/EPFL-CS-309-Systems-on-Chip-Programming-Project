@@ -24,19 +24,19 @@ architecture rtl of tb_mcp3204_spi is
 
 begin
     duv : entity work.mcp3204_spi
-        port map(
-            clk        => clk,
-            reset      => reset,
-            busy       => busy,
-            start      => start,
-            channel    => channel,
-            data_valid => data_valid,
-            data       => data,
-            SCLK       => SCLK,
-            CS_N       => CS_N,
-            MOSI       => MOSI,
-            MISO       => MISO
-        );
+    port map(
+        clk        => clk,
+        reset      => reset,
+        busy       => busy,
+        start      => start,
+        channel    => channel,
+        data_valid => data_valid,
+        data       => data,
+        SCLK       => SCLK,
+        CS_N       => CS_N,
+        MOSI       => MOSI,
+        MISO       => MISO
+    );
 
     clk <= not clk after CLK_PERIOD / 2 when not sim_finished;
 

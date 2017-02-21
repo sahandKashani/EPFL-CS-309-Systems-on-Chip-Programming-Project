@@ -4,15 +4,15 @@
 -------------------------------------------------------------------------------
 -- File       : byte2pix.vhd
 -- Author     : Philemon Orphee Favrod  <pofavrod@lappc5.epfl.ch>
--- Company    : 
+-- Company    :
 -- Created    : 2016-03-21
--- Last update: 2016-03-21
--- Platform   : 
+-- Last update: 2017-02-21
+-- Platform   :
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
--- Description: Converts a byte stream to a 14-bit pixel stream. 
+-- Description: Converts a byte stream to a 14-bit pixel stream.
 -------------------------------------------------------------------------------
--- Copyright (c) 2016 
+-- Copyright (c) 2016
 -------------------------------------------------------------------------------
 -- Revisions  :
 -- Date        Version  Author  Description
@@ -41,7 +41,7 @@ end byte2pix;
 architecture rtl of byte2pix is
     signal last_sof : std_logic;
     signal msb      : std_logic_vector(5 downto 0);
-    signal cnt      : std_logic;        -- used to skip msb sampling every other time
+    signal cnt      : std_logic;  -- used to skip msb sampling every other time
 begin
     process(clk, reset)
     begin

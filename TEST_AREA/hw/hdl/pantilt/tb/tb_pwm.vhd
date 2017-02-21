@@ -11,7 +11,7 @@ architecture rtl of tb_pwm is
     signal reset        : std_logic := '0';
     signal sim_finished : boolean   := false;
 
-    -- pwm ------------------------------------------------------------    
+    -- pwm ------------------------------------------------------------
     signal address     : std_logic_vector(1 downto 0)  := (others => '0');
     signal writedata   : std_logic_vector(31 downto 0) := (others => '0');
     signal read, write : std_logic                     := '0';
@@ -24,16 +24,16 @@ architecture rtl of tb_pwm is
 
 begin
     duv : entity work.pwm
-        port map(
-            clk       => clk,
-            reset     => reset,
-            address   => address,
-            writedata => writedata,
-            read      => read,
-            write     => write,
-            readdata  => readdata,
-            pwm_out   => pwm_out
-        );
+    port map(
+        clk       => clk,
+        reset     => reset,
+        address   => address,
+        writedata => writedata,
+        read      => read,
+        write     => write,
+        readdata  => readdata,
+        pwm_out   => pwm_out
+    );
 
     clk <= not clk after CLK_PERIOD / 2 when not sim_finished;
 

@@ -17,10 +17,10 @@ use ieee.std_logic_arith.all;
 entity i2c_core is
     port(
         -- I2C signals
-        sda_in       : in  std_logic;
-        scl_in       : in  std_logic;
-        sda_out      : out std_logic;
-        scl_out      : out std_logic;
+        sda_in  : in  std_logic;
+        scl_in  : in  std_logic;
+        sda_out : out std_logic;
+        scl_out : out std_logic;
 
         -- interface signals
         clk          : in  std_logic;
@@ -38,8 +38,8 @@ entity i2c_core is
         cmd_done     : out std_logic;
         busy         : out std_logic
 
-    -- debug signals
-    --		state      : out std_logic_vector(5 downto 0)
+        -- debug signals
+        --              state      : out std_logic_vector(5 downto 0)
 
     );
 end i2c_core;
@@ -122,7 +122,7 @@ begin
     end process data_input_selector;
 
     -- indicate start of command
-    i_cmd_go <= (cmd_read OR cmd_write) AND NOT i_busy;
+    i_cmd_go <= (cmd_read or cmd_write) and not i_busy;
 
     -- i2c bit counter
     counter : process(clk, rst)
@@ -664,7 +664,7 @@ begin
                 n_state <= s_DoneAck;
 
             when s_DoneAck =>
-                --state  	     <= "000011";
+                --state              <= "000011";
                 i_sclk_en    <= '0';
                 i_busy       <= '1';
                 i_ctr_clr    <= '0';

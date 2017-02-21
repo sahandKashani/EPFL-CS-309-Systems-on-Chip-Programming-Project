@@ -12,10 +12,10 @@ entity lepton is
         read      : in  std_logic;
         write     : in  std_logic;
 
-        SCLK      : out std_logic;
-        CSn       : out std_logic;
-        MOSI      : out std_logic;
-        MISO      : in  std_logic
+        SCLK : out std_logic;
+        CSn  : out std_logic;
+        MOSI : out std_logic;
+        MISO : in  std_logic
     );
 
 end lepton;
@@ -168,93 +168,93 @@ architecture rtl of lepton is
 
 begin
     spi_controller0 : avalon_st_spi_master
-        port map(
-            clk             => clk,
-            reset           => reset,
-            spi_cs_n        => spi_cs_n,
-            mosi_sink_data  => spi_mosi_data,
-            mosi_sink_valid => spi_mosi_valid,
-            mosi_sink_ready => spi_mosi_ready,
-            miso_src_data   => spi_miso_data,
-            miso_src_valid  => spi_miso_valid,
-            SCLK            => SCLK,
-            MISO            => MISO,
-            MOSI            => MOSI,
-            CS_n            => CSn);
+    port map(
+        clk             => clk,
+        reset           => reset,
+        spi_cs_n        => spi_cs_n,
+        mosi_sink_data  => spi_mosi_data,
+        mosi_sink_valid => spi_mosi_valid,
+        mosi_sink_ready => spi_mosi_ready,
+        miso_src_data   => spi_miso_data,
+        miso_src_valid  => spi_miso_valid,
+        SCLK            => SCLK,
+        MISO            => MISO,
+        MOSI            => MOSI,
+        CS_n            => CSn);
 
     lepton_manager0 : lepton_manager
-        port map(
-            clk                 => clk,
-            reset               => reset,
-            spi_miso_sink_data  => spi_miso_data,
-            spi_miso_sink_valid => spi_miso_valid,
-            spi_mosi_src_data   => spi_mosi_data,
-            spi_mosi_src_valid  => spi_mosi_valid,
-            spi_mosi_src_ready  => spi_mosi_ready,
-            lepton_out_data     => byte_data,
-            lepton_out_valid    => byte_valid,
-            lepton_out_sof      => byte_sof,
-            lepton_out_eof      => byte_eof,
-            row_idx             => row_idx,
-            error               => lepton_manager_error,
-            start               => lepton_manager_start,
-            spi_cs_n            => spi_cs_n);
+    port map(
+        clk                 => clk,
+        reset               => reset,
+        spi_miso_sink_data  => spi_miso_data,
+        spi_miso_sink_valid => spi_miso_valid,
+        spi_mosi_src_data   => spi_mosi_data,
+        spi_mosi_src_valid  => spi_mosi_valid,
+        spi_mosi_src_ready  => spi_mosi_ready,
+        lepton_out_data     => byte_data,
+        lepton_out_valid    => byte_valid,
+        lepton_out_sof      => byte_sof,
+        lepton_out_eof      => byte_eof,
+        row_idx             => row_idx,
+        error               => lepton_manager_error,
+        start               => lepton_manager_start,
+        spi_cs_n            => spi_cs_n);
 
     byte2pix0 : byte2pix
-        port map(
-            clk        => clk,
-            reset      => reset,
-            byte_data  => byte_data,
-            byte_valid => byte_valid,
-            byte_sof   => byte_sof,
-            byte_eof   => byte_eof,
-            pix_data   => pix_data,
-            pix_valid  => pix_valid,
-            pix_sof    => pix_sof,
-            pix_eof    => pix_eof);
+    port map(
+        clk        => clk,
+        reset      => reset,
+        byte_data  => byte_data,
+        byte_valid => byte_valid,
+        byte_sof   => byte_sof,
+        byte_eof   => byte_eof,
+        pix_data   => pix_data,
+        pix_valid  => pix_valid,
+        pix_sof    => pix_sof,
+        pix_eof    => pix_eof);
 
     lepton_stats0 : lepton_stats
-        port map(
-            reset      => reset,
-            clk        => clk,
-            pix_data   => pix_data,
-            pix_valid  => pix_valid,
-            pix_sof    => pix_sof,
-            pix_eof    => pix_eof,
-            stat_min   => stat_min,
-            stat_max   => stat_max,
-            stat_sum   => stat_sum,
-            stat_valid => stat_valid);
+    port map(
+        reset      => reset,
+        clk        => clk,
+        pix_data   => pix_data,
+        pix_valid  => pix_valid,
+        pix_sof    => pix_sof,
+        pix_eof    => pix_eof,
+        stat_min   => stat_min,
+        stat_max   => stat_max,
+        stat_sum   => stat_sum,
+        stat_valid => stat_valid);
 
     ram_writer0 : ram_writer
-        port map(
-            clk           => clk,
-            reset         => reset,
-            pix_data      => pix_data,
-            pix_valid     => pix_valid,
-            pix_sof       => pix_sof,
-            pix_eof       => pix_eof,
-            ram_data      => ram_data,
-            ram_wren      => ram_wren,
-            ram_wraddress => ram_wraddress);
+    port map(
+        clk           => clk,
+        reset         => reset,
+        pix_data      => pix_data,
+        pix_valid     => pix_valid,
+        pix_sof       => pix_sof,
+        pix_eof       => pix_eof,
+        ram_data      => ram_data,
+        ram_wren      => ram_wren,
+        ram_wraddress => ram_wraddress);
 
     dual_ported_ram0 : dual_ported_ram
-        port map(
-            clock     => clk,
-            data      => ram_data,
-            rdaddress => ram_rdaddress,
-            wraddress => ram_wraddress,
-            wren      => ram_wren,
-            q         => ram_q);
+    port map(
+        clock     => clk,
+        data      => ram_data,
+        rdaddress => ram_rdaddress,
+        wraddress => ram_wraddress,
+        wren      => ram_wren,
+        q         => ram_q);
 
     level_adjuster0 : level_adjuster
-        port map(
-            clk            => clk,
-            raw_pixel      => ram_q(13 downto 0),
-            raw_max        => max_reg,
-            raw_min        => min_reg,
-            raw_sum        => sum_reg,
-            adjusted_pixel => adjusted_pixel);
+    port map(
+        clk            => clk,
+        raw_pixel      => ram_q(13 downto 0),
+        raw_max        => max_reg,
+        raw_min        => min_reg,
+        raw_sum        => sum_reg,
+        adjusted_pixel => adjusted_pixel);
 
     p_lepton_start : process(clk, reset)
     begin

@@ -12,7 +12,7 @@ entity avalon_st_spi_master is
     );
     port(
         -- Input clock
-        clk             : in  std_logic;
+        clk : in std_logic;
 
         -- Reset
         reset           : in  std_logic;
@@ -23,14 +23,14 @@ entity avalon_st_spi_master is
         mosi_sink_ready : out std_logic;
 
         -- Source Avalon ST Interface
-        miso_src_data   : out std_logic_vector(7 downto 0);
-        miso_src_valid  : out std_logic;
+        miso_src_data  : out std_logic_vector(7 downto 0);
+        miso_src_valid : out std_logic;
 
         -- SPI Master signals
-        SCLK            : out std_logic;
-        MISO            : in  std_logic;
-        MOSI            : out std_logic;
-        CS_n            : out std_logic
+        SCLK : out std_logic;
+        MISO : in  std_logic;
+        MOSI : out std_logic;
+        CS_n : out std_logic
     );
 end avalon_st_spi_master;
 

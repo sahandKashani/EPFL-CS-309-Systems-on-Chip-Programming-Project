@@ -4,13 +4,13 @@
 --
 -- The register map of the component is shown below:
 -- +--------+------------+--------+---------------------------------------------------------------------------+
--- | RegNo  | Name       | Access | Description                                                       		  |
+-- | RegNo  | Name       | Access | Description                                                               |
 -- +--------+------------+--------+---------------------------------------------------------------------------+
--- | 0      | PERIOD     | R/W    | The clock divider. Reminder: clk is a 50-MHz clock.               		  |
+-- | 0      | PERIOD     | R/W    | The clock divider. Reminder: clk is a 50-MHz clock.                       |
 -- +--------+------------+--------+---------------------------------------------------------------------------+
 -- | 1      | DUTY_CYCLE | R/W    | A value between 0 and CLOCK_DIV indicating the duty cycle of the clock.   |
 -- +--------+------------+--------+---------------------------------------------------------------------------+
--- | 2      | CTRL		 | W	  | Writing 0 (resp. 1) to the register stops (resp. starts) the PWM. 		  |
+-- | 2      | CTRL       | W      | Writing 0 (resp. 1) to the register stops (resp. starts) the PWM.         |
 -- +--------+------------+--------+---------------------------------------------------------------------------+
 
 library ieee;
@@ -20,15 +20,15 @@ use ieee.numeric_std.all;
 entity pwm is
     port(
         -- Inputs
-        clk         : in  std_logic;
-        reset       : in  std_logic;
-        address     : in  std_logic_vector(1 downto 0); -- 2 address bits are needed to address each register of the interface
-        writedata   : in  std_logic_vector(31 downto 0);
-        read, write : in  std_logic;
+        clk         : in std_logic;
+        reset       : in std_logic;
+        address     : in std_logic_vector(1 downto 0);  -- 2 address bits are needed to address each register of the interface
+        writedata   : in std_logic_vector(31 downto 0);
+        read, write : in std_logic;
 
         -- Outputs
-        readdata    : out std_logic_vector(31 downto 0);
-        pwm_out     : out std_logic
+        readdata : out std_logic_vector(31 downto 0);
+        pwm_out  : out std_logic
     );
 
 end pwm;
@@ -115,9 +115,9 @@ begin
             if read = '1' then
                 case address is
                     when REG_PERIOD_OFST =>
-                        readdata <= std_logic_vector(period); -- should technically return new_period
+                        readdata <= std_logic_vector(period);  -- should technically return new_period
                     when REG_DUTY_CYCLE_OFST =>
-                        readdata <= std_logic_vector(duty_cycle); -- should technically return new_duty_cycle
+                        readdata <= std_logic_vector(duty_cycle);  -- should technically return new_duty_cycle
                     when others => null;
                 end case;
             end if;

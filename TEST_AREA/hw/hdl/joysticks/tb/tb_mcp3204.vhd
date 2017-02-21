@@ -25,17 +25,17 @@ architecture rtl of tb_mcp3204 is
 
 begin
     duv : entity work.mcp3204
-        port map(
-            clk      => clk,
-            reset    => reset,
-            address  => address,
-            read     => read,
-            readdata => readdata,
-            CS_N     => CS_N,
-            MOSI     => MOSI,
-            MISO     => MISO,
-            SCLK     => SCLK
-        );
+    port map(
+        clk      => clk,
+        reset    => reset,
+        address  => address,
+        read     => read,
+        readdata => readdata,
+        CS_N     => CS_N,
+        MOSI     => MOSI,
+        MISO     => MISO,
+        SCLK     => SCLK
+    );
 
     clk <= not clk after CLK_PERIOD / 2 when not sim_finished;
 

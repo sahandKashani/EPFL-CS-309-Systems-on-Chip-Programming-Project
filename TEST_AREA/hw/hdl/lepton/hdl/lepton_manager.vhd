@@ -6,34 +6,34 @@ entity lepton_manager is
     generic(
         INPUT_CLK_FREQ : integer := 50000000);
     port(
-        clk                 : in  std_logic := '0';
-        reset               : in  std_logic := '0';
+        clk   : in std_logic := '0';
+        reset : in std_logic := '0';
 
         -- Avalon ST Sink to receive SPI data
-        spi_miso_sink_data  : in  std_logic_vector(7 downto 0);
-        spi_miso_sink_valid : in  std_logic;
+        spi_miso_sink_data  : in std_logic_vector(7 downto 0);
+        spi_miso_sink_valid : in std_logic;
 
         -- Avalon ST Source to send SPI data
-        spi_mosi_src_data   : out std_logic_vector(7 downto 0);
-        spi_mosi_src_valid  : out std_logic;
-        spi_mosi_src_ready  : in  std_logic := '0';
+        spi_mosi_src_data  : out std_logic_vector(7 downto 0);
+        spi_mosi_src_valid : out std_logic;
+        spi_mosi_src_ready : in  std_logic := '0';
 
         -- Filtered output to retransmit cleaned data (without the discard packets, see Lepton Datasheet on page 31)
         -- lepton_out_data is valid on rising edge when lepton_src_valid = '1'
-        lepton_out_data     : out std_logic_vector(7 downto 0);
-        lepton_out_valid    : out std_logic;
-        lepton_out_sof      : out std_logic;
-        lepton_out_eof      : out std_logic;
+        lepton_out_data  : out std_logic_vector(7 downto 0);
+        lepton_out_valid : out std_logic;
+        lepton_out_sof   : out std_logic;
+        lepton_out_eof   : out std_logic;
 
         -- Some status
-        row_idx             : out std_logic_vector(5 downto 0);
-        error               : out std_logic;
+        row_idx : out std_logic_vector(5 downto 0);
+        error   : out std_logic;
 
         -- Avalon MM Slave interface for configuration
-        start               : in  std_logic;
+        start : in std_logic;
 
         -- The SPI Chip Select (Active low !)
-        spi_cs_n            : out std_logic := '0');
+        spi_cs_n : out std_logic := '0');
 end entity lepton_manager;
 
 architecture rtl of lepton_manager is
@@ -42,7 +42,7 @@ architecture rtl of lepton_manager is
 
     signal header_3_last_nibbles : std_logic_vector(11 downto 0);
 
-    constant CLOCK_TICKS_PER_37_MS  : integer := 37 * (INPUT_CLK_FREQ / 1e3); -- the timeout delay for a frame
+    constant CLOCK_TICKS_PER_37_MS  : integer := 37 * (INPUT_CLK_FREQ / 1e3);  -- the timeout delay for a frame
     constant CLOCK_TICKS_PER_200_MS : integer := 200 * (INPUT_CLK_FREQ / 1e3);
     constant CLOCK_TICKS_PER_200_NS : integer := (200 * (INPUT_CLK_FREQ / 1e6)) / 1e3;
     constant BYTES_PER_HEADER       : integer := 4;

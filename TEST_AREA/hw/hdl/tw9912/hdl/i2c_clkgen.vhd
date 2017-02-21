@@ -1,7 +1,7 @@
 --------------------------------------------------------------------
 -- i2c_clkgen.vhd -- I2C base clock generator
 --                   with clock stretching feature
---					 generate 1 pulse every clk_cnt clk cycles, for 1 clk duration
+--                   generate 1 pulse every clk_cnt clk cycles, for 1 clk duration
 --------------------------------------------------------------------
 -- Author  : Cédric Gaudin
 -- Version : 0.2 alpha
@@ -17,18 +17,18 @@ use ieee.std_logic_arith.all;
 
 entity i2c_clkgen is
     port(
-        signal clk     : in  std_logic;
-        signal rst     : in  std_logic;
+        signal clk : in std_logic;
+        signal rst : in std_logic;
 
         -- count used for dividing clk signal
-        signal clk_cnt : in  std_logic_vector(7 downto 0);
+        signal clk_cnt : in std_logic_vector(7 downto 0);
 
         -- I2C clock output generated
-        signal sclk    : out std_logic;
+        signal sclk : out std_logic;
 
         -- I2C clock line SCL (used for clock stretching)
-        signal scl_in  : in  std_logic;
-        signal scl_out : in  std_logic
+        signal scl_in  : in std_logic;
+        signal scl_out : in std_logic
     );
 
 end i2c_clkgen;

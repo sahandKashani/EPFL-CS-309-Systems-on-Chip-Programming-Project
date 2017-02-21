@@ -39,17 +39,17 @@ architecture tb of lepton_tb is
 
 begin
     dut : lepton
-        port map(clk       => clk,
-                 reset     => reset,
-                 address   => address,
-                 readdata  => readdata,
-                 writedata => writedata,
-                 read      => read,
-                 write     => write,
-                 SCLK      => SCLK,
-                 CSn       => CSn,
-                 MOSI      => MOSI,
-                 MISO      => MISO);
+    port map(clk       => clk,
+             reset     => reset,
+             address   => address,
+             readdata  => readdata,
+             writedata => writedata,
+             read      => read,
+             write     => write,
+             SCLK      => SCLK,
+             CSn       => CSn,
+             MOSI      => MOSI,
+             MISO      => MISO);
 
     clk <= not clk after CLK_PERIOD / 2 when not sim_ended else '0';
 
@@ -79,7 +79,7 @@ begin
         write        <= '1';
         writedata(0) <= '1';
         wait for CLK_PERIOD;
-        write <= '0';
+        write        <= '0';
 
         wait for 17 ms;
         sim_ended <= true;

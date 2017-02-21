@@ -27,12 +27,12 @@ architecture rtl of level_adjuster is
     signal quotient : std_logic_vector(27 downto 0);
 begin
     lpm_divider0 : lpm_divider
-        port map(
-            clock    => clk,
-            denom    => denom,
-            numer    => numer,
-            quotient => quotient,
-            remain   => open);
+    port map(
+        clock    => clk,
+        denom    => denom,
+        numer    => numer,
+        quotient => quotient,
+        remain   => open);
 
     numer          <= std_logic_vector((unsigned(raw_pixel) - unsigned(raw_min)) * resize(X"3fff", raw_pixel'length));
     denom          <= std_logic_vector(unsigned(raw_max) - unsigned(raw_min));

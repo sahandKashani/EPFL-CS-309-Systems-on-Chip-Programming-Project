@@ -9,7 +9,7 @@
 --           20-mar-2002 CG 0.2 minor corrections
 --           27-mar-2002 CG 0.6 interface is working yet
 --           02-apr-2002 CG 0.7 minor corrections
---			 09-05 -2006 RB 0.8 synchronise scl_in and sda_in with rising_edge of clk
+--           09-05 -2006 RB 0.8 synchronise scl_in and sda_in with rising_edge of clk
 ------------------------------------------------------------------
 -- Registers description:
 --
@@ -60,21 +60,21 @@ use ieee.std_logic_arith.all;
 
 entity i2c_interface is
     port(
-        clk        : in    std_logic;
-        reset      : in    std_logic;
+        clk   : in std_logic;
+        reset : in std_logic;
 
         -- Avalon bus signals
-        address    : in    std_logic_vector(1 downto 0);
-        chipselect : in    std_logic;
-        write      : in    std_logic;
-        writedata  : in    std_logic_vector(7 downto 0);
-        read       : in    std_logic;
-        readdata   : out   std_logic_vector(7 downto 0);
-        irq        : out   std_logic;
+        address    : in  std_logic_vector(1 downto 0);
+        chipselect : in  std_logic;
+        write      : in  std_logic;
+        writedata  : in  std_logic_vector(7 downto 0);
+        read       : in  std_logic;
+        readdata   : out std_logic_vector(7 downto 0);
+        irq        : out std_logic;
 
         -- I2C signals
-        scl        : inout std_logic;
-        sda        : inout std_logic
+        scl : inout std_logic;
+        sda : inout std_logic
     );
 
 end i2c_interface;
@@ -83,10 +83,10 @@ architecture structural of i2c_interface is
     component i2c_core
         port(
             -- I2C signals
-            sda_in       : in  std_logic;
-            scl_in       : in  std_logic;
-            sda_out      : out std_logic;
-            scl_out      : out std_logic;
+            sda_in  : in  std_logic;
+            scl_in  : in  std_logic;
+            sda_out : out std_logic;
+            scl_out : out std_logic;
 
             -- interface signals
             clk          : in  std_logic;
@@ -105,23 +105,23 @@ architecture structural of i2c_interface is
             busy         : out std_logic
 
         -- debug signals
-        --state  		: out std_logic_vector(5 downto 0)
+        --state                 : out std_logic_vector(5 downto 0)
         );
     end component;
 
     component i2c_clkgen
         port(
-            signal clk     : in  std_logic;
-            signal rst     : in  std_logic;
+            signal clk : in std_logic;
+            signal rst : in std_logic;
 
-            signal clk_cnt : in  std_logic_vector(7 downto 0);
+            signal clk_cnt : in std_logic_vector(7 downto 0);
 
             -- I2C clock generated
-            signal sclk    : out std_logic;
+            signal sclk : out std_logic;
 
             -- I2C clock line SCL (used for clock stretching)
-            signal scl_in  : in  std_logic;
-            signal scl_out : in  std_logic
+            signal scl_in  : in std_logic;
+            signal scl_out : in std_logic
         );
     end component;
 
@@ -176,43 +176,43 @@ architecture structural of i2c_interface is
     signal sda_out : std_logic;
 
 begin
-    scl_in <= scl when rising_edge(clk); -- RB 0.8
-    sda_in <= sda when rising_edge(clk); -- RB 0.8
+    scl_in <= scl when rising_edge(clk);  -- RB 0.8
+    sda_in <= sda when rising_edge(clk);  -- RB 0.8
 
     --scl <= 'Z' when (scl_out = '1') else '0';
-    scl <= '1' when (scl_out = '1') else '0'; -- RB 0.8 to have nice scl ( no more open collector !! )
+    scl <= '1' when (scl_out = '1') else '0';  -- RB 0.8 to have nice scl ( no more open collector !! )
     sda <= 'Z' when (sda_out = '1') else '0';
 
     clkgen : i2c_clkgen port map(
-            clk     => clk,
-            rst     => reset,
-            clk_cnt => i_clkdiv_reg,
-            sclk    => i_sclk,
-            scl_in  => scl_in,
-            scl_out => i_scl_out
-        );
+        clk     => clk,
+        rst     => reset,
+        clk_cnt => i_clkdiv_reg,
+        sclk    => i_sclk,
+        scl_in  => scl_in,
+        scl_out => i_scl_out
+    );
 
     core : i2c_core port map(
-            clk          => clk,
-            rst          => reset,
-            sclk         => i_sclk,
-            ack_in       => i_ack_reg,
-            ack_out      => i_lar_reg,
-            data_in      => i_data_in,
-            data_out     => i_data_out,
-            cmd_start    => i_start_reg,
-            cmd_stop     => i_stop_reg,
-            cmd_read     => i_read_reg,
-            cmd_write    => i_write_reg,
-            cmd_done_ack => i_cmd_done_ack,
-            cmd_done     => i_cmd_done,
-            busy         => i_busy_reg,
-            sda_in       => sda_in,
-            scl_in       => scl_in,
-            sda_out      => sda_out,
-            scl_out      => i_scl_out
-        --	state        => state
-        );
+        clk          => clk,
+        rst          => reset,
+        sclk         => i_sclk,
+        ack_in       => i_ack_reg,
+        ack_out      => i_lar_reg,
+        data_in      => i_data_in,
+        data_out     => i_data_out,
+        cmd_start    => i_start_reg,
+        cmd_stop     => i_stop_reg,
+        cmd_read     => i_read_reg,
+        cmd_write    => i_write_reg,
+        cmd_done_ack => i_cmd_done_ack,
+        cmd_done     => i_cmd_done,
+        busy         => i_busy_reg,
+        sda_in       => sda_in,
+        scl_in       => scl_in,
+        sda_out      => sda_out,
+        scl_out      => i_scl_out
+    --  state        => state
+    );
 
     -- read strobe
     i_read_strobe <= (chipselect and read);
@@ -246,9 +246,9 @@ begin
                 i_readdata(5) <= i_int_en_reg;
 
             when "10" => i_readdata(0) <= i_lar_reg;
-                i_readdata(1) <= i_busy_reg;
-                i_readdata(2) <= i_int_pe_reg;
-                i_readdata(3) <= i_tip_reg;
+                         i_readdata(1) <= i_busy_reg;
+                         i_readdata(2) <= i_int_pe_reg;
+                         i_readdata(3) <= i_tip_reg;
 
             when "11"   => i_readdata <= i_clkdiv_reg;
             when others => i_readdata <= (others => '0');
@@ -259,13 +259,13 @@ begin
     scl_out <= i_scl_out;
 
     -- transfer in progress
-    i_tip_reg <= (i_read_reg OR i_write_reg);
+    i_tip_reg <= (i_read_reg or i_write_reg);
 
     -- write strobe
     i_write_strobe <= (chipselect and write);
 
     -- interrupt output
-    i_irq <= (i_int_pe_reg AND i_int_en_reg);
+    i_irq <= (i_int_pe_reg and i_int_en_reg);
 
     -- interrupt clear signal coming from outside
     i_int_clr <= '1' when (address = "00" and chipselect = '1') else '0';
@@ -293,12 +293,12 @@ begin
                     case address is
                         when "00" => i_data_in <= writedata;
                         when "01" => i_ack_reg <= writedata(0);
-                            i_stop_reg            <= writedata(1);
-                            i_start_reg           <= writedata(2);
-                            i_read_reg            <= writedata(3);
-                            i_write_reg           <= writedata(4);
-                            i_int_en_reg          <= writedata(5);
-                        when "11" => i_clkdiv_reg <= writedata;
+                                     i_stop_reg   <= writedata(1);
+                                     i_start_reg  <= writedata(2);
+                                     i_read_reg   <= writedata(3);
+                                     i_write_reg  <= writedata(4);
+                                     i_int_en_reg <= writedata(5);
+                        when "11"   => i_clkdiv_reg <= writedata;
                         when others => null;
                     end case;
                 end if;

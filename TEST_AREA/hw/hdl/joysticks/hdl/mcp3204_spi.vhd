@@ -14,10 +14,10 @@ entity mcp3204_spi is
         data       : out std_logic_vector(11 downto 0);
 
         -- 1 MHz
-        SCLK       : out std_logic;
-        CS_N       : out std_logic;
-        MOSI       : out std_logic;
-        MISO       : in  std_logic
+        SCLK : out std_logic;
+        CS_N : out std_logic;
+        MOSI : out std_logic;
+        MISO : in  std_logic
     );
 end mcp3204_spi;
 
@@ -25,13 +25,13 @@ architecture rtl of mcp3204_spi is
     type state is (STATE_IDLE, STATE_START, STATE_SGL, STATE_D2, STATE_D1, STATE_D0, STATE_SAMPLE, STATE_NULL, STATE_D_IN, STATE_DATA_VALID);
     signal reg_state : state := STATE_IDLE;
 
-    signal reg_clk_divider_counter : unsigned(4 downto 0) := (others => '0'); -- need to be able to count until 24
-    signal reg_spi_en              : std_logic            := '0'; -- pulses every 0.5 MHz
+    signal reg_clk_divider_counter : unsigned(4 downto 0) := (others => '0');  -- need to be able to count until 24
+    signal reg_spi_en              : std_logic            := '0';  -- pulses every 0.5 MHz
     signal reg_rising_edge_sclk    : std_logic            := '0';
     signal reg_falling_edge_sclk   : std_logic            := '0';
 
     signal reg_channel      : std_logic_vector(channel'range) := (others => '0');
-    signal reg_data_counter : unsigned(3 downto 0)            := (others => '0'); -- need to be able to count until 11
+    signal reg_data_counter : unsigned(3 downto 0)            := (others => '0');  -- need to be able to count until 11
 
     -- registered outputs
     signal reg_busy       : std_logic                    := '0';
