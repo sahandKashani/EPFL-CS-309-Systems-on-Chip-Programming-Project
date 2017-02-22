@@ -1,9 +1,10 @@
 ###############################################################################
-# prsoc_ext_board_pinning.tcl
+# pin_assignment_prsoc_ext_board.tcl
 #
 # BOARD         : DE0-Nano-SoC from Terasic
 # Author        : Philemon Favrod
 #               : adapted by Florian Depraz
+#               : adapted by Sahand Kashani-Akhavan
 #                 Based on the work of Sahand Kashani-Akhavan
 # Revision      : 1.2
 # Creation date : May 12, 2016
@@ -47,47 +48,48 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ADC_SDO
 #============================================================
 # ARDUINO Extention OV7670 CAMERA
 #============================================================
-set_location_assignment PIN_AG13 -to CAM_D[9]
-set_location_assignment PIN_AG13 -to CAM_D_9
-set_location_assignment PIN_AF13 -to CAM_D[8]
-set_location_assignment PIN_AF13 -to CAM_D_8
-set_location_assignment PIN_AG10 -to CAM_D[7]
-set_location_assignment PIN_AG10 -to CAM_D_7
-set_location_assignment PIN_AG9  -to CAM_D[6]
-set_location_assignment PIN_AG9  -to CAM_D_6
-set_location_assignment PIN_U14  -to CAM_D[5]
-set_location_assignment PIN_U14  -to CAM_D_5
-set_location_assignment PIN_U13  -to CAM_D[4]
-set_location_assignment PIN_U13  -to CAM_D_4
-set_location_assignment PIN_AG8  -to CAM_D[3]
-set_location_assignment PIN_AG8  -to CAM_D_3
-set_location_assignment PIN_AH8  -to CAM_D[2]
-set_location_assignment PIN_AH8  -to CAM_D_2
-set_location_assignment PIN_AF17 -to CAM_D[1]
-set_location_assignment PIN_AF17 -to CAM_D_1
 set_location_assignment PIN_AE15 -to CAM_D[0]
 set_location_assignment PIN_AE15 -to CAM_D_0
+set_location_assignment PIN_AF17 -to CAM_D[1]
+set_location_assignment PIN_AF17 -to CAM_D_1
+set_location_assignment PIN_AH8  -to CAM_D[2]
+set_location_assignment PIN_AH8  -to CAM_D_2
+set_location_assignment PIN_AG8  -to CAM_D[3]
+set_location_assignment PIN_AG8  -to CAM_D_3
+set_location_assignment PIN_U13  -to CAM_D[4]
+set_location_assignment PIN_U13  -to CAM_D_4
+set_location_assignment PIN_U14  -to CAM_D[5]
+set_location_assignment PIN_U14  -to CAM_D_5
+set_location_assignment PIN_AG9  -to CAM_D[6]
+set_location_assignment PIN_AG9  -to CAM_D_6
+set_location_assignment PIN_AG10 -to CAM_D[7]
+set_location_assignment PIN_AG10 -to CAM_D_7
+set_location_assignment PIN_AF13 -to CAM_D[8]
+set_location_assignment PIN_AF13 -to CAM_D_8
+set_location_assignment PIN_AG13 -to CAM_D[9]
+set_location_assignment PIN_AG13 -to CAM_D_9
 
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[9]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_9
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[8]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_8
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_7
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_6
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_5
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_4
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_3
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_2
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_1
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_0
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_1
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_2
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_3
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_4
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_5
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_6
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_7
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[8]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_8
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D[9]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_D_9
+
 #============================================================
 # Arduino Extension LEPTON CAMERA THERMAL CAM_TH
 #============================================================
@@ -97,7 +99,6 @@ set_location_assignment PIN_AH11 -to CAM_TH_MISO
 set_location_assignment PIN_AH12 -to CAM_TH_CLK
 set_location_assignment PIN_AH9  -to CAM_TH_I2C_SDA
 set_location_assignment PIN_AG11 -to CAM_TH_I2C_SCL
-
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_TH_SPI_CS_N
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_TH_MOSI
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_TH_MISO
@@ -105,9 +106,7 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_TH_CLK
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_TH_I2C_SDA
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_TH_I2C_SCL
 
-
-set_location_assignment PIN_AH7  -to ARDUINO_RESET_N
-
+set_location_assignment PIN_AH7 -to ARDUINO_RESET_N
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ARDUINO_RESET_N
 
 #============================================================
@@ -607,8 +606,12 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW_3
 set_location_assignment PIN_V12  -to PIO_INT_N
 set_location_assignment PIN_AE11 -to PIO_SCL
 set_location_assignment PIN_AE12 -to PIO_SDA
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PIO_INT_N
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PIO_SCL
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PIO_SDA
 
 set_location_assignment PIN_AF7  -to PIR_OUT
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PIR_OUT
 
 set_location_assignment PIN_W12  -to CAM_PAL_VGA_SDA
 set_location_assignment PIN_AF8  -to CAM_PAL_VGA_SCL
@@ -616,219 +619,214 @@ set_location_assignment PIN_T11  -to CAM_SYS_CLK
 set_location_assignment PIN_AG6  -to CAM_LV
 set_location_assignment PIN_AH2  -to CAM_PIX_CLK
 set_location_assignment PIN_AE4  -to CAM_FV
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_PAL_VGA_SDA
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_PAL_VGA_SCL
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_SYS_CLK
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_LV
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_PIX_CLK
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_FV
 
 set_location_assignment PIN_Y8   -to PAL_VD_HSO
 set_location_assignment PIN_AB4  -to PAL_VD_VSO
-set_location_assignment PIN_W8   -to PAL_VD_VD[7]
-set_location_assignment PIN_W8   -to PAL_VD_VD_7
-set_location_assignment PIN_Y4   -to PAL_VD_VD[6]
-set_location_assignment PIN_Y4   -to PAL_VD_VD_6
-set_location_assignment PIN_Y5   -to PAL_VD_VD[5]
-set_location_assignment PIN_Y5   -to PAL_VD_VD_5
-set_location_assignment PIN_T8   -to PAL_VD_VD[3]
-set_location_assignment PIN_T8   -to PAL_VD_VD_3
-set_location_assignment PIN_T12  -to PAL_VD_VD[4]
-set_location_assignment PIN_T12  -to PAL_VD_VD_4
+set_location_assignment PIN_AG5  -to PAL_VD_VD[0]
+set_location_assignment PIN_AG5  -to PAL_VD_VD_0
 set_location_assignment PIN_AH5  -to PAL_VD_VD[1]
 set_location_assignment PIN_AH5  -to PAL_VD_VD_1
 set_location_assignment PIN_AH6  -to PAL_VD_VD[2]
 set_location_assignment PIN_AH6  -to PAL_VD_VD_2
+set_location_assignment PIN_T8   -to PAL_VD_VD[3]
+set_location_assignment PIN_T8   -to PAL_VD_VD_3
+set_location_assignment PIN_T12  -to PAL_VD_VD[4]
+set_location_assignment PIN_T12  -to PAL_VD_VD_4
+set_location_assignment PIN_Y5   -to PAL_VD_VD[5]
+set_location_assignment PIN_Y5   -to PAL_VD_VD_5
+set_location_assignment PIN_Y4   -to PAL_VD_VD[6]
+set_location_assignment PIN_Y4   -to PAL_VD_VD_6
+set_location_assignment PIN_W8   -to PAL_VD_VD[7]
+set_location_assignment PIN_W8   -to PAL_VD_VD_7
 set_location_assignment PIN_AH4  -to PAL_VD_CLKO
-set_location_assignment PIN_AG5  -to PAL_VD_VD[0]
-set_location_assignment PIN_AG5  -to PAL_VD_VD_0
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_HSO
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VSO
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_0
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_1
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_2
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_3
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_4
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_5
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_6
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_7
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_CLKO
 
 set_location_assignment PIN_U11  -to BOARD_ID
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to BOARD_ID
 
 set_location_assignment PIN_AH3  -to SERVO_0
 set_location_assignment PIN_AF4  -to SERVO_1
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SERVO_0
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SERVO_1
 
 set_location_assignment PIN_AD12 -to J0_SPI_CLK
 set_location_assignment PIN_AD11 -to J0_SPI_MISO
 set_location_assignment PIN_AF9  -to J0_SPI_CS_N
 set_location_assignment PIN_AD10 -to J0_SPI_MOSI
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to J0_SPI_CLK
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to J0_SPI_MISO
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to J0_SPI_CS_N
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to J0_SPI_MOSI
 
 set_location_assignment PIN_AF5  -to FROM_ESP_TXD
 set_location_assignment PIN_T13  -to TO_ESP_RXD
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FROM_ESP_TXD
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TO_ESP_RXD
 
 set_location_assignment PIN_AE7  -to SPI_MISO
 set_location_assignment PIN_AF6  -to SPI_ENA_N
 set_location_assignment PIN_AE8  -to SPI_CLK
 set_location_assignment PIN_AE9  -to SPI_MOSI
 set_location_assignment PIN_AF10 -to SPI_DAT
-
-set_location_assignment PIN_AF11 -to LED_BGR
-
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PIO_INT_N
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PIR_OUT
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_PAL_VGA_SDA
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_PAL_VGA_SCL
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_HSO
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VSO
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_7
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_6
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_5
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to BOARD_ID
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_3
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_4
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_1
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_2
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_CLKO
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_0
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SERVO_0
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_PIX_CLK
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SERVO_1
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_LV
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FROM_ESP_TXD
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_FV
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TO_ESP_RXD
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CAM_SYS_CLK
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SPI_MISO
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SPI_ENA_N
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to J0_SPI_CS_N
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SPI_CLK
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to J0_SPI_MOSI
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SPI_MOSI
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to J0_SPI_MISO
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SPI_DAT
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to J0_SPI_CLK
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PIO_SCL
+
+set_location_assignment PIN_AF11 -to LED_BGR
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED_BGR
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PIO_SDA
 
 #============================================================
 # GPIO_1, GPIO_1 connect to GPIO Default
 #============================================================
 set_location_assignment PIN_AA15 -to RESET_N
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to RESET_N
 
 set_location_assignment PIN_AG28 -to TS_SCL
 set_location_assignment PIN_AH27 -to TS_SDA
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TS_SCL
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TS_SDA
 
 set_location_assignment PIN_Y15  -to LCD_PIN_DAV_N
 set_location_assignment PIN_AG26 -to LCD_DE
 set_location_assignment PIN_AF23 -to LCD_DISPLAY_EN
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_PIN_DAV_N
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DE
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DISPLAY_EN
 
 set_location_assignment PIN_AH24 -to BLT_TXD
 set_location_assignment PIN_AE22 -to BLT_RXD
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to BLT_TXD
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to BLT_RXD
 
 set_location_assignment PIN_AG20 -to BOARD_ID
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to BOARD_ID
 
 set_location_assignment PIN_AF21 -to VIDEO_HSYNC
 set_location_assignment PIN_AG19 -to VIDEO_VSYNC
 set_location_assignment PIN_AF20 -to VIDEO_CLK
-set_location_assignment PIN_AC23 -to VIDEO_B[7]
-set_location_assignment PIN_AC23 -to VIDEO_B_7
-set_location_assignment PIN_AG18 -to VIDEO_B[6]
-set_location_assignment PIN_AG18 -to VIDEO_B_6
-set_location_assignment PIN_AH26 -to VIDEO_B[5]
-set_location_assignment PIN_AH26 -to VIDEO_B_5
-set_location_assignment PIN_AA19 -to VIDEO_B[4]
-set_location_assignment PIN_AA19 -to VIDEO_B_4
-set_location_assignment PIN_AG24 -to VIDEO_B[3]
-set_location_assignment PIN_AG24 -to VIDEO_B_3
-set_location_assignment PIN_AF25 -to VIDEO_B[2]
-set_location_assignment PIN_AF25 -to VIDEO_B_2
-set_location_assignment PIN_AH23 -to VIDEO_B[1]
-set_location_assignment PIN_AH23 -to VIDEO_B_1
 set_location_assignment PIN_AG23 -to VIDEO_B[0]
 set_location_assignment PIN_AG23 -to VIDEO_B_0
-set_location_assignment PIN_AE19 -to VIDEO_G[7]
-set_location_assignment PIN_AE19 -to VIDEO_G_7
-set_location_assignment PIN_AF18 -to VIDEO_G[6]
-set_location_assignment PIN_AF18 -to VIDEO_G_6
-set_location_assignment PIN_AD19 -to VIDEO_G[5]
-set_location_assignment PIN_AD19 -to VIDEO_G_5
-set_location_assignment PIN_AE20 -to VIDEO_G[4]
-set_location_assignment PIN_AE20 -to VIDEO_G_4
-set_location_assignment PIN_AE24 -to VIDEO_G[3]
-set_location_assignment PIN_AE24 -to VIDEO_G_3
-set_location_assignment PIN_AD20 -to VIDEO_G[2]
-set_location_assignment PIN_AD20 -to VIDEO_G_2
-set_location_assignment PIN_AF22 -to VIDEO_G[1]
-set_location_assignment PIN_AF22 -to VIDEO_G_1
+set_location_assignment PIN_AH23 -to VIDEO_B[1]
+set_location_assignment PIN_AH23 -to VIDEO_B_1
+set_location_assignment PIN_AF25 -to VIDEO_B[2]
+set_location_assignment PIN_AF25 -to VIDEO_B_2
+set_location_assignment PIN_AG24 -to VIDEO_B[3]
+set_location_assignment PIN_AG24 -to VIDEO_B_3
+set_location_assignment PIN_AA19 -to VIDEO_B[4]
+set_location_assignment PIN_AA19 -to VIDEO_B_4
+set_location_assignment PIN_AH26 -to VIDEO_B[5]
+set_location_assignment PIN_AH26 -to VIDEO_B_5
+set_location_assignment PIN_AG18 -to VIDEO_B[6]
+set_location_assignment PIN_AG18 -to VIDEO_B_6
+set_location_assignment PIN_AC23 -to VIDEO_B[7]
+set_location_assignment PIN_AC23 -to VIDEO_B_7
 set_location_assignment PIN_AH22 -to VIDEO_G[0]
 set_location_assignment PIN_AH22 -to VIDEO_G_0
-set_location_assignment PIN_AH19 -to VIDEO_R[7]
-set_location_assignment PIN_AH19 -to VIDEO_R_7
-set_location_assignment PIN_AH21 -to VIDEO_R[6]
-set_location_assignment PIN_AH21 -to VIDEO_R_6
-set_location_assignment PIN_AG21 -to VIDEO_R[5]
-set_location_assignment PIN_AG21 -to VIDEO_R_5
-set_location_assignment PIN_AH18 -to VIDEO_R[4]
-set_location_assignment PIN_AH18 -to VIDEO_R_4
-set_location_assignment PIN_AD23 -to VIDEO_R[3]
-set_location_assignment PIN_AD23 -to VIDEO_R_3
-set_location_assignment PIN_AE23 -to VIDEO_R[2]
-set_location_assignment PIN_AE23 -to VIDEO_R_2
-set_location_assignment PIN_AA18 -to VIDEO_R[1]
-set_location_assignment PIN_AA18 -to VIDEO_R_1
+set_location_assignment PIN_AF22 -to VIDEO_G[1]
+set_location_assignment PIN_AF22 -to VIDEO_G_1
+set_location_assignment PIN_AD20 -to VIDEO_G[2]
+set_location_assignment PIN_AD20 -to VIDEO_G_2
+set_location_assignment PIN_AE24 -to VIDEO_G[3]
+set_location_assignment PIN_AE24 -to VIDEO_G_3
+set_location_assignment PIN_AE20 -to VIDEO_G[4]
+set_location_assignment PIN_AE20 -to VIDEO_G_4
+set_location_assignment PIN_AD19 -to VIDEO_G[5]
+set_location_assignment PIN_AD19 -to VIDEO_G_5
+set_location_assignment PIN_AF18 -to VIDEO_G[6]
+set_location_assignment PIN_AF18 -to VIDEO_G_6
+set_location_assignment PIN_AE19 -to VIDEO_G[7]
+set_location_assignment PIN_AE19 -to VIDEO_G_7
 set_location_assignment PIN_AC22 -to VIDEO_R[0]
 set_location_assignment PIN_AC22 -to VIDEO_R_0
+set_location_assignment PIN_AA18 -to VIDEO_R[1]
+set_location_assignment PIN_AA18 -to VIDEO_R_1
+set_location_assignment PIN_AE23 -to VIDEO_R[2]
+set_location_assignment PIN_AE23 -to VIDEO_R_2
+set_location_assignment PIN_AD23 -to VIDEO_R[3]
+set_location_assignment PIN_AD23 -to VIDEO_R_3
+set_location_assignment PIN_AH18 -to VIDEO_R[4]
+set_location_assignment PIN_AH18 -to VIDEO_R_4
+set_location_assignment PIN_AG21 -to VIDEO_R[5]
+set_location_assignment PIN_AG21 -to VIDEO_R_5
+set_location_assignment PIN_AH21 -to VIDEO_R[6]
+set_location_assignment PIN_AH21 -to VIDEO_R_6
+set_location_assignment PIN_AH19 -to VIDEO_R[7]
+set_location_assignment PIN_AH19 -to VIDEO_R_7
 
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_PIN_DAV_N
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TS_SCL
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to RESET_N
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TS_SDA
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DE
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to BLT_TXD
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DISPLAY_EN
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to BLT_RXD
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_HSYNC
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to BOARD_ID
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_VSYNC
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_CLK
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_7
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_6
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_5
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_4
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_3
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_2
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_1
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_0
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G_7
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G_6
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G_5
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G_4
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G_3
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G_2
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G_1
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_1
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_2
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_3
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_4
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_5
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_6
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_B_7
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G_0
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_7
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_6
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_5
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_4
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_3
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_2
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_1
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G_1
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G_2
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G_3
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G_4
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G_5
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G_6
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_G_7
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_0
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_1
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_2
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_3
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_4
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_5
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_6
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_R_7
