@@ -14,4 +14,4 @@ void lepton_wait_until_eof(lepton_dev *dev);
 bool lepton_error_check(lepton_dev *dev);
 void lepton_save_capture(lepton_dev *dev, bool adjusted, const char *fname);
 
-#endif
+#endif /* __LEPTON_H__ */

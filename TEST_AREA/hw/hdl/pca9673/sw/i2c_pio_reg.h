@@ -1,3 +1,5 @@
+#ifndef __I2C_PIO_REG_H__
+#define __I2C_PIO_REG_H__
 
 #define I2C_PIO_DATA_OFST   ( 0 * 4) /* RW */
 #define I2C_PIO_DATA_OFST   ( 1 * 4) /* RW */
@@ -20,3 +22,5 @@
 
 #define I2C_PIO_ERROR_MASK  (1)
 #define I2C_PIO_BUSY_MASK   (0)
+
+#endif /* __I2C_PIO_REG_H__ */

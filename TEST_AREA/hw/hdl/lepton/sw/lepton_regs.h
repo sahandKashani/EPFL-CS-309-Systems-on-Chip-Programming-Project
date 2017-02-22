@@ -13,4 +13,4 @@
 #define LEPTON_REGS_BUFFER_SIZE          (80 * 60)
 #define LEPTON_REGS_BUFFER_BYTELENGTH    (LEPTON_REGS_BUFFER_SIZE * 2)
 
-#endif
+#endif /* __LEPTON_REGS_H__ */

@@ -5,8 +5,8 @@
  *      Author: Florian Depraz
  */
 
-#ifndef I2C_PIO_H_
-#define I2C_PIO_H_
+#ifndef __I2C_PIO_H__
+#define __I2C_PIO_H__
 
 #define BIT_BLON 		0
 #define BIT_WIFI_PWR 	1
@@ -45,4 +45,4 @@ uint16_t i2c_pio_read(i2c_pio_dev *dev);
 uint16_t i2c_pio_readbit(i2c_pio_dev *dev, uint8_t bit);
 
 
-#endif /* I2C_PIO_H_ */
+#endif /* __I2C_PIO_H__ */

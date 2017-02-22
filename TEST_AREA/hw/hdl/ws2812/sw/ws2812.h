@@ -5,8 +5,8 @@
  *      Author: Florian Depraz
  */
 
-#ifndef WS2812_H_
-#define WS2812_H_
+#ifndef __WS2812_H__
+#define __WS2812_H__
 
 
 #include <stdint.h>
@@ -41,4 +41,4 @@ uint32_t ws2812_readConfig(ws2812_dev *dev);
 uint32_t ws2812_readIntensity(ws2812_dev *dev);
 
 
-#endif /* WS2812_H_ */
+#endif /* __WS2812_H__ */
