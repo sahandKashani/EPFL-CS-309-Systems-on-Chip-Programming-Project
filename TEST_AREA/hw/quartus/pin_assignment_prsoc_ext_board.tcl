@@ -665,9 +665,6 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD[7]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_VD_7
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PAL_VD_CLKO
 
-set_location_assignment PIN_U11  -to BOARD_ID
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to BOARD_ID
-
 set_location_assignment PIN_AH3  -to SERVO_0
 set_location_assignment PIN_AF4  -to SERVO_1
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SERVO_0
