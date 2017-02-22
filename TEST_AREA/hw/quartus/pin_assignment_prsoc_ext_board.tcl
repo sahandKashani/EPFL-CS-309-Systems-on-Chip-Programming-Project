@@ -778,7 +778,6 @@ set_location_assignment PIN_AH21 -to VIDEO_R[6]
 set_location_assignment PIN_AH21 -to VIDEO_R_6
 set_location_assignment PIN_AH19 -to VIDEO_R[7]
 set_location_assignment PIN_AH19 -to VIDEO_R_7
-
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_HSYNC
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_VSYNC
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VIDEO_CLK
