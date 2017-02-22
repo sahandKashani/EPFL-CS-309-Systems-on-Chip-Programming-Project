@@ -1,7 +1,7 @@
 -- #############################################################################
--- DE0_Nano_SoC_top_level_ext_board.vhd
+-- DE0_Nano_SoC_PrSoC_extn_board_top_level.vhd
 --
--- BOARD         : PrSoC ext_board top level
+-- BOARD         : PrSoC extension board for DE0-Nano-SoC
 -- Author        : Florian Depraz based on Sahand Kashani-Akhavan work
 -- Revision      : 1.1
 -- Creation date : 06/02/2016
@@ -17,7 +17,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity DE0_Nano_SoC_ext_board_top_level is
+entity DE0_Nano_SoC_PrSoC_extn_board_top_level is
     port(
         -------------------------------
         -- Comment ALL unused ports. --
@@ -163,9 +163,9 @@ entity DE0_Nano_SoC_ext_board_top_level is
         HPS_USB_NXT      : in    std_logic;
         HPS_USB_STP      : out   std_logic
     );
-end entity DE0_Nano_SoC_ext_board_top_level;
+end entity DE0_Nano_SoC_PrSoC_extn_board_top_level;
 
-architecture rtl of DE0_Nano_SoC_ext_board_top_level is
+architecture rtl of DE0_Nano_SoC_PrSoC_extn_board_top_level is
     component soc_system is
         port (
             clk_clk                           : in    std_logic                     := 'X';
@@ -337,7 +337,6 @@ begin
         hps_0_io_hps_io_gpio_inst_GPIO54  => HPS_KEY_N,
         hps_0_io_hps_io_gpio_inst_GPIO61  => HPS_GSENSOR_INT
     );
-
 
     LED(0)          <= KEY_N(0) or KEY_N(1);
     LED(7 downto 1) <= "1000001";

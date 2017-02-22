@@ -1,7 +1,7 @@
 -- #############################################################################
--- DE0_Nano_SoC_top_level_ext_board.vhd
+-- DE0_Nano_SoC_PrSoC_extn_board_top_level_nios_only.vhd
 --
--- BOARD         : PrSoC ext_board top level
+-- BOARD         : PrSoC extension board for DE0-Nano-SoC
 -- Author        : Florian Depraz based on Sahand Kashani-Akhavan work
 -- Revision      : 1.1
 -- Creation date : 06/02/2016
@@ -17,7 +17,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity DE0_Nano_SoC_ext_board_nios_top_level is
+entity DE0_Nano_SoC_PrSoC_extn_board_top_level_nios_only is
     port(
         -------------------------------
         -- Comment ALL unused ports. --
@@ -113,9 +113,9 @@ entity DE0_Nano_SoC_ext_board_nios_top_level is
         -- LED RGB
         LED_BGR : out std_logic
     );
-end entity DE0_Nano_SoC_ext_board_nios_top_level;
+end entity DE0_Nano_SoC_PrSoC_extn_board_top_level_nios_only;
 
-architecture rtl of DE0_Nano_SoC_ext_board_nios_top_level is
+architecture rtl of DE0_Nano_SoC_PrSoC_extn_board_top_level_nios_only is
     component soc_system_nios_only is
         port (
             clk_clk                    : in    std_logic := 'X';
@@ -139,7 +139,7 @@ architecture rtl of DE0_Nano_SoC_ext_board_nios_top_level is
     end component soc_system_nios_only;
 
 begin
-    u0 : component soc_system_nios_only
+    soc_system_inst : component soc_system_nios_only
     port map(
         clk_clk                    => FPGA_CLK1_50,
         reset_reset_n              => KEY_N(0),
@@ -159,7 +159,6 @@ begin
         i2c_pio_0_pca9673_reset_n  => RESET_N,
         ws2812_0_conduit_end_name  => LED_BGR
     );
-
 
     LED(0)          <= KEY_N(0) or KEY_N(1);
     LED(7 downto 1) <= "1000001";

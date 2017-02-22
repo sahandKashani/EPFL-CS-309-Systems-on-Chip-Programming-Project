@@ -1,5 +1,5 @@
 ###############################################################################
-# pin_assignment_prsoc_ext_board.tcl
+# pin_assignment_DE0_Nano_SoC_PrSoC_extn_board.tcl
 #
 # BOARD         : DE0-Nano-SoC from Terasic
 # Author        : Philemon Favrod
