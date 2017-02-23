@@ -37,12 +37,13 @@ void pwm_init(pwm_dev *dev) {
  * @param dev pwm device structure.
  * @param duty_cycle pwm duty cycle in us.
  * @param period pwm period in us.
+ * @param module_frequency frequency at which the component is clocked.
  */
 void pwm_configure(pwm_dev *dev, uint32_t duty_cycle, uint32_t period, uint32_t module_frequency) {
     period = period * (module_frequency / 1000000u);
     ioc_write_word(dev->base, PWM_PERIOD_OFST, period);
 
-    duty_cycle = duty_cycle * (module_frequency / 10000000u);
+    duty_cycle = duty_cycle * (module_frequency / 1000000u);
     ioc_write_word(dev->base, PWM_DUTY_CYCLE_OFST, duty_cycle);
 }
 

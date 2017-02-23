@@ -43,7 +43,7 @@ void pwm_configure(pwm_dev *dev, uint32_t duty_cycle, uint32_t period, uint32_t 
     period = period * (module_frequency / 1000000u);
     IOWR_32DIRECT(dev->base, PWM_PERIOD_OFST, period);
 
-    duty_cycle = duty_cycle * (module_frequency / 10000000u);
+    duty_cycle = duty_cycle * (module_frequency / 1000000u);
     IOWR_32DIRECT(dev->base, PWM_DUTY_CYCLE_OFST, duty_cycle);
 }
 
