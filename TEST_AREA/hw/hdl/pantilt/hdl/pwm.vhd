@@ -6,9 +6,9 @@
 -- +--------+------------+--------+---------------------------------------------------------------------------+
 -- | RegNo  | Name       | Access | Description                                                               |
 -- +--------+------------+--------+---------------------------------------------------------------------------+
--- | 0      | PERIOD     | R/W    | The clock divider. Reminder: clk is a 50-MHz clock.                       |
+-- | 0      | PERIOD     | R/W    | Period in clock cycles.                                                   |
 -- +--------+------------+--------+---------------------------------------------------------------------------+
--- | 1      | DUTY_CYCLE | R/W    | A value between 0 and CLOCK_DIV indicating the duty cycle of the clock.   |
+-- | 1      | DUTY_CYCLE | R/W    | A value between 0 and PERIOD indicating the duty cycle of the clock.      |
 -- +--------+------------+--------+---------------------------------------------------------------------------+
 -- | 2      | CTRL       | W      | Writing 0 (resp. 1) to the register stops (resp. starts) the PWM.         |
 -- +--------+------------+--------+---------------------------------------------------------------------------+
