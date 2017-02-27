@@ -1,0 +1,4 @@
+work/*
+!work/_info
+transcript
+*.cr.mti
