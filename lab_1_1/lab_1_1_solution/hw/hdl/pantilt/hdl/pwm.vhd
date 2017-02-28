@@ -19,18 +19,22 @@ use ieee.numeric_std.all;
 
 entity pwm is
     port(
-        -- Inputs
-        clk         : in std_logic;
-        reset       : in std_logic;
-        address     : in std_logic_vector(1 downto 0);  -- 2 address bits are needed to address each register of the interface
-        writedata   : in std_logic_vector(31 downto 0);
-        read, write : in std_logic;
+        -- Avalon Clock interface
+        clk : in std_logic;
 
-        -- Outputs
-        readdata : out std_logic_vector(31 downto 0);
-        pwm_out  : out std_logic
+        -- Avalon Reset interface
+        reset : in std_logic;
+
+        -- Avalon-MM Slave interface
+        address   : in  std_logic_vector(1 downto 0);
+        read      : in  std_logic;
+        write     : in  std_logic;
+        readdata  : out std_logic_vector(31 downto 0);
+        writedata : in  std_logic_vector(31 downto 0);
+
+        -- Avalon Conduit interface
+        pwm_out : out std_logic
     );
-
 end pwm;
 
 architecture rtl of pwm is
