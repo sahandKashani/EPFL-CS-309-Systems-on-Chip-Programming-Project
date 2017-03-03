@@ -96,6 +96,9 @@ begin
 
             address <= std_logic_vector(to_unsigned(ofst, address'length));
             read    <= '1';
+            -- The read has a 1 cycle wait-state, so we need to keep the read
+            -- signal high for 2 clock cycles.
+            wait until rising_edge(clk);
             wait until rising_edge(clk);
 
             address <= (others => '0');
