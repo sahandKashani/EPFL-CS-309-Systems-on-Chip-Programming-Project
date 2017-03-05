@@ -3,6 +3,8 @@
 
 #include "mcp3204.h"
 
+#define MCP3204_NUM_CHANNELS (4)
+
 /**
  * mcp3204_inst
  *
@@ -37,6 +39,6 @@ void mcp3204_init(mcp3204_dev *dev) {
  * @param channel channel to be read
  */
 uint32_t mcp3204_read(mcp3204_dev *dev, uint32_t channel) {
-    assert(channel < 4);
+    assert(channel < MCP3204_NUM_CHANNELS);
     return ioc_read_word(dev->base, 4 * channel);
 }
