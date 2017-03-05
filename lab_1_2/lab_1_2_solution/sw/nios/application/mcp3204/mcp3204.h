@@ -11,6 +11,10 @@ typedef struct mcp3204_dev {
 /*******************************************************************************
  *  Public API
  ******************************************************************************/
+
+#define MCP3204_MIN_VALUE (0)
+#define MCP3204_MAX_VALUE (2047)
+
 mcp3204_dev mcp3204_inst(void *base);
 
 void mcp3204_init(mcp3204_dev *dev);
