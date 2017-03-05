@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "pwm/pwm.h"
+#include "mcp3204/mcp3204.h"
 #include "system.h"
 
 #define PWM_CLOCK_FREQ               (50000000)
