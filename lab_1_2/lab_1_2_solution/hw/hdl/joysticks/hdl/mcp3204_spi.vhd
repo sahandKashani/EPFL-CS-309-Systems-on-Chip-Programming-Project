@@ -1,4 +1,4 @@
--- MCP3204 Avalon Memory-Mapped Interface
+-- MCP3204 SPI Interface
 -- Author: Philémon Favrod & Sahand Kashani
 -- Revision: 1
 
