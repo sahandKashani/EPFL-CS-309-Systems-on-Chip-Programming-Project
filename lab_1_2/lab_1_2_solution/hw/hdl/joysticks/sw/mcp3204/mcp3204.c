@@ -22,7 +22,7 @@ mcp3204_dev mcp3204_inst(void *base) {
 /**
  * mcp3204_init
  *
- * Initializes the pwm device.
+ * Initializes the mcp3204 device.
  *
  * @param dev mcp3204 device structure.
  */

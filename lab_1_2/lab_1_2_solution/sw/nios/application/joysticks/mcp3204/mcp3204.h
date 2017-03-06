@@ -13,7 +13,7 @@ typedef struct mcp3204_dev {
  ******************************************************************************/
 
 #define MCP3204_MIN_VALUE (0)
-#define MCP3204_MAX_VALUE (2047)
+#define MCP3204_MAX_VALUE (4095)
 
 mcp3204_dev mcp3204_inst(void *base);
 
