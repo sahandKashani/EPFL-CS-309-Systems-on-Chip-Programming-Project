@@ -1,9 +1,9 @@
 #include "joysticks.h"
 
-#define JOYSTICK_RIGHT_H_MCP3204_CHANNEL (0)
-#define JOYSTICK_RIGHT_V_MCP3204_CHANNEL (1)
-#define JOYSTICK_LEFT_H_MCP3204_CHANNEL  (2)
-#define JOYSTICK_LEFT_V_MCP3204_CHANNEL  (3)
+#define JOYSTICK_RIGHT_VRY_MCP3204_CHANNEL (0)
+#define JOYSTICK_RIGHT_VRX_MCP3204_CHANNEL (1)
+#define JOYSTICK_LEFT_VRY_MCP3204_CHANNEL  (2)
+#define JOYSTICK_LEFT_VRX_MCP3204_CHANNEL  (3)
 
 /**
  * joysticks_inst
@@ -39,9 +39,7 @@ void joysticks_init(joysticks_dev *dev) {
  * @param dev joysticks device structure.
  */
 uint32_t joysticks_read_left_vertical(joysticks_dev *dev) {
-    // Since the joysticks are rotated clockwise by 90 degress, we must read
-    // the HORIZONTAL axis to get a VERTICAL reading we want.
-    uint32_t value = mcp3204_read(&(dev->mcp3204), JOYSTICK_LEFT_H_MCP3204_CHANNEL);
+    uint32_t value = mcp3204_read(&(dev->mcp3204), JOYSTICK_LEFT_VRY_MCP3204_CHANNEL);
 
     // Need to compensate for 90 degree rotation.
     return JOYSTICKS_MAX_VALUE - value;
@@ -56,9 +54,7 @@ uint32_t joysticks_read_left_vertical(joysticks_dev *dev) {
  * @param dev joysticks device structure.
  */
 uint32_t joysticks_read_left_horizontal(joysticks_dev *dev) {
-    // Since the joysticks are rotated clockwise by 90 degress, we must read
-    // the VERTICAL axis to get a HORIZONTAL reading we want.
-    uint32_t value = mcp3204_read(&(dev->mcp3204), JOYSTICK_LEFT_V_MCP3204_CHANNEL);
+    uint32_t value = mcp3204_read(&(dev->mcp3204), JOYSTICK_LEFT_VRX_MCP3204_CHANNEL);
     return value;
 }
 
@@ -71,9 +67,7 @@ uint32_t joysticks_read_left_horizontal(joysticks_dev *dev) {
  * @param dev joysticks device structure.
  */
 uint32_t joysticks_read_right_vertical(joysticks_dev *dev) {
-    // Since the joysticks are rotated clockwise by 90 degress, we must read
-    // the HORIZONTAL axis to get a VERTICAL reading we want.
-    uint32_t value = mcp3204_read(&(dev->mcp3204), JOYSTICK_RIGHT_H_MCP3204_CHANNEL);
+    uint32_t value = mcp3204_read(&(dev->mcp3204), JOYSTICK_RIGHT_VRY_MCP3204_CHANNEL);
 
     // Need to compensate for 90 degree rotation.
     return JOYSTICKS_MAX_VALUE - value;
@@ -88,8 +82,6 @@ uint32_t joysticks_read_right_vertical(joysticks_dev *dev) {
  * @param dev joysticks device structure.
  */
 uint32_t joysticks_read_right_horizontal(joysticks_dev *dev) {
-    // Since the joysticks are rotated clockwise by 90 degress, we must read
-    // the VERTICAL axis to get a HORIZONTAL reading we want.
-    uint32_t value = mcp3204_read(&(dev->mcp3204), JOYSTICK_RIGHT_V_MCP3204_CHANNEL);
+    uint32_t value = mcp3204_read(&(dev->mcp3204), JOYSTICK_RIGHT_VRX_MCP3204_CHANNEL);
     return value;
 }
