@@ -1,5 +1,5 @@
 #include <assert.h>
-#include "io_custom.h"
+#include <io.h>
 
 #include "mcp3204.h"
 
@@ -22,7 +22,7 @@ mcp3204_dev mcp3204_inst(void *base) {
 /**
  * mcp3204_init
  *
- * Initializes the pwm device.
+ * Initializes the mcp3204 device.
  *
  * @param dev mcp3204 device structure.
  */
@@ -40,5 +40,5 @@ void mcp3204_init(mcp3204_dev *dev) {
  */
 uint32_t mcp3204_read(mcp3204_dev *dev, uint32_t channel) {
     assert(channel < MCP3204_NUM_CHANNELS);
-    return ioc_read_word(dev->base, 4 * channel);
+    return IORD_32DIRECT(dev->base, 4 * channel);
 }
