@@ -22,7 +22,54 @@ entity mcp3204_spi is
 end mcp3204_spi;
 
 architecture rtl of mcp3204_spi is
+    signal reg_clk_divider_counter : unsigned(4 downto 0) := (others => '0');  -- need to be able to count until 24
+    signal reg_spi_en              : std_logic            := '0';  -- pulses every 0.5 MHz
+    signal reg_rising_edge_sclk    : std_logic            := '0';
+    signal reg_falling_edge_sclk   : std_logic            := '0';
+
+    signal reg_sclk : std_logic := '0';
 
 begin
+    clk_divider_generation : process(clk, reset)
+    begin
+        if reset = '1' then
+            reg_clk_divider_counter <= (others => '0');
+        elsif rising_edge(clk) then
+            reg_clk_divider_counter <= reg_clk_divider_counter + 1;
+            reg_spi_en              <= '0';
+            reg_rising_edge_sclk    <= '0';
+            reg_falling_edge_sclk   <= '0';
+
+            if reg_clk_divider_counter = 24 then
+                reg_clk_divider_counter <= (others => '0');
+                reg_spi_en              <= '1';
+
+                if reg_sclk = '0' then
+                    reg_rising_edge_sclk <= '1';
+                elsif reg_sclk = '1' then
+                    reg_falling_edge_sclk <= '1';
+                end if;
+            end if;
+        end if;
+    end process;
+
+    SCLK_generation : process(clk, reset)
+    begin
+        if reset = '1' then
+            reg_sclk <= '0';
+        elsif rising_edge(clk) then
+            if reg_spi_en = '1' then
+                reg_sclk <= not reg_sclk;
+            end if;
+        end if;
+    end process;
+
+    STATE_LOGIC : process(clk, reset)
+    begin
+        -- TODO: complete this process
+        if reset = '1' then
+        elsif rising_edge(clk) then
+        end if;
+    end process;
 
 end architecture rtl;
