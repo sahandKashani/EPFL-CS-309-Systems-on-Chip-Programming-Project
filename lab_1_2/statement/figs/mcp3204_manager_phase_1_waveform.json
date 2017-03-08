@@ -1,0 +1,8 @@
+{signal: [
+  {name: 'clk'    , wave: 'p...'},
+  {name: 'busy'   , wave: '10.1'},
+  {name: 'start'  , wave: '0.10'},
+  {name: 'channel', wave: 'x.2x', data: ['0 / 1 / 2 / 3']},
+],
+  config: { hscale: 2 }
+}
