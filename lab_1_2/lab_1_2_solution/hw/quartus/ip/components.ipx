@@ -7,7 +7,7 @@
  <!--   -->
  <component
    name="mcp3204"
-   file="/home/sahand/Documents/EPFL/TA/pSoC/psoc/lab_1_2/lab_1_2_solution/hw/hdl/joysticks/hdl/mcp3204_hw.tcl"
+   file="../../hdl/joysticks/hdl/mcp3204_hw.tcl"
    displayName="mcp3204"
    version="1.0"
    description="4-Channel 12-Bit A/D Converter with SPI Serial Interface"
@@ -25,7 +25,7 @@
  </component>
  <component
    name="pwm"
-   file="/home/sahand/Documents/EPFL/TA/pSoC/psoc/lab_1_2/lab_1_2_solution/hw/hdl/pantilt/hdl/pwm_hw.tcl"
+   file="../../hdl/pantilt/hdl/pwm_hw.tcl"
    displayName="pwm"
    version="1.0"
    description="Pan-tilt"
