@@ -3,27 +3,28 @@
 # DO NOT MODIFY
 
 
-# 
-# lepton "lepton" v15.1
-#  2017.02.05.19:05:24
+#
+# lepton "lepton" v1.0
+# Philemon Favrod & Sahand Kashani-Akhavan 2017.02.05.19:05:24
 # IR Camera 80x60
-# 
+#
 
-# 
+#
 # request TCL package from ACDS 16.0
-# 
+#
 package require -exact qsys 16.0
 
 
-# 
+#
 # module lepton
-# 
+#
 set_module_property DESCRIPTION "IR Camera 80x60"
 set_module_property NAME lepton
-set_module_property VERSION 15.1
+set_module_property VERSION 1.0
 set_module_property INTERNAL false
 set_module_property OPAQUE_ADDRESS_MAP true
-set_module_property AUTHOR ""
+set_module_property GROUP Camera
+set_module_property AUTHOR "Philemon Favrod & Sahand Kashani-Akhavan"
 set_module_property DISPLAY_NAME lepton
 set_module_property INSTANTIATE_IN_SYSTEM_MODULE true
 set_module_property EDITABLE true
@@ -32,9 +33,9 @@ set_module_property ALLOW_GREYBOX_GENERATION false
 set_module_property REPORT_HIERARCHY false
 
 
-# 
+#
 # file sets
-# 
+#
 add_fileset QUARTUS_SYNTH QUARTUS_SYNTH "" ""
 set_fileset_property QUARTUS_SYNTH TOP_LEVEL lepton
 set_fileset_property QUARTUS_SYNTH ENABLE_RELATIVE_INCLUDE_PATHS false
@@ -51,19 +52,19 @@ add_fileset_file level_adjuster.vhd VHDL PATH level_adjuster.vhd
 add_fileset_file lpm_divider.vhd VHDL PATH lpm_divider.vhd
 
 
-# 
+#
 # parameters
-# 
+#
 
 
-# 
+#
 # display items
-# 
+#
 
 
-# 
+#
 # connection point clock
-# 
+#
 add_interface clock clock end
 set_interface_property clock clockRate 0
 set_interface_property clock ENABLED true
@@ -75,9 +76,9 @@ set_interface_property clock SVD_ADDRESS_GROUP ""
 add_interface_port clock clk clk Input 1
 
 
-# 
+#
 # connection point reset
-# 
+#
 add_interface reset reset end
 set_interface_property reset associatedClock clock
 set_interface_property reset synchronousEdges DEASSERT
@@ -90,9 +91,9 @@ set_interface_property reset SVD_ADDRESS_GROUP ""
 add_interface_port reset reset reset Input 1
 
 
-# 
+#
 # connection point avalon_slave_0
-# 
+#
 add_interface avalon_slave_0 avalon end
 set_interface_property avalon_slave_0 addressUnits WORDS
 set_interface_property avalon_slave_0 associatedClock clock
@@ -128,9 +129,9 @@ set_interface_assignment avalon_slave_0 embeddedsw.configuration.isNonVolatileSt
 set_interface_assignment avalon_slave_0 embeddedsw.configuration.isPrintableDevice 0
 
 
-# 
+#
 # connection point spi
-# 
+#
 add_interface spi conduit end
 set_interface_property spi associatedClock clock
 set_interface_property spi associatedReset ""
