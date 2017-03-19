@@ -45,13 +45,13 @@ entity DE0_Nano_SoC_PrSoC_extn_board_top_level is
         J0_SPI_CS_n : out std_logic;
         J0_SPI_MOSI : out std_logic;
         J0_SPI_MISO : in  std_logic;
-        J0_SPI_CLK  : out std_logic
+        J0_SPI_CLK  : out std_logic;
 
         -- Lepton
-     -- CAM_TH_SPI_CS_N : out std_logic;
-     -- CAM_TH_MISO     : in  std_logic;
-     -- CAM_TH_MOSI     : out std_logic;
-     -- CAM_TH_CLK      : out std_logic;
+        CAM_TH_SPI_CS_N : out std_logic;
+        CAM_TH_MISO     : in  std_logic;
+        CAM_TH_MOSI     : out std_logic;
+        CAM_TH_CLK      : out std_logic
 
         -- PCA9637
      -- PIO_SCL   : inout std_logic;
@@ -175,7 +175,11 @@ architecture rtl of DE0_Nano_SoC_PrSoC_extn_board_top_level is
             mcp3204_0_conduit_end_cs_n : out std_logic;
             mcp3204_0_conduit_end_mosi : out std_logic;
             mcp3204_0_conduit_end_miso : in  std_logic := 'X';
-            mcp3204_0_conduit_end_sclk : out std_logic
+            mcp3204_0_conduit_end_sclk : out std_logic;
+            lepton_0_spi_cs_n          : out std_logic;
+            lepton_0_spi_mosi          : out std_logic;
+            lepton_0_spi_miso          : in  std_logic := 'X';
+            lepton_0_spi_sclk          : out std_logic
         );
     end component soc_system;
 
@@ -189,7 +193,11 @@ begin
         mcp3204_0_conduit_end_cs_n => J0_SPI_CS_n,
         mcp3204_0_conduit_end_mosi => J0_SPI_MOSI,
         mcp3204_0_conduit_end_miso => J0_SPI_MISO,
-        mcp3204_0_conduit_end_sclk => J0_SPI_CLK
+        mcp3204_0_conduit_end_sclk => J0_SPI_CLK,
+        lepton_0_spi_cs_n          => CAM_TH_SPI_CS_N,
+        lepton_0_spi_mosi          => CAM_TH_MOSI,
+        lepton_0_spi_miso          => CAM_TH_MISO,
+        lepton_0_spi_sclk          => CAM_TH_CLK
     );
 
 end;
