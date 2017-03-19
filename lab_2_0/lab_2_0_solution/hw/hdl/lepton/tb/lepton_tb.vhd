@@ -7,20 +7,6 @@ entity lepton_tb is
 end lepton_tb;
 
 architecture tb of lepton_tb is
-    component lepton
-        port(clk       : in  std_logic;
-             reset     : in  std_logic;
-             address   : in  std_logic_vector(13 downto 0);
-             readdata  : out std_logic_vector(15 downto 0);
-             writedata : in  std_logic_vector(15 downto 0);
-             read      : in  std_logic;
-             write     : in  std_logic;
-             SCLK      : out std_logic;
-             CSn       : out std_logic;
-             MOSI      : out std_logic;
-             MISO      : in  std_logic);
-    end component;
-
     signal clk       : std_logic                     := '0';
     signal reset     : std_logic                     := '0';
     signal address   : std_logic_vector(13 downto 0) := (others => '0');
@@ -38,18 +24,20 @@ architecture tb of lepton_tb is
     signal sim_ended : boolean := false;
 
 begin
-    dut : lepton
-    port map(clk       => clk,
-             reset     => reset,
-             address   => address,
-             readdata  => readdata,
-             writedata => writedata,
-             read      => read,
-             write     => write,
-             SCLK      => SCLK,
-             CSn       => CSn,
-             MOSI      => MOSI,
-             MISO      => MISO);
+    dut : entity work.lepton
+    port map(
+        clk       => clk,
+        reset     => reset,
+        address   => address,
+        readdata  => readdata,
+        writedata => writedata,
+        read      => read,
+        write     => write,
+        SCLK      => SCLK,
+        CSn       => CSn,
+        MOSI      => MOSI,
+        MISO      => MISO
+    );
 
     clk <= not clk after CLK_PERIOD / 2 when not sim_ended else '0';
 
