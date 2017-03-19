@@ -7,7 +7,7 @@
 #define LEPTON_REGS_MAX_OFST             (0x0006)  /* RO */
 #define LEPTON_REGS_SUM_LSB_OFST         (0x0008)  /* RO */
 #define LEPTON_REGS_SUM_MSB_OFST         (0x000a)  /* RO */
-#define LEPTON_REGS_ROW_IDX_OFST         (0x000b)  /* RO */
+#define LEPTON_REGS_ROW_IDX_OFST         (0x000c)  /* RO */
 #define LEPTON_REGS_BUFFER_OFST          (0x0010)  /* RO */
 #define LEPTON_REGS_ADJUSTED_BUFFER_OFST (0x4000)  /* RO */
 
