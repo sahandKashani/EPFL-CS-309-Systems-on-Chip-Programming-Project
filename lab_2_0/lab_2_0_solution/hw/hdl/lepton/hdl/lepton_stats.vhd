@@ -4,7 +4,8 @@ use ieee.numeric_std.all;
 
 entity lepton_stats is
     port(
-        reset, clk : in  std_logic;
+        clk        : in  std_logic;
+        reset      : in  std_logic;
         pix_data   : in  std_logic_vector(13 downto 0);
         pix_valid  : in  std_logic;
         pix_sof    : in  std_logic;
