@@ -1,70 +1,31 @@
-#include <stdlib.h>
 #include <io.h>
-#include <stdio.h>
-#include <inttypes.h>
 #include <stdbool.h>
-#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
 
-#include "pantilt/pantilt.h"
-#include "joysticks/joysticks.h"
+#include "lepton/lepton.h"
 #include "system.h"
-
-#define SLEEP_DURATION_US            (100000)   // 100  ms
-
-// Servos
-#define PANTILT_PWM_V_CENTER_DUTY_CYCLE_US ((PANTILT_PWM_V_MIN_DUTY_CYCLE_US + PANTILT_PWM_V_MAX_DUTY_CYCLE_US) / 2)
-#define PANTILT_PWM_H_CENTER_DUTY_CYCLE_US ((PANTILT_PWM_H_MIN_DUTY_CYCLE_US + PANTILT_PWM_H_MAX_DUTY_CYCLE_US) / 2)
-
-uint32_t interpolate(uint32_t input,
-                     uint32_t input_lower_bound,
-                     uint32_t input_upper_bound,
-                     uint32_t output_lower_bound,
-                     uint32_t output_upper_bound) {
-    double slope = 1.0 * (output_upper_bound - output_lower_bound) / (input_upper_bound - input_lower_bound);
-    return output_lower_bound + (uint32_t) (slope * (input - input_lower_bound));
-}
 
 int main(void) {
     // Hardware control structures
-    pantilt_dev pantilt = pantilt_inst((void *) PWM_0_BASE, (void *) PWM_1_BASE);
-    joysticks_dev joysticks = joysticks_inst((void *) MCP3204_0_BASE);
+    lepton_dev lepton = lepton_inst((void *) LEPTON_0_BASE);
 
     // Initialize hardware
-    pantilt_init(&pantilt);
-    joysticks_init(&joysticks);
+    lepton_init(&lepton);
 
-    // Center servos.
-    pantilt_configure_vertical(&pantilt, PANTILT_PWM_V_CENTER_DUTY_CYCLE_US);
-    pantilt_configure_horizontal(&pantilt, PANTILT_PWM_H_CENTER_DUTY_CYCLE_US);
-    pantilt_start_vertical(&pantilt);
-    pantilt_start_horizontal(&pantilt);
+    bool capture_error = false;
+    do {
+        lepton_start_capture(&lepton);
+        lepton_wait_until_eof(&lepton);
+        capture_error = lepton_error_check(&lepton);
+    } while (capture_error);
 
-    // Control servos with joystick.
-    while (true) {
-        // Read LEFT joystick position
-        uint32_t left_joystick_v = joysticks_read_left_vertical(&joysticks);
-        uint32_t left_joystick_h = joysticks_read_left_horizontal(&joysticks);
+    printf("Thermal image written to internal memory!\n");
 
-        // Interpolate LEFT joystick position between SERVO_x_MIN_DUTY_CYCLE_US
-        // and SERVO_x_MAX_DUTY_CYCLE_US
-        uint32_t pantilt_v_duty_us = interpolate(left_joystick_v,
-                                                JOYSTICKS_MIN_VALUE,
-                                                JOYSTICKS_MAX_VALUE,
-                                                PANTILT_PWM_V_MIN_DUTY_CYCLE_US,
-                                                PANTILT_PWM_V_MAX_DUTY_CYCLE_US);
-        uint32_t pantilt_h_duty_us = interpolate(left_joystick_h,
-                                                JOYSTICKS_MIN_VALUE,
-                                                JOYSTICKS_MAX_VALUE,
-                                                PANTILT_PWM_H_MIN_DUTY_CYCLE_US,
-                                                PANTILT_PWM_H_MAX_DUTY_CYCLE_US);
+    // Save the adjusted (rescaled) buffer to a file.
+    lepton_save_capture(&lepton, true, "/mnt/host/output.pgm");
 
-        // Configure servos with interpolated joystick values
-        pantilt_configure_vertical(&pantilt, pantilt_v_duty_us);
-        pantilt_configure_horizontal(&pantilt, pantilt_h_duty_us);
-
-        // Sleep for a while to avoid excessive sensitivity
-        usleep(SLEEP_DURATION_US);
-    }
+    printf("Thermal image written to host filesystem!\n");
 
     return EXIT_SUCCESS;
 }
