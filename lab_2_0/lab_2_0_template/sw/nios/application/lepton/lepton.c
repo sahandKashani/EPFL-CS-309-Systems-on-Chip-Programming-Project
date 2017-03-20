@@ -40,7 +40,7 @@ void lepton_init(lepton_dev *dev) {
  * @param dev lepton device structure.
  */
 void lepton_start_capture(lepton_dev *dev) {
-    IOWR_16DIRECT(dev->base, LEPTON_REGS_COMMAND_OFST, LEPTON_COMMAND_START);
+    /* TODO : complete this function */
 }
 
 /**
@@ -51,9 +51,7 @@ void lepton_start_capture(lepton_dev *dev) {
  * @return true if there was an error, and false otherwise.
  */
 bool lepton_error_check(lepton_dev *dev) {
-    uint16_t status_reg = IORD_16DIRECT(dev->base, LEPTON_REGS_STATUS_OFST);
-    uint16_t error_flag = status_reg & LEPTON_STATUS_ERROR_MASK;
-    return error_flag != 0;
+    /* TODO : complete this function */
 }
 
 /**
@@ -65,13 +63,7 @@ bool lepton_error_check(lepton_dev *dev) {
  * @param dev lepton device structure.
  */
 void lepton_wait_until_eof(lepton_dev *dev) {
-    uint16_t status_reg = 0;
-    uint16_t capture_in_progress_flag = 0;
-
-    do {
-        status_reg = IORD_16DIRECT(dev->base, LEPTON_REGS_STATUS_OFST);
-        capture_in_progress_flag = status_reg & LEPTON_STATUS_CAPTURE_IN_PROGRESS_MASK;
-    } while (capture_in_progress_flag != 0);
+    /* TODO : complete this function */
 }
 
 /**

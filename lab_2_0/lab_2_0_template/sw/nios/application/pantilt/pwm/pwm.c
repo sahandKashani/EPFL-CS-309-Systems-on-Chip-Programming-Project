@@ -40,11 +40,7 @@ void pwm_init(pwm_dev *dev) {
  * @param module_frequency frequency at which the component is clocked.
  */
 void pwm_configure(pwm_dev *dev, uint32_t duty_cycle, uint32_t period, uint32_t module_frequency) {
-    period = period * (module_frequency / 1000000u);
-    IOWR_32DIRECT(dev->base, PWM_PERIOD_OFST, period);
-
-    duty_cycle = duty_cycle * (module_frequency / 1000000u);
-    IOWR_32DIRECT(dev->base, PWM_DUTY_CYCLE_OFST, duty_cycle);
+    /* TODO : complete this function */
 }
 
 /**
@@ -55,7 +51,7 @@ void pwm_configure(pwm_dev *dev, uint32_t duty_cycle, uint32_t period, uint32_t 
  * @param dev pwm device structure.
  */
 void pwm_start(pwm_dev *dev) {
-    IOWR_32DIRECT(dev->base, PWM_CTRL_OFST, PWM_CTRL_START_MASK);
+    /* TODO : complete this function */
 }
 
 /**
@@ -66,5 +62,5 @@ void pwm_start(pwm_dev *dev) {
  * @param dev pwm device structure.
  */
 void pwm_stop(pwm_dev *dev) {
-    IOWR_32DIRECT(dev->base, PWM_CTRL_OFST, PWM_CTRL_STOP_MASK);
+    /* TODO : complete this function */
 }

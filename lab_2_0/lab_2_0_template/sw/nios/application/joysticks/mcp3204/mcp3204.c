@@ -39,6 +39,5 @@ void mcp3204_init(mcp3204_dev *dev) {
  * @param channel channel to be read
  */
 uint32_t mcp3204_read(mcp3204_dev *dev, uint32_t channel) {
-    assert(channel < MCP3204_NUM_CHANNELS);
-    return IORD_32DIRECT(dev->base, 4 * channel);
+    /* TODO : complete this function */
 }

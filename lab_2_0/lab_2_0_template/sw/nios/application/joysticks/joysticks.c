@@ -39,10 +39,9 @@ void joysticks_init(joysticks_dev *dev) {
  * @param dev joysticks device structure.
  */
 uint32_t joysticks_read_left_vertical(joysticks_dev *dev) {
-    uint32_t value = mcp3204_read(&(dev->mcp3204), JOYSTICK_LEFT_VRY_MCP3204_CHANNEL);
+    /* TODO : complete this function */
 
     // Need to compensate for 90 degree rotation.
-    return JOYSTICKS_MAX_VALUE - value;
 }
 
 /**
@@ -54,8 +53,7 @@ uint32_t joysticks_read_left_vertical(joysticks_dev *dev) {
  * @param dev joysticks device structure.
  */
 uint32_t joysticks_read_left_horizontal(joysticks_dev *dev) {
-    uint32_t value = mcp3204_read(&(dev->mcp3204), JOYSTICK_LEFT_VRX_MCP3204_CHANNEL);
-    return value;
+    /* TODO : complete this function */
 }
 
 /**
@@ -67,10 +65,9 @@ uint32_t joysticks_read_left_horizontal(joysticks_dev *dev) {
  * @param dev joysticks device structure.
  */
 uint32_t joysticks_read_right_vertical(joysticks_dev *dev) {
-    uint32_t value = mcp3204_read(&(dev->mcp3204), JOYSTICK_RIGHT_VRY_MCP3204_CHANNEL);
+    /* TODO : complete this function */
 
     // Need to compensate for 90 degree rotation.
-    return JOYSTICKS_MAX_VALUE - value;
 }
 
 /**
@@ -82,6 +79,5 @@ uint32_t joysticks_read_right_vertical(joysticks_dev *dev) {
  * @param dev joysticks device structure.
  */
 uint32_t joysticks_read_right_horizontal(joysticks_dev *dev) {
-    uint32_t value = mcp3204_read(&(dev->mcp3204), JOYSTICK_RIGHT_VRX_MCP3204_CHANNEL);
-    return value;
+    /* TODO : complete this function */
 }

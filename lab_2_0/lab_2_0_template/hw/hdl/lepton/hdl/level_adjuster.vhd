@@ -22,20 +22,6 @@ architecture rtl of level_adjuster is
             remain   : out std_logic_vector(13 downto 0));
     end component;
 
-    signal denom    : std_logic_vector(13 downto 0);
-    signal numer    : std_logic_vector(27 downto 0);
-    signal quotient : std_logic_vector(27 downto 0);
 begin
-    lpm_divider0 : lpm_divider
-    port map(
-        clock    => clk,
-        denom    => denom,
-        numer    => numer,
-        quotient => quotient,
-        remain   => open);
-
-    numer          <= std_logic_vector((unsigned(raw_pixel) - unsigned(raw_min)) * resize(X"3fff", raw_pixel'length));
-    denom          <= std_logic_vector(unsigned(raw_max) - unsigned(raw_min));
-    adjusted_pixel <= quotient(13 downto 0);
-
+    -- TODO : complete this architecture
 end rtl;
