@@ -36,7 +36,7 @@
 -- |  8192 - 12991 | ADJUSTED BUFFER | RO     | View into adjusted (scaled) pixel buffer.         |
 -- |               |                 |        | Values are scaled between MIN and MAX.            |
 -- +---------------+-----------------+--------+---------------------------------------------------+
--- | 12991 - 16383 | RESERVED        | -      | Reserved                                          |
+-- | 12992 - 16383 | RESERVED        | -      | Reserved                                          |
 -- +---------------+-----------------+--------+---------------------------------------------------+
 
 library ieee;
