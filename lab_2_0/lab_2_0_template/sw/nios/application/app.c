@@ -13,19 +13,15 @@ int main(void) {
     // Initialize hardware
     lepton_init(&lepton);
 
-    bool capture_error = false;
-    do {
-        lepton_start_capture(&lepton);
-        lepton_wait_until_eof(&lepton);
-        capture_error = lepton_error_check(&lepton);
-    } while (capture_error);
-
-    printf("Thermal image written to internal memory!\n");
+    // =========================================================================
+    // TODO : use the lepton library to capture an image.
+    //
+    // Fill me!
+    //
+    // =========================================================================
 
     // Save the adjusted (rescaled) buffer to a file.
     lepton_save_capture(&lepton, true, "/mnt/host/output.pgm");
-
-    printf("Thermal image written to host filesystem!\n");
 
     return EXIT_SUCCESS;
 }
