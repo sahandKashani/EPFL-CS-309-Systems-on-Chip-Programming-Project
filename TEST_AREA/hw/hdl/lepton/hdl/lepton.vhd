@@ -8,7 +8,8 @@
 -- | RegNo         | Name            | Access | Description                                       |
 -- +---------------+-----------------+--------+---------------------------------------------------+
 -- |             0 | COMMAND         | WO     | Command                                           |
--- |               |                 |        | - Writing 1 starts capturing a frame.             |
+-- |               |                 |        | - Writing 1 starts capturing a frame & resets the |
+-- |               |                 |        |   ERROR bit (bit 1) in the STATUS register.       |
 -- +---------------+-----------------+--------+---------------------------------------------------+
 -- |             1 | STATUS          | RO     | Status                                            |
 -- |               |                 |        | - Bit 0: 0 --> no capture in progress.            |
