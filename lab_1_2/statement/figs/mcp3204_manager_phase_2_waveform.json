@@ -1,7 +1,8 @@
 {signal: [
   {name: 'SCLK'      , wave: 'p..'},
   {name: 'data'      , wave: 'x2x', data: ['12-bit data']},
-  {name: 'data_valid', wave: '010'}
+  {name: 'data_valid', wave: '010'},
+  {name: 'busy'      , wave: '1.0'}
 ],
   config: { hscale: 2 }
 }
