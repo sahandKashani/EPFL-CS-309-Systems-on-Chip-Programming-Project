@@ -1,11 +1,11 @@
 #include <assert.h>
 #include <inttypes.h>
 #include <stdio.h>
-#include <socal/socal.h>
 #include <unistd.h>
 
 #include "lepton_regs.h"
 #include "lepton.h"
+#include "io_custom.h"
 
 /**
  * lepton_inst
@@ -40,7 +40,7 @@ void lepton_init(lepton_dev *dev) {
  * @param dev lepton device structure.
  */
 void lepton_start_capture(lepton_dev *dev) {
-    alt_write_hword((uintptr_t) dev->base + LEPTON_REGS_COMMAND_OFST, LEPTON_COMMAND_START);
+    ioc_write_16(dev->base, LEPTON_REGS_COMMAND_OFST, LEPTON_COMMAND_START);
 }
 
 /**
@@ -51,7 +51,7 @@ void lepton_start_capture(lepton_dev *dev) {
  * @return true if there was an error, and false otherwise.
  */
 bool lepton_error_check(lepton_dev *dev) {
-    uint16_t status_reg = alt_read_hword((uintptr_t) dev->base + LEPTON_REGS_STATUS_OFST);
+    uint16_t status_reg = ioc_read_16(dev->base, LEPTON_REGS_STATUS_OFST);
     uint16_t error_flag = status_reg & LEPTON_STATUS_ERROR_MASK;
     return error_flag != 0;
 }
@@ -69,7 +69,7 @@ void lepton_wait_until_eof(lepton_dev *dev) {
     uint16_t capture_in_progress_flag = 0;
 
     do {
-        status_reg = alt_read_hword((uintptr_t) dev->base + LEPTON_REGS_STATUS_OFST);
+        status_reg = ioc_read_16(dev->base, LEPTON_REGS_STATUS_OFST);
         capture_in_progress_flag = status_reg & LEPTON_STATUS_CAPTURE_IN_PROGRESS_MASK;
     } while (capture_in_progress_flag != 0);
 }
@@ -96,7 +96,7 @@ void lepton_save_capture(lepton_dev *dev, bool adjusted, const char *fname) {
     const uint8_t num_cols = 80;
 
     uint16_t offset = LEPTON_REGS_RAW_BUFFER_OFST;
-    uint16_t max_value = alt_read_hword((uintptr_t) dev->base + LEPTON_REGS_MAX_OFST);
+    uint16_t max_value = ioc_read_16(dev->base, LEPTON_REGS_MAX_OFST);
     if (adjusted) {
         offset = LEPTON_REGS_ADJUSTED_BUFFER_OFST;
         max_value = 0x3fff;
@@ -117,7 +117,7 @@ void lepton_save_capture(lepton_dev *dev, bool adjusted, const char *fname) {
             }
 
             uint16_t current_ofst = offset + (row * num_cols + col) * sizeof(uint16_t);
-            uint16_t pix_value = alt_read_hword((uintptr_t) dev->base + current_ofst);
+            uint16_t pix_value = ioc_read_16(dev->base, current_ofst);
             fprintf(fp, "%" PRIu16, pix_value);
         }
     }
@@ -142,7 +142,7 @@ void lepton_print_capture(lepton_dev *dev, bool adjusted) {
     const uint8_t num_cols = 80;
 
     uint16_t offset = LEPTON_REGS_RAW_BUFFER_OFST;
-    uint16_t max_value = alt_read_hword((uintptr_t) dev->base + LEPTON_REGS_MAX_OFST);
+    uint16_t max_value = ioc_read_16(dev->base, LEPTON_REGS_MAX_OFST);
     if (adjusted) {
         offset = LEPTON_REGS_ADJUSTED_BUFFER_OFST;
         max_value = 0x3fff;
@@ -163,7 +163,7 @@ void lepton_print_capture(lepton_dev *dev, bool adjusted) {
             }
 
             uint16_t current_ofst = offset + (row * num_cols + col) * sizeof(uint16_t);
-            uint16_t pix_value = alt_read_hword((uintptr_t) dev->base + current_ofst);
+            uint16_t pix_value = ioc_read_16(dev->base, current_ofst);
             printf("%" PRIu16, pix_value);
         }
     }
