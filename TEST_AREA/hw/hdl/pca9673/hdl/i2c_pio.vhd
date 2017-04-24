@@ -36,7 +36,7 @@ entity i2c_pio is
         -- PCA9673 signals
         signal pio_int_n   : in    std_logic;
         signal pio_reset_n : out   std_logic;
-        signal scl         : out   std_logic;
+        signal scl         : inout std_logic;
         signal sda         : inout std_logic);
 end entity i2c_pio;
 
