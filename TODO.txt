@@ -1,0 +1,4 @@
+TODO
+====
+
+- Do not use NATURAL for slave offsets, but use an UNSIGNED(x downto 0) directly.
