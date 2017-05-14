@@ -1,0 +1,1 @@
+cmd_/home/phil/Downloads/FramebufferExample/sw/prsoc_fbdev.ko := arm-linux-gnueabihf-ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/phil/Downloads/FramebufferExample/sw/prsoc_fbdev.ko /home/phil/Downloads/FramebufferExample/sw/prsoc_fbdev.o /home/phil/Downloads/FramebufferExample/sw/prsoc_fbdev.mod.o
