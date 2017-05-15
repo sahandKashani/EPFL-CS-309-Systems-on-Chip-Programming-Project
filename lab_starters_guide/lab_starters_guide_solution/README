@@ -1,0 +1,115 @@
+# ##############################################################################
+# README
+#
+# Author        : Sahand Kashani-Akhavan & Philémon Favrod
+# Revision      : 1.0
+# Creation date : 2016/02/21
+#
+# ##############################################################################
+
+About
+=====
+This README describes the standard project structure that will be used in the
+following courses:
+    - CS-309 : Projet de Systems-on-Chip  (PSOC)
+    - CS-473 : Embedded systems           (ES)
+    - CS-476 : Real-time embedded systems (RTES)
+
+Folder structure
+================
+IMPORTANT : Please read the following paragraphs VERY carefully...
+
+            Make sure the project directory in located in some place such that
+            its ABSOLUTE path contains NO SPACES.
+
+            Make sure that any files/directories that you create as you advance
+            in your designs also contain NO SPACES.
+
+            Failing to satisfy these constraints will cause some of the tools
+            used in the course to generate error messages, ultimately leading to
+            non-functional designs (and, additionally, to much swearing directed
+            towards the tools).
+
+            We've been there (numerous) times, and want to avoid wasting your
+            time debugging this sort of (useless) error :).
+
+To facilitate US to help YOU, we kindly ask that you use the following folder
+structure for all your projects.
+
+<project_name>
+├── hw
+│   ├── hdl
+│   │   ├── DE0_Nano_SoC_top_level.vhd
+│   │   ├── DE0_Nano_top_level.vhd
+│   │   └── DE1_SoC_top_level.vhd
+│   ├── modelsim
+│   └── quartus
+│       ├── pin_assignment_DE0_Nano_SoC.tcl
+│       ├── pin_assignment_DE0_Nano.tcl
+│       └── pin_assignment_DE1_SoC.tcl
+├── README
+└── sw
+    ├── hps
+    │   ├── application
+    │   ├── linux
+    │   │   └── driver
+    │   └── preloader
+    └── nios
+        └── application
+
+We ask that you use the following guidelines for placing your various files:
+
+    - Quartus Prime   projects              : hw/quartus
+    - ModelSim-Altera projects              : hw/modelsim
+    - Nios II SBT     projects              : sw/nios/application
+    - ARM DS5         baremetal application : sw/hps/application
+    - ARM DS5         linux     application : sw/hps/application
+    - Linux           linux     driver      : sw/hps/linux/driver
+    - SoC-FPGA        preloader             : sw/hps/preloader
+
+    - YOUR hdl design files in hw/hdl
+    - Qsys design files in hw/quartus
+
+Note that for Eclipse-based tools (Nios II SBT & ARM DS5), the "project"
+directories listed above are NOT what Eclipse calls the "workspace" directory
+(generally asked when you start the program).
+
+Please use a DIFFERENT folder (somewhere else on your machine) for Eclipse's
+"workspace" directory. This directory generally contains bookkeeping information
+needed for Eclipse to run, but is not related in any way to source files for the
+projects you are designing!
+
+FPGA development boards
+=======================
+We use 3 different FPGA development boards in these courses:
+    - Terasic DE0-Nano     (Cyclone IV E : EP4CE22F17C6)
+    - Terasic DE0-Nano-SoC (Cyclone V    : 5CSEMA4U23C6)
+    - Terasic DE1-SoC      (Cyclone V    : 5CSEMA5F31C6)
+
+    TCL Scripts
+    ===========
+    When creating your Quartus projects, remember to source the TCL script
+    corresponding to your chosen development board. To source a TCL script, go
+    to
+
+        Tools > TCL Scripts...
+
+    and execute the TCL script corresponding to the board you are using.
+
+    NOTE: executing TCL scripts takes some time (~20-60 seconds), and Quartus
+          may seem to have "frozen", but it is not the case. Please be patient
+          and wait until the script is fully executed and returns.
+
+    Top-level VHDL files
+    ====================
+    We provide top-level VHDL files for all development boards. These VHDL files
+    contain the names of all available pins on the device.
+
+    After creating your (empty) Quartus projects, add the VHDL file corresponding
+    to your development board to the project. To add a file, go to
+
+        Project > Add/Remove Files in Project...
+
+    Once the file is added, you can set it as the top-level entity of your
+    design by right-clicking on the VHDL file in the "files" tab of the Project
+    Navigator and selecting "Set as Top-Level Entity".
