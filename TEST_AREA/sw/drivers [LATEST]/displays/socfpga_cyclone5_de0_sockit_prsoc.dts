@@ -1,0 +1,37 @@
+#include "socfpga_cyclone5_de0_sockit.dts"
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+
+#define VGA_SEQUENCER_REG_CSR   0x00
+#define VGA_SEQUENCER_REG_HBP   0x04
+#define VGA_SEQUENCER_REG_HFP   0x08
+#define VGA_SEQUENCER_REG_VBP   0x0c
+#define VGA_SEQUENCER_REG_VFP   0x10
+#define VGA_SEQUENCER_REG_HDATA 0x14
+#define VGA_SEQUENCER_REG_VDATA 0x18
+#define VGA_SEQUENCER_REG_HSYNC 0x1c
+#define VGA_SEQUENCER_REG_VSYNC 0x20
+
+/ {
+  soc {
+      display {
+              compatible = "prsoc,display";
+              reg = <0xff200080 0x40   /* Frame manager <address span> */
+                     0xff200000 0x80>; /* VGA sequencer  <address span> */
+              interrupts = <GIC_SPI 40 IRQ_TYPE_EDGE_RISING>;
+              prsoc,screen-width  = <480>;
+              prsoc,screen-height = <272>;
+              prsoc,buffer-width  = <480>;
+              prsoc,buffer-height = <544>; // -> 2 buffers
+              prsoc,reg-init = <VGA_SEQUENCER_REG_VSYNC 10>,
+                               <VGA_SEQUENCER_REG_VBP 2>,
+                               <VGA_SEQUENCER_REG_VDATA 272>,
+                               <VGA_SEQUENCER_REG_VFP 3>,
+                               <VGA_SEQUENCER_REG_HSYNC 41>,
+                               <VGA_SEQUENCER_REG_HBP 47>,
+                               <VGA_SEQUENCER_REG_HDATA 480>,
+                               <VGA_SEQUENCER_REG_HFP 8>,
+                               <VGA_SEQUENCER_REG_CSR 1>;
+      };
+  };
+};
