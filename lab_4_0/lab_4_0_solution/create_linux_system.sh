@@ -365,6 +365,40 @@ compile_linux() {
     popd
 }
 
+# compile_driver() #############################################################
+compile_driver() {
+    custom_dts_file="$(readlink -m "${linux_dir}/device_tree/socfpga_cyclone5_de0_sockit_prsoc.dts")"
+    custom_dtb_file="$(dirname "${linux_dtb_file}")/$(basename "${custom_dts_file}" .dts).dtb"
+
+    # copy custom device tree to linux directory where device trees are stored.
+    cp "${custom_dts_file}" "$(dirname "${custom_dtb_file}")"
+
+    # change working directory to linux source tree directory
+    pushd "${linux_src_dir}"
+
+    # compile for the ARM architecture
+    export ARCH=arm
+
+    # use cross compiler instead of standard x86 version of gcc
+    export CROSS_COMPILE=arm-linux-gnueabihf-
+
+    # You need to MANUALLY configure the kernel to enable framebuffer support.
+    make menuconfig
+
+    # compile zImage
+    make -j4 zImage
+
+    # compile device tree
+    make -j4 "$(basename "${custom_dtb_file}")"
+
+    # copy artifacts to associated sdcard directory
+    cp "${linux_zImage_file}" "${sdcard_fat32_zImage_file}"
+    cp "${custom_dtb_file}" "${sdcard_fat32_dtb_file}"
+
+    # change working directory back to script directory
+    popd
+}
+
 # create_rootfs() ##############################################################
 create_rootfs() {
     # if rootfs tarball doesn't exist, then download it
@@ -496,6 +530,7 @@ compile_quartus_project
 compile_preloader
 compile_uboot
 compile_linux
+compile_driver
 create_rootfs
 
 # Write sdcard if it exists
