@@ -2,3 +2,4 @@ TODO
 ====
 
 - Do not use NATURAL for slave offsets, but use an UNSIGNED(x downto 0) directly.
+- Create a pan-tilt.vhd file which instantiates 2 PWM controllers.
