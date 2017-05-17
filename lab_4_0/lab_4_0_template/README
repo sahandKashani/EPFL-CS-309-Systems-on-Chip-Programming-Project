@@ -1,0 +1,169 @@
+README
+======
+
+The file tree shown at the end of this README lists all the contents of the
+provided template. In addition to the standard file hierarchy you have been
+using for the previous labs, the template for this lab contains the VHDL files
+and Linux kernel module of 2 new custom interfaces:
+
+    1) framebuffer device
+    2) VGA output
+
+The hardware files are available under hw/hdl/displays/
+The Linux kernel device tree is available under sw/hps/linux/device_tree/
+The Linux kernel module is available under sw/hps/linux/driver/fbdev/
+
+How to use the template
+=======================
+
+    Background
+    ==========
+    We need to re-create a linux system in this lab, but we cannot directly copy
+    and modify the one you created in the previous labs since some of the tools
+    used in the middle hard-code absolute paths in many generated files...
+
+    Therefore, we provide you with a shell script which performs all the steps
+    you did in lab 3.0 and 3.1 in order to get a bootable linux system. Namely
+    the script performs the following steps automatically:
+
+        1) Compiles the Quartus project.
+        2) Generates and compiles the Preloader.
+        3) Downloads and compiles U-Boot.
+        4) Downloads and compiles Linux.
+        5) Downloads and creates a Ubuntu 14.04.5 root filesystem.
+        6) Partitions the sdcard.
+        7) Writes all files to the sdcard.
+
+    BEFORE you start your mini-project
+    ==================================
+    Follow the steps listed below in order to create a bootable sdcard
+    containing a Linux OS:
+
+        1) Replace all files indicated with the "OVERWRITE" label in the file
+           tree shown at the end of this README with the files you implemented
+           in the previous labs.
+
+        2) Plug in your sdcard into your Linux computer/VM and take note of the
+           identifier the OS assigned to it. This README assumes the identifier
+           assigned to the sdcard is "/dev/sdb".
+
+           WARNING : Be ABSOLUTELY SURE that you have the correct drive
+                     identifier or else we will later accidentally format the
+                     wrong drive!
+
+        3) Start an embedded command shell.
+
+        4) Execute the create_linux_system.sh script as follows:
+           $ ./create_linux_system.sh /dev/sdb
+
+           WARNING : Again, be absolutely sure that you have used the correct
+                     drive identifier before running the command above!
+
+           The lower bound for the execution time of the script is around 25
+           minutes (the time it takes to compile all files). However, the script
+           also clones large git repositories, so the total execution time can
+           vary greatly depending on the download speed. Be patient :).
+
+    AFTER you start your mini-project
+    =================================
+    You can now follow the steps explained in the lab statement.
+
+File tree
+=========
+lab_4_0_template/
+├── create_hw_headers.sh
+├── create_linux_system.sh
+├── hw
+│   ├── hdl
+│   │   ├── DE0_Nano_SoC_PrSoC_extn_board_top_level.vhd
+│   │   ├── displays
+│   │   │   ├── framebuffer_manager
+│   │   │   │   └── hdl
+│   │   │   │       ├── dc_video_fifo.vhd
+│   │   │   │       ├── framebuffer_manager_hw.tcl
+│   │   │   │       └── framebuffer_manager.vhd
+│   │   │   └── vga_sequencer
+│   │   │       └── hdl
+│   │   │           ├── vga_sequencer_hw.tcl
+│   │   │           └── vga_sequencer.vhd
+│   │   ├── joysticks
+│   │   │   ├── hdl
+│   │   │   │   ├── mcp3204_hw.tcl
+│   │   │   │   ├── mcp3204_spi.vhd ------------------------> # OVERWRITE : Overwrite with your previous implementation.
+│   │   │   │   └── mcp3204.vhd
+│   │   │   └── tb
+│   │   │       ├── tb_mcp3204_spi.vhd
+│   │   │       └── tb_mcp3204.vhd
+│   │   ├── lepton
+│   │   │   ├── hdl
+│   │   │   │   ├── avalon_st_spi_master.vhd
+│   │   │   │   ├── byte2pix.vhd
+│   │   │   │   ├── dual_ported_ram.vhd
+│   │   │   │   ├── lepton_hw.tcl
+│   │   │   │   ├── lepton_manager.vhd
+│   │   │   │   ├── lepton_stats.vhd -----------------------> # OVERWRITE : Overwrite with your previous implementation.
+│   │   │   │   ├── lepton.vhd
+│   │   │   │   ├── level_adjuster.vhd ---------------------> # OVERWRITE : Overwrite with your previous implementation.
+│   │   │   │   ├── lpm_divider.vhd
+│   │   │   │   ├── ram_writer.vhd
+│   │   │   │   └── utils.vhd
+│   │   │   └── tb
+│   │   │       └── lepton_tb.vhd
+│   │   └── pantilt
+│   │       ├── hdl
+│   │       │   ├── pwm_constants.vhd ----------------------> # OVERWRITE : Overwrite with your previous implementation.
+│   │       │   ├── pwm_hw.tcl
+│   │       │   └── pwm.vhd --------------------------------> # OVERWRITE : Overwrite with your previous implementation.
+│   │       └── tb
+│   │           └── tb_pwm.vhd
+│   ├── modelsim
+│   └── quartus
+│       ├── ip
+│       │   └── components.ipx
+│       ├── lab_4_0.qpf
+│       ├── lab_4_0.qsf
+│       ├── lab_4_0.sdc
+│       └── soc_system.qsys
+├── README
+└── sw
+    └── hps
+        ├── application
+        │   ├── hw_headers
+        │   └── lab_4_0
+        │       ├── app.c ----------------------------------> # TODO : Your lab_4_0 mini-project application code goes here.
+        │       ├── displays
+        │       │   ├── batman_320x240.jpg -----------------> # IMAGE  : sample input images for "fbv" binary.
+        │       │   ├── batman_480x272.jpg -----------------> # IMAGE  : sample input images for "fbv" binary.
+        │       │   ├── fb_multiple_buffering_example.c ----> # DEMO   : how to use a framebuffer driver.
+        │       │   └── fbv --------------------------------> # BINARY : "framebuffer viewer" outputs an image to a framebuffer device (http://freecode.com/projects/fbv).
+        │       ├── io_custom.h
+        │       ├── joysticks
+        │       │   ├── joysticks.c ------------------------> # OVERWRITE : Overwrite with your previous implementation.
+        │       │   ├── joysticks.h ------------------------> # OVERWRITE : Overwrite with your previous implementation.
+        │       │   └── mcp3204
+        │       │       ├── mcp3204.c ----------------------> # OVERWRITE : Overwrite with your previous implementation.
+        │       │       ├── mcp3204.h ----------------------> # OVERWRITE : Overwrite with your previous implementation.
+        │       │       └── mcp3204_regs.h -----------------> # OVERWRITE : Overwrite with your previous implementation.
+        │       ├── lepton
+        │       │   ├── lepton.c ---------------------------> # OVERWRITE : Overwrite with your previous implementation.
+        │       │   ├── lepton.h ---------------------------> # OVERWRITE : Overwrite with your previous implementation.
+        │       │   └── lepton_regs.h ----------------------> # OVERWRITE : Overwrite with your previous implementation.
+        │       └── pantilt
+        │           ├── pantilt.c --------------------------> # OVERWRITE : Overwrite with your previous implementation.
+        │           ├── pantilt.h --------------------------> # OVERWRITE : Overwrite with your previous implementation.
+        │           └── pwm
+        │               ├── pwm.c --------------------------> # OVERWRITE : Overwrite with your previous implementation.
+        │               ├── pwm.h --------------------------> # OVERWRITE : Overwrite with your previous implementation.
+        │               └── pwm_regs.h ---------------------> # OVERWRITE : Overwrite with your previous implementation.
+        └── linux
+            ├── device_tree
+            │   └── socfpga_cyclone5_de0_sockit_prsoc.dts --> # DEMO : source code of our custom device tree.
+            ├── driver
+            │   └── fbdev
+            │       ├── Makefile ---------------------------> # DEMO : makefile of our custom framebuffer driver.
+            │       └── prsoc_fbdev.c ----------------------> # DEMO : source code of our custom framebuffer driver.
+            └── rootfs
+                ├── config_post_install.sh
+                └── config_system.sh
+
+35 directories, 59 files
