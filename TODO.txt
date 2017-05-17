@@ -1,5 +1,9 @@
 TODO
 ====
-
 - Do not use NATURAL for slave offsets, but use an UNSIGNED(x downto 0) directly.
+
 - Create a pan-tilt.vhd file which instantiates 2 PWM controllers.
+
+- Using 128-bit fpga2hps bridge interface results in a segmentation fault when
+  using the framebuffer in lab_4_0. It works fine with a 64-bit fpga2hps
+  interface though.
