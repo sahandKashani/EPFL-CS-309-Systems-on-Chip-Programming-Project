@@ -9,3 +9,5 @@ TODO
 - Using 128-bit fpga2hps bridge interface results in a segmentation fault when
   using the framebuffer in lab_4_0. It works fine with a 64-bit fpga2hps
   interface though.
+
+- Find horizontal back porch, front porch, ... for 320x240 LCDs.
