@@ -1,6 +1,26 @@
--- demo_adder Memory-Mapped Avalon Slave Interface
--- Author: Sahand Kashani-Akhavan (sahand.kashani-akhavan@epfl.ch)
--- Revision: 1
+-- #############################################################################
+-- demo_adder.vhd
+-- ==============
+-- This component describes a simple adder with an Avalon-MM slave interface.
+-- The operands can be written to register 0 and 1, and the result of the
+-- addition can be read back from register 2.
+--
+-- Register map
+-- +--------+------------+--------+------------------------------------+
+-- | RegNo  | Name       | Access | Description                        |
+-- +--------+------------+--------+------------------------------------+
+-- | 0      | INPUT_1    | R/W    | First input of the addition.       |
+-- +--------+------------+--------+------------------------------------+
+-- | 1      | INPUT_2    | R/W    | Second input of the addition.      |
+-- +--------+------------+--------+------------------------------------+
+-- | 2      | RESULT     | RO     | Result of the addition. Writing to |
+-- |        |            |        | this register has no effect.       |
+-- +--------+------------+--------+------------------------------------+
+--
+-- Author : Sahand Kashani-Akhavan [sahand.kashani-akhavan@epfl.ch]
+-- Revision : 2
+-- Last updated : 2018-02-28
+-- #############################################################################
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -25,20 +45,9 @@ end demo_adder;
 
 architecture rtl of demo_adder is
 
-    -- Register map
-    -- +--------+------------+--------+------------------------------------+
-    -- | RegNo  | Name       | Access | Description                        |
-    -- +--------+------------+--------+------------------------------------+
-    -- | 0      | INPUT_1    | R/W    | First input of the addition.       |
-    -- +--------+------------+--------+------------------------------------+
-    -- | 1      | INPUT_2    | R/W    | Second input of the addition.      |
-    -- +--------+------------+--------+------------------------------------+
-    -- | 2      | RESULT     | RO     | Result of the addition. Writing to |
-    -- |        |            |        | this register has no effect.       |
-    -- +--------+------------+--------+------------------------------------+
-    constant REG_INPUT_1_OFST : natural := 0;
-    constant REG_INPUT_2_OFST : natural := 1;
-    constant REG_RESULT_OFST  : natural := 2;
+    constant REG_INPUT_1_OFST : std_logic_vector(1 downto 0) := "00";
+    constant REG_INPUT_2_OFST : std_logic_vector(1 downto 0) := "01";
+    constant REG_RESULT_OFST  : std_logic_vector(1 downto 0) := "10";
 
     signal reg_input_1 : unsigned(writedata'range);
     signal reg_input_2 : unsigned(writedata'range);
@@ -53,7 +62,7 @@ begin
             reg_input_2 <= (others => '0');
         elsif rising_edge(clk) then
             if write = '1' then
-                case to_integer(unsigned(address)) is
+                case address is
                     when REG_INPUT_1_OFST =>
                         reg_input_1 <= unsigned(writedata);
 
@@ -75,7 +84,7 @@ begin
     begin
         if rising_edge(clk) then
             if read = '1' then
-                case to_integer(unsigned(address)) is
+                case address is
                     when REG_INPUT_1_OFST =>
                         readdata <= std_logic_vector(reg_input_1);
 

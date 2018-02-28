@@ -1,7 +1,13 @@
--- PWM Memory-Mapped Avalon Slave Interface
--- Author: Philémon Favrod (philemon.favrod@epfl.ch)
--- Modified by: Sahand Kashani-Akhavan (sahand.kashani-akhavan@epfl.ch)
--- Revision: 2
+-- #############################################################################
+-- pwm.vhd
+-- =======
+-- PWM memory-mapped Avalon slave interface.
+--
+-- Author        : Philémon Favrod (philemon.favrod@epfl.ch)
+-- Modified by   : Sahand Kashani-Akhavan [sahand.kashani-akhavan@epfl.ch]
+-- Revision      : 3
+-- Last modified : 2018-02-28
+-- #############################################################################
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -89,7 +95,7 @@ begin
             run            <= '0';
         elsif rising_edge(clk) then
             if write = '1' then
-                case to_integer(unsigned(address)) is
+                case address is
                     when REG_PERIOD_OFST =>
                         new_period <= unsigned(writedata);
 
@@ -109,7 +115,7 @@ begin
     begin
         if rising_edge(clk) then
             if read = '1' then
-                case to_integer(unsigned(address)) is
+                case address is
                     when REG_PERIOD_OFST =>
                         readdata <= std_logic_vector(period);  -- should technically return new_period
 
