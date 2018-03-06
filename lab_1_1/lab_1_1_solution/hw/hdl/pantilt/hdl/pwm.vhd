@@ -3,10 +3,10 @@
 -- =======
 -- PWM memory-mapped Avalon slave interface.
 --
--- Author        : Philémon Favrod (philemon.favrod@epfl.ch)
+-- Author        : Philémon Favrod [philemon.favrod@epfl.ch]
 -- Modified by   : Sahand Kashani-Akhavan [sahand.kashani-akhavan@epfl.ch]
--- Revision      : 3
--- Last modified : 2018-02-28
+-- Revision      : 4
+-- Last modified : 2018-03-06
 -- #############################################################################
 
 library ieee;
