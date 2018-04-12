@@ -1,3 +1,15 @@
+-- #############################################################################
+-- mcp3204_spi.vhd
+-- ===============
+-- MCP3204 SPI interface.
+--
+-- Author        : Philémon Favrod [philemon.favrod@epfl.ch]
+-- Author        : Sahand Kashani-Akhavan [sahand.kashani-akhavan@epfl.ch]
+-- Author        : <insert your name> (<insert your e-mail address>)
+-- Revision      : 1
+-- Last modified : <insert date>
+-- #############################################################################
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
