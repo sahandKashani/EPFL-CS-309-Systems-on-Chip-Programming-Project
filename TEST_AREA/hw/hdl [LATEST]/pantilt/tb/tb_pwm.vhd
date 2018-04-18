@@ -1,3 +1,13 @@
+-- #############################################################################
+-- tb_pwm.vhd
+-- ==========
+-- Testbench for PWM memory-mapped Avalon slave interface.
+--
+-- Modified by   : Sahand Kashani-Akhavan [sahand.kashani-akhavan@epfl.ch]
+-- Revision      : 2
+-- Last modified : 2018-02-28
+-- #############################################################################
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -74,12 +84,12 @@ begin
             wait for CLK_PERIOD / 4;
         end procedure async_reset;
 
-        procedure write_register(constant ofst : in natural;
+        procedure write_register(constant ofst : in std_logic_vector(1 downto 0);
                                  constant val  : in natural) is
         begin
             wait until rising_edge(clk);
 
-            address   <= std_logic_vector(to_unsigned(ofst, address'length));
+            address   <= ofst;
             write     <= '1';
             writedata <= std_logic_vector(to_unsigned(val, writedata'length));
             wait until rising_edge(clk);
@@ -90,11 +100,11 @@ begin
             wait until rising_edge(clk);
         end procedure write_register;
 
-        procedure read_register(constant ofst : in natural) is
+        procedure read_register(constant ofst : in std_logic_vector(1 downto 0)) is
         begin
             wait until rising_edge(clk);
 
-            address <= std_logic_vector(to_unsigned(ofst, address'length));
+            address <= ofst;
             read    <= '1';
             -- The read has a 1 cycle wait-state, so we need to keep the read
             -- signal high for 2 clock cycles.
@@ -106,7 +116,7 @@ begin
             wait until rising_edge(clk);
         end procedure read_register;
 
-        procedure read_register_check(constant ofst         : in natural;
+        procedure read_register_check(constant ofst         : in std_logic_vector(1 downto 0);
                                       constant expected_val : in natural) is
         begin
             read_register(ofst);
