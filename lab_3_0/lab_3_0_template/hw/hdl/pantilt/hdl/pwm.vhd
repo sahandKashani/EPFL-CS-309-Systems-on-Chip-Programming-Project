@@ -1,3 +1,14 @@
+-- #############################################################################
+-- pwm.vhd
+-- =======
+-- PWM memory-mapped Avalon slave interface.
+--
+-- Author        : <insert your name> (<insert your e-mail address>)
+-- Author        : <insert your name> (<insert your e-mail address>)
+-- Revision      : <insert revision>
+-- Last modified : <insert date>
+-- #############################################################################
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
