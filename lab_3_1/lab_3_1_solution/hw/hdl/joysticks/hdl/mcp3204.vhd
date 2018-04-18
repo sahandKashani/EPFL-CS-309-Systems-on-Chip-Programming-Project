@@ -1,8 +1,8 @@
--- MCP3204 Avalon Memory-Mapped Slave Interface
--- Author: Philémon Favrod (philemon.favrod@epfl.ch)
--- Author: Sahand Kashani-Akhavan (sahand.kashani-akhavan@epfl.ch)
--- Revision: 2
-
+-- #############################################################################
+-- mcp3204.vhd
+-- ===========
+-- MCP3204 Avalon-MM slave interface.
+--
 -- Register map
 -- +-------+-----------+--------+------------------------------------+
 -- | RegNo | Name      | Access | Description                        |
@@ -15,6 +15,12 @@
 -- +-------+-----------+--------+------------------------------------+
 -- | 3     | CHANNEL_3 | RO     | 12-bit digital value of channel 3. |
 -- +-------+-----------+--------+------------------------------------+
+--
+-- Author        : Philémon Favrod [philemon.favrod@epfl.ch]
+-- Author        : Sahand Kashani-Akhavan [sahand.kashani-akhavan@epfl.ch]
+-- Revision      : 2
+-- Last modified : 2018-03-06
+-- #############################################################################
 
 library ieee;
 use ieee.std_logic_1164.all;

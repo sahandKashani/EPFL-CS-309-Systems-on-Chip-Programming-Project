@@ -4,8 +4,8 @@
 -- This package contains constants used in the PWM design files.
 --
 -- Author        : Sahand Kashani-Akhavan [sahand.kashani-akhavan@epfl.ch]
--- Revision      : 1.0
--- Last modified : 2017.02.28
+-- Revision      : 2
+-- Last modified : 2018-02-28
 -- #############################################################################
 
 library ieee;
@@ -46,9 +46,9 @@ package pwm_constants is
     -- |        |            |        |                                                                              |
     -- |        |            |        | >> Reading this register always returns 0.                                   |
     -- +--------+------------+--------+------------------------------------------------------------------------------+
-    constant REG_PERIOD_OFST     : natural := 0;
-    constant REG_DUTY_CYCLE_OFST : natural := 1;
-    constant REG_CTRL_OFST       : natural := 2;
+    constant REG_PERIOD_OFST     : std_logic_vector(1 downto 0) := "00";
+    constant REG_DUTY_CYCLE_OFST : std_logic_vector(1 downto 0) := "01";
+    constant REG_CTRL_OFST       : std_logic_vector(1 downto 0) := "10";
 
     -- Default values of registers after reset (BEFORE writing START to the CTRL
     -- register with a new configuration)

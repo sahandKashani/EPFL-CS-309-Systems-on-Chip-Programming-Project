@@ -1,6 +1,13 @@
--- MCP3204 SPI Interface
--- Author: Philémon Favrod & Sahand Kashani
--- Revision: 1
+-- #############################################################################
+-- mcp3204_spi.vhd
+-- ===============
+-- MCP3204 SPI interface.
+--
+-- Author        : Philémon Favrod [philemon.favrod@epfl.ch]
+-- Author        : Sahand Kashani-Akhavan [sahand.kashani-akhavan@epfl.ch]
+-- Revision      : 1
+-- Last modified : 2018-03-06
+-- #############################################################################
 
 library ieee;
 use ieee.std_logic_1164.all;
