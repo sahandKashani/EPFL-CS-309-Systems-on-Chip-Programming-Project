@@ -1,3 +1,13 @@
+-- #############################################################################
+-- tb_mcp3204_spi.vhd
+-- ==================
+-- Testbench for MCP3204 SPI interface.
+--
+-- Author        : Sahand Kashani-Akhavan [sahand.kashani-akhavan@epfl.ch]
+-- Revision      : 1
+-- Last modified : 2018-03-06
+-- #############################################################################
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
