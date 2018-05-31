@@ -2,8 +2,6 @@ TODO
 ====
 - User-space DMA buffers: https://github.com/ikwzm/udmabuf
 
-- Do not use NATURAL for slave offsets, but use an UNSIGNED(x downto 0) directly.
-
 - Create a pan-tilt.vhd file which instantiates 2 PWM controllers.
 
 - Using 128-bit fpga2hps bridge interface results in a segmentation fault when
@@ -16,6 +14,3 @@ TODO
     sudo apt-get install libncurses5-dev libncursesw5-dev
 
 - Check if we can use a more recent socfpga branch like 4.15 or something.
-
-- Increase number of virtual buffers in lab 4.0 to 3 (instead of 2, because
-  right now we don't see the blue color in fb_multiple_buffering_example.c)
