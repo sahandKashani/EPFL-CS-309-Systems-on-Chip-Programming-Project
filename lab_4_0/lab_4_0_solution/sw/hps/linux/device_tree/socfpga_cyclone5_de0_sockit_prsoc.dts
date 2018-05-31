@@ -22,7 +22,7 @@
               prsoc,screen-width  = <480>;
               prsoc,screen-height = <272>;
               prsoc,buffer-width  = <480>;
-              prsoc,buffer-height = <544>; // -> 2 buffers
+              prsoc,buffer-height = <816>; // -> 3 buffers
               prsoc,reg-init = <VGA_SEQUENCER_REG_VSYNC 10>,
                                <VGA_SEQUENCER_REG_VBP 2>,
                                <VGA_SEQUENCER_REG_VDATA 272>,
