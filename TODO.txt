@@ -11,3 +11,11 @@ TODO
   interface though.
 
 - Find horizontal back porch, front porch, ... for 320x240 LCDs.
+
+- Install libncurses in the VM:
+    sudo apt-get install libncurses5-dev libncursesw5-dev
+
+- Check if we can use a more recent socfpga branch like 4.15 or something.
+
+- Increase number of virtual buffers in lab 4.0 to 3 (instead of 2, because
+  right now we don't see the blue color in fb_multiple_buffering_example.c)
