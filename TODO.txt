@@ -14,3 +14,7 @@ TODO
     sudo apt-get install libncurses5-dev libncursesw5-dev
 
 - Check if we can use a more recent socfpga branch like 4.15 or something.
+
+- Framebuffer consoles
+    - https://superuser.com/questions/892028/fbterm-expected-behavior-at-launch
+    - https://www.kernel.org/doc/Documentation/fb/fbcon.txt
