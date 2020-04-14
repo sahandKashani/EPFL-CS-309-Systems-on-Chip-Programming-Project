@@ -27,7 +27,6 @@ begin
     next_running_sum   <= u_resized_pix_data + running_sum;
 
     p_stats : process(clk, reset)
-        variable pix : unsigned(pix_data'range);
     begin
         if reset = '1' then
             running_max <= (others => '0');
