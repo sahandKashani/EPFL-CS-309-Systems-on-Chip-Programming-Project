@@ -3,6 +3,10 @@
  * @brief Example of ping-pong buffering using the framebuffer.
  */
 
+// Compile with the following command:
+//
+//   arm-linux-gnueabihf-gcc -std=gnu99 fb_multiple_buffering_example.c -o fb_multiple_buffering_example
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -19,7 +23,7 @@ int num_buffers;
 int num_pixels_per_buffer;
 int fb_fd;
 
-inline uint32_t make_color(uint8_t red, uint8_t green, uint8_t blue)
+uint32_t make_color(uint8_t red, uint8_t green, uint8_t blue)
 {
     uint32_t r = red   << var_info.red.offset;
     uint32_t g = green << var_info.green.offset;
