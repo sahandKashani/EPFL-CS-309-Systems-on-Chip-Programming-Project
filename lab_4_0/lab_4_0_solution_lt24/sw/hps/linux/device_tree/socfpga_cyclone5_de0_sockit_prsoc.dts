@@ -1,0 +1,24 @@
+#include "socfpga_cyclone5_de0_sockit.dts"
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+
+#define LT24_SEQUENCER_REG_WRITE_CMD       0x00
+#define LT24_SEQUENCER_REG_WRITE_DATA      0x04
+#define LT24_SEQUENCER_REG_LCD_ON          0x08
+#define LT24_SEQUENCER_REG_DATA_SRC_SELECT 0x0c
+
+/ {
+  soc {
+      display {
+              compatible = "prsoc,display";
+              reg = <0xff200080 0x40   /* Frame manager <address span> */
+                     0xff200000 0x10>; /* LT24 sequencer  <address span> */
+              interrupts = <GIC_SPI 40 IRQ_TYPE_EDGE_RISING>;
+              prsoc,screen-width  = <320>;
+              prsoc,screen-height = <240>;
+              prsoc,buffer-width  = <320>;
+              prsoc,buffer-height = <720>; // -> 3 buffers
+              prsoc,reg-init = <LT24_SEQUENCER_REG_LCD_ON 1>;
+      };
+  };
+};
