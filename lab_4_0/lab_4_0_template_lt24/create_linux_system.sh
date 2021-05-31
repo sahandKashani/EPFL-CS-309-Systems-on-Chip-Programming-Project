@@ -342,14 +342,14 @@ compile_linux() {
     # use cross compiler instead of standard x86 version of gcc
     export CROSS_COMPILE=arm-linux-gnueabihf-
 
-    # # clean up source tree
-    # make distclean
+    # clean up source tree
+    make distclean
 
-    # # checkout the following commit (tested and working):
-    # git checkout "${linux_src_git_checkout_commit}"
+    # checkout the following commit (tested and working):
+    git checkout "${linux_src_git_checkout_commit}"
 
-    # # configure kernel for socfpga architecture
-    # make "${linux_src_make_config_file}"
+    # configure kernel for socfpga architecture
+    make "${linux_src_make_config_file}"
 
     # compile zImage
     make -j4 zImage
